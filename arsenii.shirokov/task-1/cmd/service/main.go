@@ -5,6 +5,11 @@ import (
 	"fmt"
 )
 
+var (
+	errDivisionByZero   = errors.New("division by zero")
+	errInvalidOperation = errors.New("invalid operation")
+)
+
 func calculate(a, b int, op string) (int, error) {
 	switch op {
 	case "+":
@@ -15,41 +20,44 @@ func calculate(a, b int, op string) (int, error) {
 		return a * b, nil
 	case "/":
 		if b == 0 {
-			return 0, errors.New("Division by zero")
+			return 0, errDivisionByZero
 		}
 		return a / b, nil
 	default:
-		return 0, errors.New("Invalid operation")
+		return 0, errInvalidOperation
 	}
 }
 
 func main() {
-	var (
-		a, b int
-		op   string
-	)
-	_, err := fmt.Scanln(&a)
-	if err != nil {
+	var a int
+	if _, err := fmt.Scanln(&a); err != nil {
 		fmt.Println("Invalid first operand")
 		return
 	}
 
-	_, err = fmt.Scanln(&b)
-	if err != nil {
+	var b int
+	if _, err := fmt.Scanln(&b); err != nil {
 		fmt.Println("Invalid second operand")
 		return
 	}
 
-	_, err = fmt.Scanln(&op)
-	if err != nil {
+	var op string
+	if _, err := fmt.Scanln(&op); err != nil {
 		fmt.Println("Invalid operation")
 		return
 	}
 
 	res, err := calculate(a, b, op)
 	if err != nil {
-		fmt.Println(err.Error())
-	} else {
-		fmt.Println(res)
+		switch {
+		case errors.Is(err, errDivisionByZero):
+			fmt.Println("Division by zero")
+		case errors.Is(err, errInvalidOperation):
+			fmt.Println("Invalid operation")
+		default:
+			fmt.Println(err)
+		}
+		return
 	}
+	fmt.Println(res)
 }
