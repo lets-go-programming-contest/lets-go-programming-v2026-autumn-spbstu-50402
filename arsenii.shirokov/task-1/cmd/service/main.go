@@ -48,16 +48,17 @@ func main() {
 	}
 
 	res, err := calculate(a, b, op)
+	switch {
+	case errors.Is(err, errDivisionByZero):
+		fmt.Println("Division by zero")
+	case errors.Is(err, errInvalidOperation):
+		fmt.Println("Invalid operation")
+	default:
+		fmt.Println(err)
+	}
 	if err != nil {
-		switch {
-		case errors.Is(err, errDivisionByZero):
-			fmt.Println("Division by zero")
-		case errors.Is(err, errInvalidOperation):
-			fmt.Println("Invalid operation")
-		default:
-			fmt.Println(err)
-		}
 		return
 	}
+
 	fmt.Println(res)
 }
