@@ -9,18 +9,21 @@ func main() {
 		fmt.Println("Invalid first operand")
 		return
 	}
+
 	var rhs int
 	_, err = fmt.Scan(&rhs)
 	if err != nil {
 		fmt.Println("Invalid second operand")
 		return
 	}
+
 	var operation string
 	_, err = fmt.Scan(&operation)
 	if err != nil {
 		fmt.Println("Invalid operation")
 		return
 	}
+
 	var result int
 	switch operation {
 	case "+":
