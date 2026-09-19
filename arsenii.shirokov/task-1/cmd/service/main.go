@@ -53,8 +53,6 @@ func main() {
 		fmt.Println("Division by zero")
 	case errors.Is(err, errInvalidOperation):
 		fmt.Println("Invalid operation")
-	default:
-		fmt.Println(err)
 	}
 	if err != nil {
 		return
