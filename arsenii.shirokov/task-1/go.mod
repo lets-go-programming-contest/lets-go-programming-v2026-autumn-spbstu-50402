@@ -1,3 +1,3 @@
-module task-1
+module calculator
 
 go 1.22
