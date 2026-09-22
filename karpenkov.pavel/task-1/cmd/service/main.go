@@ -17,9 +17,8 @@ func calculate(a int, b int, operator string) (int, error) {
 			return 0, errors.New("Division by zero")
 		}
 		return a / b, nil
-	} else {
-		return 0, errors.New("Invalid operation")
 	}
+	return 0, errors.New("Invalid operation")
 }
 
 func main() {
