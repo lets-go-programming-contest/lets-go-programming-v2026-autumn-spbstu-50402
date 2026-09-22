@@ -24,7 +24,7 @@ func calculate(a int, b int, operator string) (int, error) {
 
 func main() {
 	var (
-		a, b int
+		a, b     int
 		operator string
 	)
 	_, err := fmt.Scanln(&a)
