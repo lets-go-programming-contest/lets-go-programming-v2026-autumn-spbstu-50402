@@ -1,30 +1,32 @@
 package main
 
 import (
-    "fmt"
-    "errors"
+	"errors"
+	"fmt"
 )
 
-func calculate(a int, b int, operator string) (int,error) {
-  if operator == "+" {
-  		return a + b, nil
-  	} else if operator == "-" {
-  		return a - b, nil
-  	} else if operator == "*" {
-  		return a * b, nil
-  	} else if operator == "/" {
-  		if b == 0 {
-  			return 0,errors.New("Division by zero")
-  		}
-  		return a / b, nil
-  	} else {
-  		return 0,errors.New("Invalid operation")
-  	}
+func calculate(a int, b int, operator string) (int, error) {
+	if operator == "+" {
+		return a + b, nil
+	} else if operator == "-" {
+		return a - b, nil
+	} else if operator == "*" {
+		return a * b, nil
+	} else if operator == "/" {
+		if b == 0 {
+			return 0, errors.New("Division by zero")
+		}
+		return a / b, nil
+	} else {
+		return 0, errors.New("Invalid operation")
+	}
 }
 
 func main() {
-	var a, b int
-	var operator string
+	var (
+		a, b int
+		operator string
+	)
 	_, err := fmt.Scanln(&a)
 	if err != nil {
 		fmt.Println("Invalid first operand")
@@ -40,10 +42,10 @@ func main() {
 		fmt.Println("Invalid operation")
 		return
 	}
-    res, err1 := calculate(a,b,operator)
-    if err1 == nil{
-        fmt.Println(res)
-    } else{
-        fmt.Println(err1)
-    }
+	res, err1 := calculate(a, b, operator)
+	if err1 == nil {
+		fmt.Println(res)
+	} else {
+		fmt.Println(err1)
+	}
 }
