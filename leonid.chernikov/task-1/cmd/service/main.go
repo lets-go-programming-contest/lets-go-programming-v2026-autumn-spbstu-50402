@@ -8,14 +8,13 @@ import (
 )
 
 func main() {
-
 	scanner := bufio.NewScanner(os.Stdin)
 	if !scanner.Scan() {
 		fmt.Println("Invalid first operand")
 		return
 	}
-	first_operand_line := scanner.Text()
-	first_operand_num, err := strconv.Atoi(first_operand_line)
+	firstOperandLine := scanner.Text()
+	firstOperandNum, err := strconv.Atoi(firstOperandLine)
 	if err != nil {
 		fmt.Println("Invalid first operand")
 		return
@@ -25,8 +24,8 @@ func main() {
 		fmt.Println("Invalid second operand")
 		return
 	}
-	second_operand_line := scanner.Text()
-	second_operand_num, err := strconv.Atoi(second_operand_line)
+	secondOperandLine := scanner.Text()
+	secondOperandNum, err := strconv.Atoi(secondOperandLine)
 	if err != nil {
 		fmt.Println("Invalid second operand")
 		return
@@ -41,17 +40,17 @@ func main() {
 	var result int
 	switch operation {
 	case "/":
-		if second_operand_num == 0 {
+		if secondOperandNum == 0 {
 			fmt.Println("Division by zero")
 			return
 		}
-		result = first_operand_num / second_operand_num
+		result = firstOperandNum / secondOperandNum
 	case "*":
-		result = first_operand_num * second_operand_num
+		result = firstOperandNum * secondOperandNum
 	case "+":
-		result = first_operand_num + second_operand_num
+		result = firstOperandNum + secondOperandNum
 	case "-":
-		result = first_operand_num - second_operand_num
+		result = firstOperandNum - secondOperandNum
 	default:
 		fmt.Println("Invalid operation")
 		return
