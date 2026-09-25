@@ -36,7 +36,7 @@ func main() {
 	case "/":
 		if n2 == 0 {
 			fmt.Println("Division by zero")
-			break
+			return
 		}
 		fmt.Println(n1 / n2)
 	default:
