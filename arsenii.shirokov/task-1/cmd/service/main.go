@@ -49,12 +49,15 @@ func main() {
 
 	res, err := calculate(a, b, op)
 	switch {
+	case err == nil:
 	case errors.Is(err, errDivisionByZero):
 		fmt.Println("Division by zero")
+		return
 	case errors.Is(err, errInvalidOperation):
 		fmt.Println("Invalid operation")
-	}
-	if err != nil {
+		return
+	default:
+		fmt.Println(err)
 		return
 	}
 
