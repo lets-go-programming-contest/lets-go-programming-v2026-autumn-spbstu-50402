@@ -6,26 +6,26 @@ import (
 )
 
 var (
-    ErrDivisionByZero = errors.New("Division by zero")
-    ErrInvalidOperation = errors.New("Invalid operation")
+	ErrDivisionByZero   = errors.New("Division by zero")
+	ErrInvalidOperation = errors.New("Invalid operation")
 )
 
 func calculate(a int, b int, operator string) (int, error) {
-    switch operator{
-      case "+":
-        return a + b, nil
-      case "-":
-        return a - b, nil
-      case "*":
-        return a * b, nil
-      case "/":
-        if b == 0{
-            return 0, ErrDivisionByZero
-        }
-        return a / b, nil
-      default:
-        return 0, ErrInvalidOperation
-    }
+	switch operator {
+	case "+":
+		return a + b, nil
+	case "-":
+		return a - b, nil
+	case "*":
+		return a * b, nil
+	case "/":
+		if b == 0 {
+			return 0, ErrDivisionByZero
+		}
+		return a / b, nil
+	default:
+		return 0, ErrInvalidOperation
+	}
 }
 
 func main() {
@@ -49,9 +49,9 @@ func main() {
 		return
 	}
 	res, err1 := calculate(a, b, operator)
-	if err1 != nil{
-	  fmt.Println(err1)
-	  return
+	if err1 != nil {
+		fmt.Println(err1)
+		return
 	}
-    fmt.Println(res)
+	fmt.Println(res)
 }
