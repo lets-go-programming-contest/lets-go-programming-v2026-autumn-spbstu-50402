@@ -5,20 +5,27 @@ import (
 	"fmt"
 )
 
+var (
+    ErrDivisionByZero = errors.New("Division by zero")
+    ErrInvalidOperation = errors.New("Invalid operation")
+)
+
 func calculate(a int, b int, operator string) (int, error) {
-	if operator == "+" {
-		return a + b, nil
-	} else if operator == "-" {
-		return a - b, nil
-	} else if operator == "*" {
-		return a * b, nil
-	} else if operator == "/" {
-		if b == 0 {
-			return 0, errors.New("Division by zero")
-		}
-		return a / b, nil
-	}
-	return 0, errors.New("Invalid operation")
+    switch operator{
+      case "+":
+        return a + b, nil
+      case "-":
+        return a - b, nil
+      case "*":
+        return a * b, nil
+      case "/":
+        if b == 0{
+            return 0, ErrDivisionByZero
+        }
+        return a / b, nil
+      default:
+        return 0, ErrInvalidOperation
+    }
 }
 
 func main() {
