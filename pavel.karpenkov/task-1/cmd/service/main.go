@@ -49,9 +49,9 @@ func main() {
 		return
 	}
 	res, err1 := calculate(a, b, operator)
-	if err1 == nil {
-		fmt.Println(res)
-	} else {
-		fmt.Println(err1)
+	if err1 != nil{
+	  fmt.Println(err1)
+	  return
 	}
+    fmt.Println(res)
 }
