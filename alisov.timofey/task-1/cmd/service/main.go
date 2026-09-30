@@ -31,7 +31,7 @@ func main(){
 		res = a*b
 	case "/":
 		if b==0{
-			fmt.Println("Devision by zero")
+			fmt.Println("Division by zero")
 			return
 		}
 		res = a/b
