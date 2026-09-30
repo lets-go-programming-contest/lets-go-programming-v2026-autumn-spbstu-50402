@@ -2,16 +2,16 @@ package main
 
 import "fmt"
 
-func main(){
+func main() {
 	var a int
 	if _, err := fmt.Scanln(&a); err != nil {
-		fmt.Println("Invalid 1 operand")
+		fmt.Println("Invalid first operand")
 		return
 	}
 
 	var b int
 	if _, err := fmt.Scanln(&b); err != nil {
-		fmt.Println("Invalid 2 operand")
+		fmt.Println("Invalid second operand")
 		return
 	}
 
@@ -22,19 +22,19 @@ func main(){
 	}
 
 	var res int
-	switch op{
+	switch op {
 	case "+":
-		res = a+b
+		res = a + b
 	case "-":
-		res = a-b
+		res = a - b
 	case "*":
-		res = a*b
+		res = a * b
 	case "/":
-		if b==0{
+		if b == 0 {
 			fmt.Println("Division by zero")
 			return
 		}
-		res = a/b
+		res = a / b
 	default:
 		fmt.Println("Invalid operation")
 		return
