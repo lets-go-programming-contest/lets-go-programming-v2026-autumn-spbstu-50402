@@ -35,7 +35,7 @@ func main() {
 		ans = a * b
 	case '/':
 		if b == 0 {
-			fmt.Println("Division by zero is criminal")
+			fmt.Println("Division by zero")
 			return
 		}
 		ans = a / b
