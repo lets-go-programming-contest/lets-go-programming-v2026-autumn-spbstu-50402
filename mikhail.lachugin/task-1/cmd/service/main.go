@@ -29,13 +29,10 @@ func main() {
 	switch operation {
 	case "+":
 		fmt.Println(first + second)
-
 	case "-":
 		fmt.Println(first - second)
-
 	case "*":
 		fmt.Println(first * second)
-
 	case "/":
 		if second == 0 {
 			fmt.Println("Division by zero")
