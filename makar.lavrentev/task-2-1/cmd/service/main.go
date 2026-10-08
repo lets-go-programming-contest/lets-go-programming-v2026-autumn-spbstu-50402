@@ -9,8 +9,10 @@ func processStaff(staff int) {
 	maxTemp := 30
 
 	for range staff {
-		var oprtn string
-		var temp int
+		var (
+			oprtn string
+			temp int
+		)
 
 		if _, err := fmt.Scan(&oprtn, &temp); err != nil {
 			fmt.Println("Invalid input")
