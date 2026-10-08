@@ -11,7 +11,7 @@ func processStaff(staff int) {
 	for range staff {
 		var (
 			oprtn string
-			temp int
+			temp  int
 		)
 
 		if _, err := fmt.Scan(&oprtn, &temp); err != nil {
