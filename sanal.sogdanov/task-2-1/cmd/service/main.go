@@ -3,31 +3,37 @@ package main
 import "fmt"
 
 func main() {
-	var n int
-	_, err := fmt.Scan(&n)
+	var departmentCount int
+
+	_, err := fmt.Scan(&departmentCount)
 	if err != nil {
 		fmt.Println("Invalid input the number of departments")
+
 		return
 	}
 
-	for i := 0; i < n; i++ {
-		var k int
-		_, err = fmt.Scan(&k)
+	for range departmentCount {
+		var employeeCount int
+
+		_, err = fmt.Scan(&employeeCount)
 		if err != nil {
 			fmt.Println("invalid input the number of workers")
+
 			return
 		}
 
 		low, high := 15, 30
 
-		for j := 0; j < k; j++ {
+		for range employeeCount {
 			var (
 				operator    string
 				temperature int
 			)
+
 			_, err = fmt.Scan(&operator, &temperature)
 			if err != nil {
 				fmt.Println("Invalid input the temperature condition")
+
 				return
 			}
 
@@ -42,6 +48,7 @@ func main() {
 				}
 			default:
 				fmt.Println("Expected <= or >=")
+
 				return
 			}
 
