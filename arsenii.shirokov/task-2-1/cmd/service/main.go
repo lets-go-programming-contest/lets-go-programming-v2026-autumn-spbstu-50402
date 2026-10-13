@@ -5,8 +5,10 @@ import (
 	"fmt"
 )
 
-const lRange = 14
-const rRange = 31
+const (
+	lRange = 14
+	rRange = 31
+)
 
 var (
 	errInvalidComparisonOperator = errors.New("invalid operator")
@@ -26,8 +28,8 @@ func getIntermediateResult(minLess int, maxLarger int) {
 }
 
 func getOptimalTemperature(staff int) error {
-	var minLess int = rRange
-	var maxLarger int = lRange
+	minLess := rRange
+	maxLarger := lRange
 
 	for range staff {
 		var operation string
