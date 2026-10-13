@@ -15,18 +15,6 @@ var (
 	errInvalidTemperature        = errors.New("invalid temperature")
 )
 
-func getIntermediateResult(minLess int, maxLarger int) {
-	if minLess < maxLarger && minLess != rRange {
-		fmt.Println(-1)
-	} else {
-		if maxLarger != lRange {
-			fmt.Println(maxLarger)
-		} else {
-			fmt.Println(minLess)
-		}
-	}
-}
-
 func getOptimalTemperature(staff int) error {
 	minLess := rRange
 	maxLarger := lRange
@@ -48,7 +36,11 @@ func getOptimalTemperature(staff int) error {
 			maxLarger = temperature
 		}
 
-		getIntermediateResult(minLess, maxLarger)
+		if maxLarger <= minLess {
+			fmt.Println(maxLarger)
+		} else {
+			fmt.Println(-1)
+		}
 	}
 
 	return nil
