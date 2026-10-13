@@ -5,68 +5,82 @@ import (
 	"fmt"
 )
 
+const lRange = 14
+const rRange = 31
+
 var (
 	errInvalidComparisonOperator = errors.New("invalid operator")
 	errInvalidTemperature        = errors.New("invalid temperature")
 )
 
-func getOptimalTemperature(k int) error {
-	var minimumLess int = 31
-	var maximumLarger int = 14
-	for range k {
-		var op string
-		if _, err := fmt.Scan(&op); err != nil || !(op == "<=" || op == ">=") {
+func getIntermediateResult(minLess int, maxLarger int) {
+	if minLess < maxLarger && minLess != rRange {
+		fmt.Println(-1)
+	} else {
+		if maxLarger != lRange {
+			fmt.Println(maxLarger)
+		} else {
+			fmt.Println(minLess)
+		}
+	}
+}
+
+func getOptimalTemperature(staff int) error {
+	var minLess int = rRange
+	var maxLarger int = lRange
+
+	for range staff {
+		var operation string
+		if _, err := fmt.Scan(&operation); err != nil || !(operation == "<=" || operation == ">=") {
 			return errInvalidComparisonOperator
 		}
 
-		var t int
-		if _, err := fmt.Scan(&t); err != nil || t > 30 || t < 15 {
+		var temperature int
+		if _, err := fmt.Scan(&temperature); err != nil || temperature >= rRange || temperature <= lRange {
 			return errInvalidTemperature
 		}
 
-		if op == "<=" && t < minimumLess {
-			minimumLess = t
-		} else if op == ">=" && t > maximumLarger {
-			maximumLarger = t
+		if operation == "<=" && temperature < minLess {
+			minLess = temperature
+		} else if operation == ">=" && temperature > maxLarger {
+			maxLarger = temperature
 		}
 
-		if minimumLess < maximumLarger && minimumLess != 31 {
-			fmt.Println(-1)
-		} else {
-			if maximumLarger != 14 {
-				fmt.Println(maximumLarger)
-			} else {
-				fmt.Println(minimumLess)
-			}
-		}
+		getIntermediateResult(minLess, maxLarger)
 	}
+
 	return nil
 }
 
 func main() {
-	var n int
-	if _, err := fmt.Scanln(&n); err != nil {
+	var numberOfDepartment int
+	if _, err := fmt.Scanln(&numberOfDepartment); err != nil {
 		fmt.Println("Invalid number of departments")
+
 		return
 	}
 
-	for range n {
-		var k int
-		if _, err := fmt.Scanln(&k); err != nil {
+	for range numberOfDepartment {
+		var staff int
+		if _, err := fmt.Scanln(&staff); err != nil {
 			fmt.Println("Invalid number of employees")
 		}
 
-		err := getOptimalTemperature(k)
+		err := getOptimalTemperature(staff)
+
 		switch {
 		case err == nil:
 		case errors.Is(err, errInvalidComparisonOperator):
 			fmt.Println("Invalid operator")
+
 			return
 		case errors.Is(err, errInvalidTemperature):
 			fmt.Println("Invalid temperature")
+
 			return
 		default:
 			fmt.Println(err)
+
 			return
 		}
 	}
