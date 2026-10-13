@@ -15,19 +15,28 @@ var (
 	errInvalidTemperature        = errors.New("invalid temperature")
 )
 
+func scanEmployee() (string, int, error) {
+	var operation string
+	if _, err := fmt.Scan(&operation); err != nil || !(operation == "<=" || operation == ">=") {
+		return "", 0, errInvalidComparisonOperator
+	}
+
+	var temperature int
+	if _, err := fmt.Scan(&temperature); err != nil || temperature >= rRange || temperature <= lRange {
+		return "", 0, errInvalidTemperature
+	}
+
+	return operation, temperature, nil
+}
+
 func getOptimalTemperature(staff int) error {
 	minLess := rRange
 	maxLarger := lRange
 
 	for range staff {
-		var operation string
-		if _, err := fmt.Scan(&operation); err != nil || !(operation == "<=" || operation == ">=") {
-			return errInvalidComparisonOperator
-		}
-
-		var temperature int
-		if _, err := fmt.Scan(&temperature); err != nil || temperature >= rRange || temperature <= lRange {
-			return errInvalidTemperature
+		operation, temperature, err := scanEmployee()
+		if err != nil {
+			return err
 		}
 
 		if operation == "<=" && temperature < minLess {
