@@ -16,7 +16,10 @@ func main() {
 
 	for range parts {
 
-		var workers string
+		minTmp := 15
+		maxTmp := 30
+
+		var workers int
 
 		_, err := fmt.Scan(&workers)
 		if err != nil {
@@ -42,6 +45,19 @@ func main() {
 				fmt.Println("Invalid temperature input")
 
 				return
+			}
+
+			switch changeCmd {
+			case ">=":
+				minTmp = max(minTmp, temperature)
+			case "<=":
+				maxTmp = min(maxTmp, temperature)
+			}
+
+			if minTmp > maxTmp {
+				fmt.Println(-1)
+			} else {
+				fmt.Println(minTmp)
 			}
 		}
 	}
