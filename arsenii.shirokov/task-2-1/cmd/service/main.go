@@ -6,8 +6,8 @@ import (
 )
 
 const (
-	lRange = 14
-	rRange = 31
+	minTemp = 15
+	maxTemp = 30
 )
 
 var (
@@ -22,7 +22,7 @@ func scanEmployee() (string, int, error) {
 	}
 
 	var temperature int
-	if _, err := fmt.Scan(&temperature); err != nil || temperature >= rRange || temperature <= lRange {
+	if _, err := fmt.Scan(&temperature); err != nil || temperature > maxTemp || temperature < minTemp {
 		return "", 0, errInvalidTemperature
 	}
 
@@ -30,8 +30,8 @@ func scanEmployee() (string, int, error) {
 }
 
 func getOptimalTemperature(staff int) error {
-	minLess := rRange
-	maxLarger := lRange
+	lowerBound := minTemp
+	upperBound := maxTemp
 
 	for range staff {
 		operation, temperature, err := scanEmployee()
@@ -39,14 +39,14 @@ func getOptimalTemperature(staff int) error {
 			return err
 		}
 
-		if operation == "<=" && temperature < minLess {
-			minLess = temperature
-		} else if operation == ">=" && temperature > maxLarger {
-			maxLarger = temperature
+		if operation == "<=" && temperature < upperBound {
+			upperBound = temperature
+		} else if operation == ">=" && temperature > lowerBound {
+			lowerBound = temperature
 		}
 
-		if maxLarger <= minLess {
-			fmt.Println(maxLarger)
+		if lowerBound <= upperBound {
+			fmt.Println(lowerBound)
 		} else {
 			fmt.Println(-1)
 		}
