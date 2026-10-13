@@ -1,60 +1,52 @@
 package main
 
-import (
-	"fmt"
-)
+import "fmt"
 
 func main() {
 	var parts int
+	if _, err := fmt.Scan(&parts); err != nil {
+		fmt.Println("Invalid number of parts")
 
-	_, err := fmt.Scan(&parts)
-	if err != nil {
-		fmt.Println("Invalid parts input")
 		return
 	}
 
 	for range parts {
-
-		minTmp := 15
-		maxTmp := 30
-
 		var workers int
-
-		_, err := fmt.Scan(&workers)
-		if err != nil {
+		if _, err := fmt.Scan(&workers); err != nil {
 			fmt.Println("Invalid workers input")
+
 			return
 		}
 
-		for range workers {
-			var changeCmd string
+		low := 15
+		high := 30
 
-			_, err := fmt.Scan(&changeCmd)
-			if err != nil {
+		for range workers {
+			var operation string
+			if _, err := fmt.Scan(&operation); err != nil {
 				fmt.Println("Invalid change cmd input")
+
 				return
 			}
 
-			var temperature int
-
-			_, err = fmt.Scan(&temperature)
-			if err != nil {
+			var tmp int
+			if _, err := fmt.Scan(&tmp); err != nil {
 				fmt.Println("Invalid temperature input")
 
 				return
 			}
 
-			switch changeCmd {
+			switch operation {
 			case ">=":
-				minTmp = max(minTmp, temperature)
+				low = max(low, tmp)
 			case "<=":
-				maxTmp = min(maxTmp, temperature)
+				high = min(high, tmp)
 			}
 
-			if minTmp > maxTmp {
-				fmt.Println(-1)
+			if low <= high {
+				fmt.Println(low)
 			} else {
-				fmt.Println(minTmp)
+				fmt.Println(-1)
 			}
 		}
 	}
