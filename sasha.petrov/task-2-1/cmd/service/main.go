@@ -27,9 +27,37 @@ func newTemperature() *temperature {
 	return &temperature{low: minTemperature, high: maxTemperature}
 }
 
+func (r *temperature) update(operation string, temperature int) error {
+	if !isKnownOperation(operation) {
+		return fmt.Errorf("%w: unknown operation %q", errInvalidInput, operation)
+	}
+
+	if err := checkBounds("temperature", temperature, minTemperature, maxTemperature); err != nil {
+		return err
+	}
+
+	if operation == menshe {
+		r.low = max(r.low, temperature)
+	} else {
+		r.high = min(r.high, temperature)
+	}
+
+	return nil
+}
+
 func isKnownOperation(operation string) bool {
 	return operation == bolshe || operation == menshe
 }
+
+func checkBounds(detailInfo string, value, minValue, maxValue int) error {
+	if value < minValue || value > maxValue {
+		return fmt.Errorf("%w: %s %d is not in [%d; %d]", errInvalidInput, detailInfo, value, minValue, maxValue)
+	}
+
+	return nil
+}
+
+func (r *temperature) result() error { return nil }
 
 func readData(detailInfo string) (int, error) {
 	var data int
@@ -37,11 +65,28 @@ func readData(detailInfo string) (int, error) {
 		return 0, fmt.Errorf("read %s: %w", detailInfo, err)
 	}
 
-	if minData > data || data > maxData {
-		return 0, fmt.Errorf("%w: %s not between 1 and 1000", errInvalidInput, detailInfo)
+	if err := checkBounds(detailInfo, data, minData, maxData); err != nil {
+		return 0, err
 	}
 
 	return data, nil
+}
+
+func readInfoOfTemperature() (string, int, error) {
+	var (
+		operation           string
+		temperatureToChange int
+	)
+
+	if _, err := fmt.Scan(&operation); err != nil {
+		return "", 0, fmt.Errorf("read operation: %w", err)
+	}
+
+	if _, err := fmt.Scan(&temperatureToChange); err != nil {
+		return "", 0, fmt.Errorf("read temperature: %w", err)
+	}
+
+	return operation, temperatureToChange, nil
 }
 
 func runTemperature() error {
@@ -55,7 +100,20 @@ func runTemperature() error {
 		if err != nil {
 			return err
 		}
+
+		for range workers {
+			limits := newTemperature()
+			operaton, temperature, err := readInfoOfTemperature()
+			if err != nil {
+				return err
+			}
+			if err := limits.update(operaton, temperature); err != nil {
+				return err
+			}
+			fmt.Printf(limits.result())
+		}
 	}
+
 	return nil
 }
 
