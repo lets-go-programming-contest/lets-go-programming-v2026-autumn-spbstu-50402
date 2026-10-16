@@ -18,6 +18,19 @@ const (
 	menshe = "<="
 )
 
+type temperature struct {
+	low  int
+	high int
+}
+
+func newTemperature() *temperature {
+	return &temperature{low: minTemperature, high: maxTemperature}
+}
+
+func isKnownOperation(operation string) bool {
+	return operation == bolshe || operation == menshe
+}
+
 var errInvalidInput = errors.New("invalid input")
 
 func runTemperature() error { return nil }
