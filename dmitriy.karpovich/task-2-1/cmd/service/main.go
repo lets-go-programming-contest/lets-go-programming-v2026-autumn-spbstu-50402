@@ -65,25 +65,26 @@ func scanWorkers() (int, error) {
 }
 
 func scanRequest() (string, int, error) {
-	var (
-		sign string
-		temp int
-	)
+	var sign string
 
-	_, err := fmt.Scan(&sign, &temp)
+	_, err := fmt.Scan(&sign)
 	if err != nil {
-		return "", 0, fmt.Errorf("error reading employee's request: %w", err)
-	}
-
-	if temp < minTemp || temp > maxTemp {
-		return "", 0, fmt.Errorf(
-			"temperature %d is outside the allowed range [%d, %d]: %w",
-			temp, minTemp, maxTemp, errTemperatureOutOfRange,
-		)
+		return "", 0, fmt.Errorf("error reading employee's operation: %w", err)
 	}
 
 	if sign != "<=" && sign != ">=" {
-		return "", 0, fmt.Errorf("%w: %q", errUnknownOperation, sign)
+		return "", 0, errUnknownOperation
+	}
+
+	var temp int
+
+	_, err = fmt.Scan(&temp)
+	if err != nil {
+		return "", 0, fmt.Errorf("error reading employee's temperature: %w", err)
+	}
+
+	if temp < minTemp || temp > maxTemp {
+		return "", 0, errTemperatureOutOfRange
 	}
 
 	return sign, temp, nil
