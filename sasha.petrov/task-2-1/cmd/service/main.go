@@ -107,15 +107,19 @@ func runTemperature() error {
 		if err != nil {
 			return err
 		}
+
 		limits := newTemperature()
+
 		for range workers {
 			operaton, temperature, err := readInfoOfTemperature()
 			if err != nil {
 				return err
 			}
+
 			if err := limits.update(operaton, temperature); err != nil {
 				return err
 			}
+
 			fmt.Println(limits.result())
 		}
 	}
