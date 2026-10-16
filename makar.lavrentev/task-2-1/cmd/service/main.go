@@ -4,9 +4,26 @@ import (
 	"fmt"
 )
 
-func processStaff(staff int) {
-	minTemp := 15
-	maxTemp := 30
+const startMinTemp = 15
+const startMaxTemp = 30
+
+func UpdateTemps(oprtn string, temp int, lower *int, upper *int) {
+	if oprtn == ">=" && temp > *lower {
+		*lower = temp
+	} else if oprtn == "<=" && temp < *upper {
+		*upper = temp
+	}
+
+	if *lower <= *upper {
+		fmt.Println(*lower)
+	} else {
+		fmt.Println(-1)
+	}
+}
+
+func processEmployeeInput(staff int) {
+	lower := startMinTemp
+	upper := startMaxTemp
 
 	for range staff {
 		var (
@@ -15,28 +32,18 @@ func processStaff(staff int) {
 		)
 
 		if _, err := fmt.Scan(&oprtn, &temp); err != nil {
-			fmt.Println("Invalid input")
+			fmt.Println("Invalid input: ", err)
 
 			return
 		}
 
-		if (oprtn != "<=" && oprtn != ">=") || temp < 15 || temp > 30 {
-			fmt.Println("Invalid input")
+		if oprtn != "<=" && oprtn != ">=" {
+			fmt.Println("Invalid operation input")
 
 			return
 		}
 
-		if oprtn == ">=" && temp > minTemp {
-			minTemp = temp
-		} else if oprtn == "<=" && temp < maxTemp {
-			maxTemp = temp
-		}
-
-		if minTemp <= maxTemp {
-			fmt.Println(minTemp)
-		} else {
-			fmt.Println(-1)
-		}
+		UpdateTemps(oprtn, temp, &lower, &upper)
 	}
 }
 
@@ -58,6 +65,6 @@ func main() {
 			return
 		}
 
-		processStaff(staff)
+		processEmployeeInput(staff)
 	}
 }
