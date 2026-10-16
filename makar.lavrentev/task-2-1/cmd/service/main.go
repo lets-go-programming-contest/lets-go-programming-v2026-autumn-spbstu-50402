@@ -4,8 +4,10 @@ import (
 	"fmt"
 )
 
-const startMinTemp = 15
-const startMaxTemp = 30
+const (
+	startMinTemp = 15
+	startMaxTemp = 30
+)
 
 func UpdateTemps(oprtn string, temp int, lower *int, upper *int) {
 	if oprtn == ">=" && temp > *lower {
