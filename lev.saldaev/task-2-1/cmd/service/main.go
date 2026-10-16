@@ -3,10 +3,9 @@ package main
 import "fmt"
 
 func main() {
-
 	var (
-		n, k, temp int
-		str        string
+		n   int
+		str string
 	)
 
 	_, err := fmt.Scan(&n)
@@ -16,26 +15,31 @@ func main() {
 		return
 	}
 
-	for i := 0; i < n; i++ {
-		t1 := 15
-		t2 := 30
-
+	for range n {
+		var k int
 		_, err = fmt.Scan(&k)
 		if err != nil {
 			fmt.Println("invalid employee amount")
+
 			return
 		}
 
-		for j := 0; j < k; j++ {
+		t1 := 15
+		t2 := 30
+
+		for range k {
 			_, err = fmt.Scan(&str)
 			if err != nil {
 				fmt.Println("invalid input")
+
 				return
 			}
 
+			var temp int
 			_, err = fmt.Scan(&temp)
 			if err != nil {
 				fmt.Println("invalid input")
+
 				return
 			}
 
@@ -46,6 +50,8 @@ func main() {
 				t2 = min(t2, temp)
 			default:
 				fmt.Println("invalid input")
+
+				return
 			}
 
 			if t2 < t1 {
