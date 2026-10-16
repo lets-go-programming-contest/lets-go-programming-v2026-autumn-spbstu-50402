@@ -13,8 +13,9 @@ type bounds struct {
 
 func (b *bounds) change(sign string, temp int) error {
 	if temp < minTemp || temp > maxTemp {
+
 		return fmt.Errorf(
-			"temperature %d is outside the allowed range [%d, %d]",
+			"Temperature %d is outside the allowed range [%d, %d]",
 			temp, minTemp, maxTemp,
 		)
 	}
@@ -25,7 +26,8 @@ func (b *bounds) change(sign string, temp int) error {
 	case ">=":
 		b.left = max(b.left, temp)
 	default:
-		return fmt.Errorf("unknown operation %q", sign)
+
+		return fmt.Errorf("Unknown operation %q", sign)
 	}
 
 	return nil
@@ -37,51 +39,54 @@ func (b *bounds) check() bool {
 
 func main() {
 	var departments int
+
 	if _, err := fmt.Scan(&departments); err != nil {
-		fmt.Println("Invalid number of departments")
+		fmt.Println("Error reading departments count:", err)
+
+		return
+	}
+
+	if departments < 1 || departments > 1000 {
+		fmt.Println("Error: departments count is out of range")
 
 		return
 	}
 
 	for range departments {
 		var workers int
+
 		if _, err := fmt.Scan(&workers); err != nil {
-			fmt.Println("Invalid number of workers")
+			fmt.Println("Error reading workers count:", err)
 
 			return
 		}
 
-		low := 15
-		high := 30
+		if workers < 1 || workers > 1000 {
+			fmt.Println("Error: workers count is out of range")
+
+			return
+		}
+
+		temperatureBounds := bounds{minTemp, maxTemp}
 
 		for range workers {
-			var operation string
-			if _, err := fmt.Scan(&operation); err != nil {
-				fmt.Println("Invalid format of operation")
+			var sign string
+			var temp int
+
+			if _, err := fmt.Scan(&sign, &temp); err != nil {
+				fmt.Println("Error reading employee's request:", err)
 
 				return
 			}
 
-			var temperature int
-			if _, err := fmt.Scan(&temperature); err != nil {
-				fmt.Println("Invalid format of temperature")
+			if err := temperatureBounds.change(sign, temp); err != nil {
+				fmt.Println("Error:", err)
 
 				return
 			}
 
-			switch operation {
-			case ">=":
-				if temperature > low {
-					low = temperature
-				}
-			case "<=":
-				if temperature < high {
-					high = temperature
-				}
-			}
-
-			if low <= high {
-				fmt.Println(low)
+			if temperatureBounds.check() {
+				fmt.Println(temperatureBounds.left)
 			} else {
 				fmt.Println(-1)
 			}
