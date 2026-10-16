@@ -12,53 +12,59 @@ const (
 
 var (
 	errInvalidComparisonOperator = errors.New("invalid operator")
-	errInvalidTemperature        = errors.New("invalid temperature")
+	errNoOptimalTemperature      = errors.New("optimal temperature range is empty")
 )
+
+type TemperatureRange struct {
+	lower int
+	upper int
+}
+
+func NewTemperatureRange(lower, upper int) *TemperatureRange {
+	return &TemperatureRange{
+		lower: lower,
+		upper: upper,
+	}
+}
+
+func (tr *TemperatureRange) UpdateBounds(operation string, temperature int) {
+	if operation == "<=" && temperature < tr.upper {
+		tr.upper = temperature
+	} else if operation == ">=" && temperature > tr.lower {
+		tr.lower = temperature
+	}
+}
+
+func (tr *TemperatureRange) GetOptimalTemperature() (int, error) {
+	if tr.lower <= tr.upper {
+		return tr.lower, nil
+	}
+
+	return 0, errNoOptimalTemperature
+}
 
 func scanEmployee() (string, int, error) {
 	var operation string
-	if _, err := fmt.Scan(&operation); err != nil || !(operation == "<=" || operation == ">=") {
-		return "", 0, errInvalidComparisonOperator
+	if _, err := fmt.Scan(&operation); err != nil {
+		return "", 0, fmt.Errorf("failed to scan operation: %w", err)
+	}
+
+	if operation != "<=" && operation != ">=" {
+		return "", 0, fmt.Errorf("%w: got %q", errInvalidComparisonOperator, operation)
 	}
 
 	var temperature int
-	if _, err := fmt.Scan(&temperature); err != nil || temperature > maxTemp || temperature < minTemp {
-		return "", 0, errInvalidTemperature
+	if _, err := fmt.Scan(&temperature); err != nil {
+		return "", 0, fmt.Errorf("failed to scan temperature: %w", err)
 	}
 
 	return operation, temperature, nil
 }
 
-func getOptimalTemperature(staff int) error {
-	lowerBound := minTemp
-	upperBound := maxTemp
-
-	for range staff {
-		operation, temperature, err := scanEmployee()
-		if err != nil {
-			return err
-		}
-
-		if operation == "<=" && temperature < upperBound {
-			upperBound = temperature
-		} else if operation == ">=" && temperature > lowerBound {
-			lowerBound = temperature
-		}
-
-		if lowerBound <= upperBound {
-			fmt.Println(lowerBound)
-		} else {
-			fmt.Println(-1)
-		}
-	}
-
-	return nil
-}
-
 func main() {
 	var numberOfDepartment int
 	if _, err := fmt.Scanln(&numberOfDepartment); err != nil {
-		fmt.Println("Invalid number of departments")
+		fmt.Printf("error reading the number of departments: %v\n", err)
 
 		return
 	}
@@ -66,25 +72,31 @@ func main() {
 	for range numberOfDepartment {
 		var staff int
 		if _, err := fmt.Scanln(&staff); err != nil {
-			fmt.Println("Invalid number of employees")
+			fmt.Printf("error reading the staff: %v\n", err)
+
+			return
 		}
 
-		err := getOptimalTemperature(staff)
+		tempRange := NewTemperatureRange(minTemp, maxTemp)
 
-		switch {
-		case err == nil:
-		case errors.Is(err, errInvalidComparisonOperator):
-			fmt.Println("Invalid operator")
+		for range staff {
+			operation, temperature, err := scanEmployee()
+			if err != nil {
+				fmt.Printf("failed to read employee data: %v\n", err)
 
-			return
-		case errors.Is(err, errInvalidTemperature):
-			fmt.Println("Invalid temperature")
+				return
+			}
 
-			return
-		default:
-			fmt.Println(err)
+			tempRange.UpdateBounds(operation, temperature)
 
-			return
+			optimalTemp, err := tempRange.GetOptimalTemperature()
+			if errors.Is(err, errNoOptimalTemperature) {
+				fmt.Println(-1)
+
+				continue
+			}
+
+			fmt.Println(optimalTemp)
 		}
 	}
 }
