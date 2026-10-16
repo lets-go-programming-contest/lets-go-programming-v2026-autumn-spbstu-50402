@@ -2,6 +2,39 @@ package main
 
 import "fmt"
 
+const (
+	minTemp = 15
+	maxTemp = 30
+)
+
+type bounds struct {
+	left, right int
+}
+
+func (b *bounds) change(sign string, temp int) error {
+	if temp < minTemp || temp > maxTemp {
+		return fmt.Errorf(
+			"temperature %d is outside the allowed range [%d, %d]",
+			temp, minTemp, maxTemp,
+		)
+	}
+
+	switch sign {
+	case "<=":
+		b.right = min(b.right, temp)
+	case ">=":
+		b.left = max(b.left, temp)
+	default:
+		return fmt.Errorf("unknown operation %q", sign)
+	}
+
+	return nil
+}
+
+func (b *bounds) check() bool {
+	return b.left <= b.right
+}
+
 func main() {
 	var departments int
 	if _, err := fmt.Scan(&departments); err != nil {
