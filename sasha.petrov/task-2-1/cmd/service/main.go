@@ -8,6 +8,7 @@ import (
 const (
 	minTemperature = 15
 	maxTemperature = 30
+	noTemperature  = -1
 
 	minData = 1
 	maxData = 1000
@@ -36,7 +37,7 @@ func (r *temperature) update(operation string, temperature int) error {
 		return err
 	}
 
-	if operation == menshe {
+	if operation == bolshe {
 		r.low = max(r.low, temperature)
 	} else {
 		r.high = min(r.high, temperature)
@@ -57,7 +58,13 @@ func checkBounds(detailInfo string, value, minValue, maxValue int) error {
 	return nil
 }
 
-func (r *temperature) result() error { return nil }
+func (r *temperature) result() int {
+	if r.low > r.high {
+		return noTemperature
+	}
+
+	return r.low
+}
 
 func readData(detailInfo string) (int, error) {
 	var data int
@@ -100,9 +107,8 @@ func runTemperature() error {
 		if err != nil {
 			return err
 		}
-
+		limits := newTemperature()
 		for range workers {
-			limits := newTemperature()
 			operaton, temperature, err := readInfoOfTemperature()
 			if err != nil {
 				return err
@@ -110,7 +116,7 @@ func runTemperature() error {
 			if err := limits.update(operaton, temperature); err != nil {
 				return err
 			}
-			fmt.Printf(limits.result())
+			fmt.Println(limits.result())
 		}
 	}
 
