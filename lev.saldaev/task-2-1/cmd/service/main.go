@@ -4,60 +4,62 @@ import "fmt"
 
 func main() {
 	var (
-		n   int
-		str string
+		departmentCount int
+		operator        string
 	)
 
-	_, err := fmt.Scan(&n)
+	_, err := fmt.Scan(&departmentCount)
 	if err != nil {
 		fmt.Println("invalid department amount")
 
 		return
 	}
 
-	for range n {
-		var k int
-		_, err = fmt.Scan(&k)
+	for range departmentCount {
+		var employeeCount int
+
+		_, err = fmt.Scan(&employeeCount)
 		if err != nil {
 			fmt.Println("invalid employee amount")
 
 			return
 		}
 
-		t1 := 15
-		t2 := 30
+		minTemp := 15
+		maxTemp := 30
 
-		for range k {
-			_, err = fmt.Scan(&str)
+		for range employeeCount {
+			_, err = fmt.Scan(&operator)
 			if err != nil {
 				fmt.Println("invalid input")
 
 				return
 			}
 
-			var temp int
-			_, err = fmt.Scan(&temp)
+			var temperature int
+
+			_, err = fmt.Scan(&temperature)
 			if err != nil {
 				fmt.Println("invalid input")
 
 				return
 			}
 
-			switch str {
+			switch operator {
 			case ">=":
-				t1 = max(t1, temp)
+				minTemp = max(minTemp, temperature)
 			case "<=":
-				t2 = min(t2, temp)
+				maxTemp = min(maxTemp, temperature)
 			default:
 				fmt.Println("invalid input")
 
 				return
 			}
 
-			if t2 < t1 {
+			if maxTemp < minTemp {
 				fmt.Println("-1")
 			} else {
-				fmt.Println(t1)
+				fmt.Println(minTemp)
 			}
 		}
 	}
