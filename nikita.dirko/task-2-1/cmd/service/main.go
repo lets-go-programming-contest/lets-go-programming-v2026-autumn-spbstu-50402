@@ -1,7 +1,17 @@
 package main
 
-import "fmt"
+import (
+	"errors"
+	"fmt"
+)
 
+var (
+	ErrInvalidDepartmentCount = errors.New("invalid number of departments provided")
+	ErrInvalidWorkerCount     = errors.New("invalid number of workers provided")
+	ErrInvalidModifier        = errors.New("invalid format of operation modifier")
+	ErrInvalidTemperature     = errors.New("invalid format of temperature value")
+	ErrTemperatureBounds      = errors.New("temperature boundaries violation")
+)
 func main() {
 	var departments int
 	if _, err := fmt.Scan(&departments); err != nil {
