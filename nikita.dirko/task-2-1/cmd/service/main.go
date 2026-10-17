@@ -65,3 +65,23 @@ func main() {
 		}
 	}
 }
+func ErrorHandler(err error) {
+	if err == nil {
+		return
+	}
+
+	switch {
+	case errors.Is(err, ErrInvalidDepartmentCount):
+		fmt.Println("Invalid number of departments")
+	case errors.Is(err, ErrInvalidWorkerCount):
+		fmt.Println("Invalid number of workers")
+	case errors.Is(err, ErrInvalidModifier):
+		fmt.Println("Invalid format of operation")
+	case errors.Is(err, ErrInvalidTemperature):
+		fmt.Println("Invalid format of temperature")
+	case errors.Is(err, ErrTemperatureBounds):
+		fmt.Println("Temperature bounds error occurred")
+	default:
+		fmt.Printf("An unexpected system error occurred: %v\n", err)
+	}
+}
