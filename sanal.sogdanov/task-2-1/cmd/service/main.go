@@ -2,12 +2,52 @@ package main
 
 import "fmt"
 
+const (
+	minAllowedTemperature = 15
+	maxAllowedTemperature = 30
+	noSuitableTemperature = -1
+)
+
+type temperatureController interface {
+	applyConstraint(operator string, temperature int) error
+	optimalTemperature() int
+}
+
+type temperatureRange struct {
+	low  int
+	high int
+}
+
+func (state *temperatureRange) applyConstraint(operator string, temperature int) error {
+	switch operator {
+	case ">=":
+		if temperature > state.low {
+			state.low = temperature
+		}
+	case "<=":
+		if temperature < state.high {
+			state.high = temperature
+		}
+	default:
+		return fmt.Errorf("expected <= or >=, got %q", operator)
+	}
+
+	return nil
+}
+
+func (state *temperatureRange) optimalTemperature() int {
+	if state.low > state.high {
+		return noSuitableTemperature
+	}
+
+	return state.low
+}
+
 func main() {
 	var departmentCount int
 
-	_, err := fmt.Scan(&departmentCount)
-	if err != nil {
-		fmt.Println("Invalid input the number of departments")
+	if _, err := fmt.Scan(&departmentCount); err != nil {
+		fmt.Println("Invalid number of departments:", err)
 
 		return
 	}
@@ -15,14 +55,16 @@ func main() {
 	for range departmentCount {
 		var employeeCount int
 
-		_, err = fmt.Scan(&employeeCount)
-		if err != nil {
-			fmt.Println("invalid input the number of workers")
+		if _, err := fmt.Scan(&employeeCount); err != nil {
+			fmt.Println("Invalid number of employees:", err)
 
 			return
 		}
 
-		low, high := 15, 30
+		var controller temperatureController = &temperatureRange{
+			low:  minAllowedTemperature,
+			high: maxAllowedTemperature,
+		}
 
 		for range employeeCount {
 			var (
@@ -30,33 +72,19 @@ func main() {
 				temperature int
 			)
 
-			_, err = fmt.Scan(&operator, &temperature)
-			if err != nil {
-				fmt.Println("Invalid input the temperature condition")
+			if _, err := fmt.Scan(&operator, &temperature); err != nil {
+				fmt.Println("Invalid temperature condition:", err)
 
 				return
 			}
 
-			switch operator {
-			case ">=":
-				if temperature > low {
-					low = temperature
-				}
-			case "<=":
-				if temperature < high {
-					high = temperature
-				}
-			default:
-				fmt.Println("Expected <= or >=")
+			if err := controller.applyConstraint(operator, temperature); err != nil {
+				fmt.Println("Invalid temperature condition:", err)
 
 				return
 			}
 
-			if low > high {
-				fmt.Println(-1)
-			} else {
-				fmt.Println(low)
-			}
+			fmt.Println(controller.optimalTemperature())
 		}
 	}
 }
