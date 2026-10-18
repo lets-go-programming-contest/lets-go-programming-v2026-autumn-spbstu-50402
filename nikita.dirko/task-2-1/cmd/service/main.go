@@ -59,48 +59,62 @@ func (cb *TemperatureBoundary) OptimalTemperature() int {
 	}
 	return cb.lowerBound
 }
-	var departments int
-	if _, err := fmt.Scan(&departments); err != nil {
-		fmt.Println("Invalid number of departments")
 
-		return
+func ParseDepartmentsCount() (int, error) {
+	var departments int
+
+	_, err := fmt.Scan(&departments)
+	if err != nil {
+		return 0, fmt.Errorf("invalid departments input: %w", err)
 	}
 
-	for range departments {
-		var workers int
-		if _, err := fmt.Scan(&workers); err != nil {
-			fmt.Println("Invalid number of workers")
+	if departments < 1 || departments > 1000 {
+		return 0, ErrInvalidDepartmentCount
+	}
 
-			return
-		}
+	return departments, nil
+}
 
-		minTemp := 15
-		maxTemp := 30
+func ParseWorkersCount() (int, error) {
+	var workers int
 
-		for range workers {
-			var modifier string
-			if _, err := fmt.Scan(&modifier); err != nil {
-				fmt.Println("Invalid format of operation")
+	_, err := fmt.Scan(&workers)
+	if err != nil {
+		return 0, fmt.Errorf("invalid workers input: %w", err)
+	}
 
-				return
-			}
+	if workers < 1 || workers > 1000 {
+		return 0, ErrInvalidWorkerCount
+	}
 
-			var temperature int
-			if _, err := fmt.Scan(&temperature); err != nil {
-				fmt.Println("Invalid format of temperature")
+	return workers, nil
+}
 
-				return
-			}
+func ParseConstraint() (string, int, error) {
+	var modifier string
 
-			switch modifier {
-			case ">=":
-				if temperature > minTemp {
-					minTemp = temperature
-				}
-			case "<=":
-				if temperature < maxTemp {
-					maxTemp = temperature
-				}
+	_, err := fmt.Scan(&modifier)
+	if err != nil {
+		return "", 0, fmt.Errorf("invalid modifier input: %w", err)
+	}
+
+	if modifier != "<=" && modifier != ">=" {
+		return "", 0, ErrInvalidModifier
+	}
+
+	var temperature int
+
+	_, err = fmt.Scan(&temperature)
+	if err != nil {
+		return "", 0, fmt.Errorf("invalid temperature input: %w", err)
+	}
+
+	if temperature < minTemp || temperature > maxTemp {
+		return "", 0, ErrInvalidTemperature
+	}
+
+	return modifier, temperature, nil
+}
 			}
 
 			if minTemp <= maxTemp {
