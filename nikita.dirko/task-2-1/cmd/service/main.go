@@ -27,6 +27,7 @@ func NewTemperatureBoundary(lower, upper int) (*TemperatureBoundary, error) {
 	if lower > upper {
 		return nil, fmt.Errorf("%w: lower bound %d cannot exceed upper bound %d", ErrTemperatureBounds, lower, upper)
 	}
+
 	return &TemperatureBoundary{
 		lowerBound: lower,
 		upperBound: upper,
@@ -46,6 +47,7 @@ func (cb *TemperatureBoundary) Adjust(modifier string, temp int) error {
 	default:
 		return fmt.Errorf("%w: operator '%s' is not supported", ErrInvalidModifier, modifier)
 	}
+
 	return nil
 }
 
@@ -57,6 +59,7 @@ func (cb *TemperatureBoundary) OptimalTemperature() int {
 	if !cb.IsValid() {
 		return -1
 	}
+
 	return cb.lowerBound
 }
 
