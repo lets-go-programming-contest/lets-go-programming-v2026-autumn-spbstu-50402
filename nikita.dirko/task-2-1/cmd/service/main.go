@@ -12,7 +12,7 @@ var (
 	ErrInvalidTemperature     = errors.New("invalid format of temperature value")
 	ErrTemperatureBounds      = errors.New("temperature boundaries violation")
 )
-func main() {
+
 const (
 	minTemp = 15
 	maxTemp = 30
@@ -115,16 +115,42 @@ func ParseConstraint() (string, int, error) {
 
 	return modifier, temperature, nil
 }
+
+func ExecuteSimulation() error {
+	deptCount, err := ParseDepartmentsCount()
+	if err != nil {
+		return err
+	}
+
+	for range deptCount {
+		workerCount, err := ParseWorkersCount()
+		if err != nil {
+			return err
+		}
+
+		tempBounds, err := NewTemperatureBoundary(minTemp, maxTemp)
+		if err != nil {
+			return err
+		}
+
+		for range workerCount {
+			modifier, temperature, err := ParseConstraint()
+			if err != nil {
+				return err
 			}
 
-			if minTemp <= maxTemp {
-				fmt.Println(minTemp)
-			} else {
-				fmt.Println(-1)
+			err = tempBounds.Adjust(modifier, temperature)
+			if err != nil {
+				return err
 			}
+
+			fmt.Println(tempBounds.OptimalTemperature())
 		}
 	}
+
+	return nil
 }
+
 func ErrorHandler(err error) {
 	if err == nil {
 		return
@@ -143,5 +169,11 @@ func ErrorHandler(err error) {
 		fmt.Println("Temperature bounds error occurred")
 	default:
 		fmt.Printf("An unexpected system error occurred: %v\n", err)
+	}
+}
+
+func main() {
+	if err := ExecuteSimulation(); err != nil {
+		ErrorHandler(err)
 	}
 }
