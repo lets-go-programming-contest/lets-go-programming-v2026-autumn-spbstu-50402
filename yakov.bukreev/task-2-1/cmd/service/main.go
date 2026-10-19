@@ -2,6 +2,11 @@ package main
 
 import "fmt"
 
+const (
+	MinTemp = 15
+	MaxTemp = 30
+)
+
 func processDepartment() {
 	var workers int
 
@@ -15,7 +20,7 @@ func processDepartment() {
 		return
 	}
 
-	var tempMin, tempMax int = 15, 30
+	var tempLow, tempHigh int = MinTemp, MaxTemp
 
 	for range workers {
 		var (
@@ -33,20 +38,20 @@ func processDepartment() {
 			return
 		}
 
-		if temperature < 15 || temperature > 30 {
+		if temperature < MinTemp || temperature > MaxTemp {
 			fmt.Println("Invalid temperature.")
 			return
 		}
 
 		switch sign {
 		case ">=":
-			tempMin = max(tempMin, temperature)
+			tempLow = max(tempLow, temperature)
 		case "<=":
-			tempMax = min(tempMax, temperature)
+			tempHigh = min(tempHigh, temperature)
 		}
 
-		if tempMin <= tempMax {
-			fmt.Println(tempMin)
+		if tempLow <= tempHigh {
+			fmt.Println(tempLow)
 		} else {
 			fmt.Println(-1)
 		}
