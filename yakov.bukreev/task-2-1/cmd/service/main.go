@@ -1,10 +1,21 @@
 package main
 
-import "fmt"
+import (
+	"errors"
+	"fmt"
+)
 
 const (
 	MinTemp = 15
 	MaxTemp = 30
+)
+
+var (
+	errInvalidWorkersNumber    = errors.New("invalid workers number")
+	errWorkersNumberOutOfRange = errors.New("workers number out of range")
+	errInvalidPreference       = errors.New("invalid preference for worker")
+	errInvalidPreferenceSign   = errors.New("invalid preference sign for worker")
+	errInvalidTemperature      = errors.New("invalid temperature for worker")
 )
 
 type TemperatureBounds struct {
@@ -32,11 +43,11 @@ func processDepartment() error {
 	var workers int
 
 	if _, err := fmt.Scan(&workers); err != nil {
-		return fmt.Errorf("invalid workers number")
+		return fmt.Errorf("%w: %w", errInvalidWorkersNumber, err)
 	}
 
 	if workers < 1 || workers > 1000 {
-		return fmt.Errorf("workers number out of range")
+		return errWorkersNumberOutOfRange
 	}
 
 	bounds := TemperatureBounds{
@@ -51,15 +62,15 @@ func processDepartment() error {
 		)
 
 		if _, err := fmt.Scan(&sign, &temperature); err != nil {
-			return fmt.Errorf("invalid preference for worker %d", idx+1)
+			return fmt.Errorf("%w %d: %w", errInvalidPreference, idx+1, err)
 		}
 
 		if sign != ">=" && sign != "<=" {
-			return fmt.Errorf("invalid preference sign for worker %d", idx+1)
+			return fmt.Errorf("%w %d", errInvalidPreferenceSign, idx+1)
 		}
 
 		if temperature < MinTemp || temperature > MaxTemp {
-			return fmt.Errorf("invalid temperature for worker %d", idx+1)
+			return fmt.Errorf("%w %d", errInvalidTemperature, idx+1)
 		}
 
 		bounds.applyBound(sign, temperature)
