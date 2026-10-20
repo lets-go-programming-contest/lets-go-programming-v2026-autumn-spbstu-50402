@@ -28,17 +28,15 @@ func (bounds *TemperatureBounds) getOptimalTemperature() int {
 	}
 }
 
-func processDepartment() {
+func processDepartment() error {
 	var workers int
 
 	if _, err := fmt.Scan(&workers); err != nil {
-		fmt.Println("Invalid workers number.")
-		return
+		return fmt.Errorf("invalid workers number")
 	}
 
 	if workers < 1 || workers > 1000 {
-		fmt.Println("Workers number out of range")
-		return
+		return fmt.Errorf("workers number out of range")
 	}
 
 	bounds := TemperatureBounds{
@@ -46,37 +44,36 @@ func processDepartment() {
 		high: MaxTemp,
 	}
 
-	for range workers {
+	for i := range workers {
 		var (
 			sign        string
 			temperature int
 		)
 
 		if _, err := fmt.Scan(&sign, &temperature); err != nil {
-			fmt.Println("Invalid preference.")
-			return
+			return fmt.Errorf("invalid preference for worker %d", i+1)
 		}
 
 		if sign != ">=" && sign != "<=" {
-			fmt.Println("Invalid preference sign.")
-			return
+			return fmt.Errorf("invalid preference sign for worker %d", i+1)
 		}
 
 		if temperature < MinTemp || temperature > MaxTemp {
-			fmt.Println("Invalid temperature.")
-			return
+			return fmt.Errorf("invalid temperature for worker %d", i+1)
 		}
 
 		bounds.applyBound(sign, temperature)
 		fmt.Println(bounds.getOptimalTemperature())
 	}
+
+	return nil
 }
 
 func main() {
 	var deparments int
 
 	if _, err := fmt.Scan(&deparments); err != nil {
-		fmt.Println("Invalid deparments number.")
+		fmt.Printf("Invalid deparments number: %v.", err)
 		return
 	}
 
@@ -85,7 +82,9 @@ func main() {
 		return
 	}
 
-	for range deparments {
-		processDepartment()
+	for i := range deparments {
+		if err := processDepartment(); err != nil {
+			fmt.Printf("Error (department %d): %v.", i+1, err)
+		}
 	}
 }
