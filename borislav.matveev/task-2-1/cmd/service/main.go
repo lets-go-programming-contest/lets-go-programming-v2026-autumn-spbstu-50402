@@ -3,13 +3,24 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"log"
 	"os"
+)
+
+const (
+	minTemperature = 15
+	maxTemperature = 30
 )
 
 func main() {
 	reader := bufio.NewReader(os.Stdin)
 	writer := bufio.NewWriter(os.Stdout)
-	defer writer.Flush()
+
+	defer func() {
+		if err := writer.Flush(); err != nil {
+			log.Print(err)
+		}
+	}()
 
 	var (
 		departments int
@@ -22,15 +33,12 @@ func main() {
 		return
 	}
 
-	for department := 0; department < departments; department++ {
+	for range departments {
 		if _, err := fmt.Fscan(reader, &employees); err != nil {
 			return
 		}
 
-		minTemperature := 15
-		maxTemperature := 30
-
-		for employee := 0; employee < employees; employee++ {
+		for range employees {
 			if _, err := fmt.Fscan(reader, &operation, &temperature); err != nil {
 				return
 			}
@@ -48,10 +56,13 @@ func main() {
 				return
 			}
 
+			result := minTemperature
 			if minTemperature > maxTemperature {
-				fmt.Fprintln(writer, -1)
-			} else {
-				fmt.Fprintln(writer, minTemperature)
+				result = -1
+			}
+
+			if _, err := fmt.Fprintln(writer, result); err != nil {
+				return
 			}
 		}
 	}
