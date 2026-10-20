@@ -7,6 +7,27 @@ const (
 	MaxTemp = 30
 )
 
+type TemperatureBounds struct {
+	low, high int
+}
+
+func (bounds *TemperatureBounds) applyBound(sign string, temperature int) {
+	switch sign {
+	case ">=":
+		bounds.low = max(bounds.low, temperature)
+	case "<=":
+		bounds.high = min(bounds.high, temperature)
+	}
+}
+
+func (bounds *TemperatureBounds) getOptimalTemperature() int {
+	if bounds.low <= bounds.high {
+		return bounds.low
+	} else {
+		return -1
+	}
+}
+
 func processDepartment() {
 	var workers int
 
@@ -20,7 +41,10 @@ func processDepartment() {
 		return
 	}
 
-	var tempLow, tempHigh int = MinTemp, MaxTemp
+	bounds := TemperatureBounds{
+		low:  MinTemp,
+		high: MaxTemp,
+	}
 
 	for range workers {
 		var (
@@ -43,18 +67,8 @@ func processDepartment() {
 			return
 		}
 
-		switch sign {
-		case ">=":
-			tempLow = max(tempLow, temperature)
-		case "<=":
-			tempHigh = min(tempHigh, temperature)
-		}
-
-		if tempLow <= tempHigh {
-			fmt.Println(tempLow)
-		} else {
-			fmt.Println(-1)
-		}
+		bounds.applyBound(sign, temperature)
+		fmt.Println(bounds.getOptimalTemperature())
 	}
 }
 
