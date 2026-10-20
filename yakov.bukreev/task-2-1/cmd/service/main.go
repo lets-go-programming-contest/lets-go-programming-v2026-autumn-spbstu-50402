@@ -85,11 +85,13 @@ func main() {
 
 	if _, err := fmt.Scan(&departments); err != nil {
 		fmt.Printf("Invalid departments number: %v.", err)
+
 		return
 	}
 
 	if departments < 1 || departments > 1000 {
 		fmt.Println("Departments number out of range.")
+
 		return
 	}
 
