@@ -44,22 +44,22 @@ func processDepartment() error {
 		high: MaxTemp,
 	}
 
-	for i := range workers {
+	for idx := range workers {
 		var (
 			sign        string
 			temperature int
 		)
 
 		if _, err := fmt.Scan(&sign, &temperature); err != nil {
-			return fmt.Errorf("invalid preference for worker %d", i+1)
+			return fmt.Errorf("invalid preference for worker %d", idx+1)
 		}
 
 		if sign != ">=" && sign != "<=" {
-			return fmt.Errorf("invalid preference sign for worker %d", i+1)
+			return fmt.Errorf("invalid preference sign for worker %d", idx+1)
 		}
 
 		if temperature < MinTemp || temperature > MaxTemp {
-			return fmt.Errorf("invalid temperature for worker %d", i+1)
+			return fmt.Errorf("invalid temperature for worker %d", idx+1)
 		}
 
 		bounds.applyBound(sign, temperature)
@@ -70,19 +70,19 @@ func processDepartment() error {
 }
 
 func main() {
-	var deparments int
+	var departments int
 
-	if _, err := fmt.Scan(&deparments); err != nil {
+	if _, err := fmt.Scan(&departments); err != nil {
 		fmt.Printf("Invalid deparments number: %v.", err)
 		return
 	}
 
-	if deparments < 1 || deparments > 1000 {
+	if departments < 1 || departments > 1000 {
 		fmt.Println("Deparments number out of range.")
 		return
 	}
 
-	for i := range deparments {
+	for i := range departments {
 		if err := processDepartment(); err != nil {
 			fmt.Printf("Error (department %d): %v.", i+1, err)
 		}
