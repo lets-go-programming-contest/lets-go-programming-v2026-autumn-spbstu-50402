@@ -17,7 +17,8 @@ func readInput() (string, int, error) {
 	if err != nil {
 		return "", 0, fmt.Errorf("read employee request: %w", err)
 	}
-	return compSymb, temp, err
+
+	return compSymb, temp, nil
 }
 
 func updateTempBounds(compSymb string, temp int, lmin *int, lmax *int) {
