@@ -14,7 +14,9 @@ func readInput() (string, int, error) {
 	)
 
 	_, err := fmt.Scan(&compSymb, &temp)
-
+	if err != nil {
+		return "", 0, fmt.Errorf("read employee request: %w", err)
+	}
 	return compSymb, temp, err
 }
 
