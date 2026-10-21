@@ -37,11 +37,21 @@ func updateTempBounds(compSymb string, temp int, lmin *int, lmax *int) {
 }
 
 func main() {
-	var localMin int = 15;
-	var localMax int = 30;
+	var constMin int = 15
+	var constMax int = 30
 
-	compSymb, temp := readInput()
-	updateTempBounds(compSymb, temp , &localMin, &localMax)
+	var departNumber int
+	fmt.Scan(&departNumber)
 
+	for i := 0; i < departNumber; i++ {
+		var localMin int = constMin
+		var localMax int = constMax
+		var employeeNumber int
+		fmt.Scan(&employeeNumber)
+		for j := 0; j < employeeNumber; j++ {
+			compSymb, temp := readInput()
+			updateTempBounds(compSymb, temp , &localMin, &localMax)
+		}
+	}
 }
 	
