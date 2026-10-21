@@ -32,7 +32,7 @@ func toChangeTemp(tempRange *TempRange, operation string, newTemp int) (int, err
 	}
 
 	if tempRange.lowLevel > tempRange.highLevel {
-		return 0, fmt.Errorf("%w: %s &d", errRangeTemperatureNotFound, operation, newTemp)
+		return 0, fmt.Errorf("%w: %s %d", errRangeTemperatureNotFound, operation, newTemp)
 	}
 
 	return tempRange.lowLevel, nil
@@ -59,9 +59,11 @@ func readLine() (string, int, error) {
 
 func main() {
 	var numberOfDepartments int
+
 	_, err := fmt.Scan(&numberOfDepartments)
 	if err != nil {
 		fmt.Printf("error reading the number of departments: %v\n", err)
+
 		return
 	}
 
@@ -95,6 +97,7 @@ func main() {
 
 				continue
 			}
+
 			fmt.Println(result)
 		}
 	}
