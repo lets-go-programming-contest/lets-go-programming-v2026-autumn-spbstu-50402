@@ -56,7 +56,7 @@ func processDepartment(reader *bufio.Reader, writer *bufio.Writer, employees int
 
 	for range employees {
 		if _, err := fmt.Fscan(reader, &operation, &temperature); err != nil {
-			return err
+			return fmt.Errorf("read employee requirement %w", err)
 		}
 
 		switch operation {
@@ -78,7 +78,7 @@ func processDepartment(reader *bufio.Reader, writer *bufio.Writer, employees int
 		}
 
 		if _, err := fmt.Fprintln(writer, result); err != nil {
-			return err
+			return fmt.Errorf("write department temperature %w", err)
 		}
 	}
 
