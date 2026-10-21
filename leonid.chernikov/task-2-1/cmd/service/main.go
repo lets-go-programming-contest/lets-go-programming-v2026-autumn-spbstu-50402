@@ -2,16 +2,28 @@ package main
 
 import "fmt"
 
+const (
+	minTemp = 15
+	maxTemp = 30
+)
+
 func readInput() (compSymb string, temp int){
 	fmt.Scan(&compSymb, &temp)
 	return compSymb, temp
 }
 
 func updateTempBounds(compSymb string, temp int, lmin *int, lmax *int) {
+	
+	if *lmin > *lmax {
+		fmt.Println("-1")
+		return
+	}
+
 	switch compSymb {
 	case ">=":
 		if temp > *lmax {
 			fmt.Println("-1")
+			*lmin = temp
 		}
 		if temp < *lmin {
 			fmt.Println(*lmin)
@@ -26,6 +38,7 @@ func updateTempBounds(compSymb string, temp int, lmin *int, lmax *int) {
 		}
 		if temp < *lmin {
 			fmt.Println("-1")
+			*lmax = temp
 		}
 		if temp >= *lmin && temp <= *lmax {
 			*lmax = temp
@@ -37,15 +50,13 @@ func updateTempBounds(compSymb string, temp int, lmin *int, lmax *int) {
 }
 
 func main() {
-	var constMin int = 15
-	var constMax int = 30
 
 	var departNumber int
 	fmt.Scan(&departNumber)
 
 	for i := 0; i < departNumber; i++ {
-		var localMin int = constMin
-		var localMax int = constMax
+		localMin := minTemp
+		localMax := maxTemp
 		var employeeNumber int
 		fmt.Scan(&employeeNumber)
 		for j := 0; j < employeeNumber; j++ {
