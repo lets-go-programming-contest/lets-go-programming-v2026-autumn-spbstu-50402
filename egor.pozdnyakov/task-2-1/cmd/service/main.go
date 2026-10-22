@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bufio"
 	"errors"
 	"fmt"
 	"io"
@@ -74,21 +75,21 @@ func (r *tempRange) optimal() int {
 	if r.low > r.high {
 		return noTemp
 	}
- 
+
 	return r.low
 }
 
 func readCount(reader io.Reader, name string, limit int) (int, error) {
 	var value int
- 
+
 	if _, err := fmt.Fscan(reader, &value); err != nil {
 		return 0, fmt.Errorf("read %s: %w", name, err)
 	}
- 
+
 	if value < minCount || value > limit {
 		return 0, fmt.Errorf("%w: %s = %d, want %d..%d", errOutOfRange, name, value, minCount, limit)
 	}
- 
+
 	return value, nil
 }
 
@@ -97,16 +98,16 @@ func readConstraint(reader io.Reader) (operator, int, error) {
 		raw  string
 		temp int
 	)
- 
+
 	if _, err := fmt.Fscan(reader, &raw, &temp); err != nil {
 		return 0, 0, fmt.Errorf("read constraint: %w", err)
 	}
- 
+
 	oper, err := parseOperator(raw)
 	if err != nil {
 		return 0, 0, err
 	}
- 
+
 	return oper, temp, nil
 }
 
@@ -123,14 +124,14 @@ func solveDepartment(reader io.Reader, writer io.Writer) error {
 		if err != nil {
 			return fmt.Errorf("employee %d: %w", employee+1, err)
 		}
- 
+
 		bounds.apply(oper, temp)
- 
+
 		if _, err := fmt.Fprintln(writer, bounds.optimal()); err != nil {
 			return fmt.Errorf("write answer: %w", err)
 		}
 	}
- 
+
 	return nil
 }
 
@@ -139,14 +140,25 @@ func solveDepartments(reader io.Reader, writer io.Writer) error {
 	if err != nil {
 		return err
 	}
- 
+
 	for department := range departments {
 		if err := solveDepartment(reader, writer); err != nil {
 			return fmt.Errorf("department %d: %w", department+1, err)
 		}
 	}
- 
+
 	return nil
+}
+
+func solve(input io.Reader, output io.Writer) error {
+	writer := bufio.NewWriter(output)
+	solveErr := solveDepartments(bufio.NewReader(input), writer)
+
+	if err := writer.Flush(); err != nil {
+		return errors.Join(solveErr, fmt.Errorf("flush output: %w", err))
+	}
+
+	return solveErr
 }
 
 func main() {}
