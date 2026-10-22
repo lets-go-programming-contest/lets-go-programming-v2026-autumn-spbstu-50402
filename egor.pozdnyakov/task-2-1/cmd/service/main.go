@@ -110,8 +110,43 @@ func readConstraint(reader io.Reader) (operator, int, error) {
 	return oper, temp, nil
 }
 
-func main() {
-	if err := solve(os.Stdin, os.Stdout); err != nil {
-		log.Fatal(err)
+func solveDepartment(reader io.Reader, writer io.Writer) error {
+	employees, err := readCount(reader, "K", maxEmployees)
+	if err != nil {
+		return err
 	}
+ 
+	bounds := newTempRange()
+ 
+	for employee := range employees {
+		oper, temp, err := readConstraint(reader)
+		if err != nil {
+			return fmt.Errorf("employee %d: %w", employee+1, err)
+		}
+ 
+		bounds.apply(oper, temp)
+ 
+		if _, err := fmt.Fprintln(writer, bounds.optimal()); err != nil {
+			return fmt.Errorf("write answer: %w", err)
+		}
+	}
+ 
+	return nil
 }
+
+func solveDepartments(reader io.Reader, writer io.Writer) error {
+	departments, err := readCount(reader, "N", maxDepartments)
+	if err != nil {
+		return err
+	}
+ 
+	for department := range departments {
+		if err := solveDepartment(reader, writer); err != nil {
+			return fmt.Errorf("department %d: %w", department+1, err)
+		}
+	}
+ 
+	return nil
+}
+
+func main() {}
