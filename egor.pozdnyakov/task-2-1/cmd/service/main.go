@@ -1,10 +1,9 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 )
-
-func main() {}
 
 const (
 	minTemp = 15
@@ -44,5 +43,42 @@ func parseOperator(raw string) (operator, error) {
 		return opLessEq, nil
 	default:
 		return 0, fmt.Errorf("%w %q", errUnknownOperator, raw)
+	}
+}
+
+var (
+	errUnknownOperator = errors.New("unknown operator")
+	errOutOfRange      = errors.New("value out of range")
+)
+
+type tempRange struct {
+	low  int
+	high int
+}
+
+func newTempRange() *tempRange {
+	return &tempRange{low: minTemp, high: maxTemp}
+}
+
+func (r *tempRange) apply(oper operator, temp int) {
+	switch oper {
+	case opGreaterEq:
+		r.low = max(r.low, temp)
+	case opLessEq:
+		r.high = min(r.high, temp)
+	}
+}
+
+func (r *tempRange) optimal() int {
+	if r.low > r.high {
+		return noTemp
+	}
+ 
+	return r.low
+}
+
+func main() {
+	if err := solve(os.Stdin, os.Stdout); err != nil {
+		log.Fatal(err)
 	}
 }
