@@ -70,6 +70,12 @@ func main() {
 		return
 	}
 
+	if departNumber > 1000 || departNumber < 1 {
+		fmt.Println("Invalid number of departments")
+
+		return
+	}
+
 	for range departNumber {
 		localMin := minTemp
 		localMax := maxTemp
@@ -79,6 +85,12 @@ func main() {
 		_, err := fmt.Scan(&employeeNumber)
 		if err != nil {
 			fmt.Println("Input employee number error")
+
+			return
+		}
+
+		if employeeNumber > 1000 || employeeNumber < 1 {
+			fmt.Println("Invalid number of employees")
 
 			return
 		}
