@@ -118,9 +118,9 @@ func solveDepartment(reader io.Reader, writer io.Writer) error {
 	if err != nil {
 		return err
 	}
- 
+
 	bounds := newTempRange()
- 
+
 	for employee := range employees {
 		oper, temp, err := readConstraint(reader)
 		if err != nil {
