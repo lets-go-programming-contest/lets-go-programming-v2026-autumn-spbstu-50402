@@ -5,6 +5,11 @@ import (
 	"fmt"
 )
 
+const (
+	minTemp = 15
+	maxTemp = 30
+)
+
 var (
 	errInvalidOperator          = errors.New("unsupported operator")
 	errRangeTemperatureNotFound = errors.New("the request violares optimal temperature")
@@ -77,7 +82,7 @@ func main() {
 			return
 		}
 
-		tempRange := TempRange{15, 30}
+		tempRange := TempRange{minTemp, maxTemp}
 
 		for range numberOfEmployees {
 			operation, newTemp, err := readLine()
