@@ -3,6 +3,7 @@ package main
 import (
 	"errors"
 	"fmt"
+	"io"
 )
 
 const (
@@ -75,6 +76,38 @@ func (r *tempRange) optimal() int {
 	}
  
 	return r.low
+}
+
+func readCount(reader io.Reader, name string, limit int) (int, error) {
+	var value int
+ 
+	if _, err := fmt.Fscan(reader, &value); err != nil {
+		return 0, fmt.Errorf("read %s: %w", name, err)
+	}
+ 
+	if value < minCount || value > limit {
+		return 0, fmt.Errorf("%w: %s = %d, want %d..%d", errOutOfRange, name, value, minCount, limit)
+	}
+ 
+	return value, nil
+}
+
+func readConstraint(reader io.Reader) (operator, int, error) {
+	var (
+		raw  string
+		temp int
+	)
+ 
+	if _, err := fmt.Fscan(reader, &raw, &temp); err != nil {
+		return 0, 0, fmt.Errorf("read constraint: %w", err)
+	}
+ 
+	oper, err := parseOperator(raw)
+	if err != nil {
+		return 0, 0, err
+	}
+ 
+	return oper, temp, nil
 }
 
 func main() {
