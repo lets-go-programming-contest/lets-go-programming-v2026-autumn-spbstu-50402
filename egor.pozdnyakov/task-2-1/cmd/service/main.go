@@ -5,6 +5,8 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"log"
+	"os"
 )
 
 const (
@@ -161,4 +163,8 @@ func solve(input io.Reader, output io.Writer) error {
 	return solveErr
 }
 
-func main() {}
+func main() {
+	if err := solve(os.Stdin, os.Stdout); err != nil {
+		log.Fatal(err)
+	}
+}
