@@ -15,19 +15,20 @@ const (
 )
 
 var (
-	errInvalidDepartments     = errors.New("Invalid input departments")
-	errInvalidDepartmentCount = errors.New("Depatments must be form 1 to 1000")
-	errInvalidStaff           = errors.New("Invalid input staff")
-	errInvalidStaffCount      = errors.New("Staff must be from 1 to 1000")
-	errInvalidTemperature     = errors.New("Invalid input temperature value")
-	errTemperatureOutOfRange  = errors.New("Temperature must be from 15 to 30")
-	errInvalidConditionInput  = errors.New("Invalid input condition")
-	errInvalidCondition       = errors.New("Condition of temperature must be '<=' or '>='")
+	errInvalidDepartments     = errors.New("invalid input departments")
+	errInvalidDepartmentCount = errors.New("departments must be form 1 to 1000")
+	errInvalidStaff           = errors.New("invalid input staff")
+	errInvalidStaffCount      = errors.New("staff must be from 1 to 1000")
+	errInvalidTemperature     = errors.New("invalid input temperature value")
+	errTemperatureOutOfRange  = errors.New("temperature must be from 15 to 30")
+	errInvalidConditionInput  = errors.New("invalid input condition")
+	errInvalidCondition       = errors.New("condition of temperature must be '<=' or '>='")
 )
 
 func parseDepartment() (int, error) {
 	var departments int
 	_, err := fmt.Scan(&departments)
+
 	if err != nil {
 		return 0, errInvalidDepartments
 	}
@@ -42,6 +43,7 @@ func parseDepartment() (int, error) {
 func parseStaff() (int, error) {
 	var staff int
 	_, err := fmt.Scan(&staff)
+
 	if err != nil {
 		return 0, errInvalidStaff
 	}
@@ -56,6 +58,7 @@ func parseStaff() (int, error) {
 func parseTemperature() (int, error) {
 	var temperature int
 	_, err := fmt.Scan(&temperature)
+
 	if err != nil {
 		return 0, errInvalidTemperature
 	}
@@ -70,6 +73,7 @@ func parseTemperature() (int, error) {
 func parseCondition() (string, error) {
 	var condition string
 	_, err := fmt.Scan(&condition)
+
 	if err != nil {
 		return "", errInvalidConditionInput
 	}
@@ -83,11 +87,13 @@ func parseCondition() (string, error) {
 
 func processStaff(minTemp *int, maxTemp *int) error {
 	condition, err := parseCondition()
+
 	if err != nil {
 		return err
 	}
 
 	temperature, err := parseTemperature()
+
 	if err != nil {
 		return err
 	}
@@ -109,6 +115,7 @@ func processStaff(minTemp *int, maxTemp *int) error {
 
 func main() {
 	departments, err := parseDepartment()
+
 	if err != nil {
 		fmt.Println(err)
 
@@ -117,6 +124,7 @@ func main() {
 
 	for range departments {
 		staff, err := parseStaff()
+
 		if err != nil {
 			fmt.Println(err)
 
@@ -128,6 +136,7 @@ func main() {
 
 		for range staff {
 			err = processStaff(&minTemp, &maxTemp)
+
 			if err != nil {
 				fmt.Println(err)
 
