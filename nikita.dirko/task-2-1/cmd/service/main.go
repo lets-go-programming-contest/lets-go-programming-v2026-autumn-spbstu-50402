@@ -14,6 +14,12 @@ var (
 )
 
 const (
+	minDepartments = 1
+	maxDepartments = 1000
+
+	minWorkers = 1
+	maxWorkers = 1000
+
 	minTemp = 15
 	maxTemp = 30
 )
@@ -71,7 +77,7 @@ func ParseDepartmentsCount() (int, error) {
 		return 0, fmt.Errorf("invalid departments input: %w", err)
 	}
 
-	if departments < 1 || departments > 1000 {
+	if departments < minDepartments || departments > maxDepartments {
 		return 0, errInvalidDepartmentCount
 	}
 
@@ -86,7 +92,7 @@ func ParseWorkersCount() (int, error) {
 		return 0, fmt.Errorf("invalid workers input: %w", err)
 	}
 
-	if workers < 1 || workers > 1000 {
+	if workers < minWorkers || workers > maxWorkers {
 		return 0, errInvalidWorkerCount
 	}
 
