@@ -1,5 +1,9 @@
 package main
 
+import (
+	"fmt"
+)
+
 type MaxHeap []int
 
 func (h *MaxHeap) Push(x any) {
@@ -25,4 +29,33 @@ func (h *MaxHeap) Swap(i, j int) {
 	(*h)[i], (*h)[j] = (*h)[j], (*h)[i]
 }
 
-func main() {}
+func getPreferredDish(h *MaxHeap, preference int) int
+
+func scanPreferences(numberOfDishes int) (*MaxHeap, error)
+
+func main() {
+	var numberOfDishes int
+	if _, err := fmt.Scanln(&numberOfDishes); err != nil {
+		fmt.Printf("error when reading the number of dishes: %v\n", err)
+
+		return
+	}
+
+	h, err := scanPreferences(numberOfDishes)
+	if err != nil {
+		fmt.Printf("error when reading the all preferences: %v\n", err)
+
+		return
+	}
+
+	var preference int
+	if _, err := fmt.Scanln(&preference); err != nil {
+		fmt.Printf("error when reading the preference: %v\n", err)
+
+		return
+	}
+
+	result := getPreferredDish(h, preference)
+
+	fmt.Println(result)
+}
