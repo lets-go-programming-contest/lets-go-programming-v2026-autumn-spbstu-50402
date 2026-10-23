@@ -26,15 +26,15 @@ func parseCondition() (string, int, error) {
 	var op string
 	_, err := fmt.Scan(&op)
 	if err != nil {
-		return "", 0, fmt.Errorf("ERROR: reading operation is failed", err)
+		return "", 0, fmt.Errorf("ERROR: reading operation is failed: %w", err)
 	}
 	if op != "<=" && op != ">=" {
-		return "", 0, fmt.Errorf("ERROR: invalid operation", err)
+		return "", 0, fmt.Errorf("ERROR: invalid operation: %w", err)
 	}
 	var temp int
 	_, err1 := fmt.Scan(&temp)
 	if err1 != nil {
-		return "", 0, fmt.Errorf("ERROR: readint number is failed", err)
+		return "", 0, fmt.Errorf("ERROR: reading number is failed: %w", err)
 	}
 	return op, temp, nil
 }
@@ -90,7 +90,7 @@ func main() {
 			optimalTemperature, err := temperatureRange.Optimal()
 			if err != nil {
 				fmt.Println(-1)
-				return
+				continue
 			}
 			fmt.Println(optimalTemperature)
 		}
