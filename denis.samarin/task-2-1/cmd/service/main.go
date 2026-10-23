@@ -21,7 +21,7 @@ func (tr *temperatureRange) update(sign string, temp int) {
 	}
 }
 
-func (tr temperatureRange) optimal() int {
+func (tr *temperatureRange) optimal() int {
 	if tr.lower > tr.upper {
 		return -1
 	}
