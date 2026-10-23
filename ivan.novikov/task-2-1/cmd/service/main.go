@@ -1,12 +1,18 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 )
 
 const (
 	minTemp = 15
 	maxTemp = 30
+)
+
+var (
+	ErrInvalidOperation     = errors.New("invalid operation")
+	ErrNoOptimalTemperature = errors.New("cannot get optimal temperature")
 )
 
 func GetEmployeeData() (string, int, error) {
@@ -16,7 +22,7 @@ func GetEmployeeData() (string, int, error) {
 	}
 
 	if operation != "<=" && operation != ">=" {
-		return "", 0, fmt.Errorf("invalid operation: entered %q", operation)
+		return "", 0, fmt.Errorf("%w: entered %q", ErrInvalidOperation, operation)
 	}
 
 	var temperature int
@@ -38,7 +44,7 @@ func UpdateBounds(operation string, temperature int, lower *int, upper *int) err
 			*lower = temperature
 		}
 	default:
-		return fmt.Errorf("invalid operation")
+		return ErrInvalidOperation
 	}
 
 	return nil
@@ -49,13 +55,14 @@ func GetOptimalTemperature(lower *int, upper *int) (int, error) {
 		return *lower, nil
 	}
 
-	return 0, fmt.Errorf("cannot get optimal temperature")
+	return 0, ErrNoOptimalTemperature
 }
 
 func main() {
 	var departmentsCount int
 	if _, err := fmt.Scanln(&departmentsCount); err != nil {
 		fmt.Printf("cannot read the number of departments: %v\n", err)
+
 		return
 	}
 
@@ -63,6 +70,7 @@ func main() {
 		var employees int
 		if _, err := fmt.Scanln(&employees); err != nil {
 			fmt.Printf("cannot read the number of employees: %v\n", err)
+
 			return
 		}
 
