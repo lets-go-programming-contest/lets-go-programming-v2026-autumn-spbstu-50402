@@ -6,6 +6,11 @@ import (
 	"fmt"
 )
 
+var (
+	errNotIntegersInHeap    = errors.New("expects a container with integers")
+	errPreferenceOutOfRange = errors.New("preference out of range")
+)
+
 type MaxHeap []int
 
 func (h *MaxHeap) Push(x any) {
@@ -45,14 +50,14 @@ func getPreferredDish(maxHeap *MaxHeap, preference int) (int, error) {
 			result, isInt = heap.Pop(maxHeap).(int)
 
 			if !isInt {
-				return 0, errors.New("expects a container with integers")
+				return 0, errNotIntegersInHeap
 			}
 		}
 
 		return result, nil
 	}
 
-	return 0, errors.New("preference out of range")
+	return 0, errPreferenceOutOfRange
 }
 
 func scanPreferences(numberOfDishes int) (*MaxHeap, error) {
