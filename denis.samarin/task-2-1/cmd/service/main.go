@@ -7,6 +7,28 @@ const (
 	maxTemp = 30
 )
 
+type temperatureRange struct {
+	lower int
+	upper int
+}
+
+func (tr *temperatureRange) update(sign string, temp int) {
+	switch sign {
+	case ">=":
+		tr.lower = max(tr.lower, temp)
+	case "<=":
+		tr.upper = min(tr.upper, temp)
+	}
+}
+
+func (tr temperatureRange) optimal() int {
+	if tr.lower > tr.upper {
+		return -1
+	}
+
+	return tr.lower
+}
+
 func main() {
 	var departments int
 
@@ -27,7 +49,7 @@ func main() {
 			return
 		}
 
-		low, high := minTemp, maxTemp
+		tempRange := temperatureRange{lower: minTemp, upper: maxTemp}
 
 		for range workers {
 			var (
@@ -42,22 +64,14 @@ func main() {
 				return
 			}
 
-			switch sign {
-			case ">=":
-				low = max(low, temp)
-			case "<=":
-				high = min(high, temp)
-			default:
+			if sign != ">=" && sign != "<=" {
 				fmt.Println("Invalid operation")
 
 				return
 			}
 
-			if low <= high {
-				fmt.Println(low)
-			} else {
-				fmt.Println(-1)
-			}
+			tempRange.update(sign, temp)
+			fmt.Println(tempRange.optimal())
 		}
 	}
 }
