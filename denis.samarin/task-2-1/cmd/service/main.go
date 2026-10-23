@@ -53,26 +53,15 @@ func (tr *temperatureRange) optimal() (int, error) {
 	return tr.lower, nil
 }
 
-func readDepartments() (int, error) {
-	var departments int
+func readCount() (int, error) {
+	var count int
 
-	_, err := fmt.Scan(&departments)
+	_, err := fmt.Scan(&count)
 	if err != nil {
-		return 0, fmt.Errorf("read departments count: %w", err)
+		return 0, fmt.Errorf("scan count: %w", err)
 	}
 
-	return departments, nil
-}
-
-func readWorkers() (int, error) {
-	var workers int
-
-	_, err := fmt.Scan(&workers)
-	if err != nil {
-		return 0, fmt.Errorf("read workers count: %w", err)
-	}
-
-	return workers, nil
+	return count, nil
 }
 
 func readRequest() (request, error) {
@@ -120,27 +109,30 @@ func printOptimalTemperatures(workers int) error {
 	return nil
 }
 
-func main() {
-	departments, err := readDepartments()
+func run() error {
+	departments, err := readCount()
 	if err != nil {
-		fmt.Println(err)
-
-		return
+		return fmt.Errorf("read departments: %w", err)
 	}
 
 	for range departments {
-		workers, err := readWorkers()
+		workers, err := readCount()
 		if err != nil {
-			fmt.Println(err)
-
-			return
+			return fmt.Errorf("read workers: %w", err)
 		}
 
 		err = printOptimalTemperatures(workers)
 		if err != nil {
-			fmt.Println(err)
-
-			return
+			return err
 		}
+	}
+
+	return nil
+}
+
+func main() {
+	err := run()
+	if err != nil {
+		fmt.Println(err)
 	}
 }
