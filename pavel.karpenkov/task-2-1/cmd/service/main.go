@@ -11,8 +11,8 @@ const (
 )
 
 var (
-	errInvalidRangeUpdate = errors.New("Range update failed")
-	errOptimalTemperature = errors.New("Temperature measurement error")
+	errInvalidRangeUpdate = errors.New("range update failed")
+	errOptimalTemperature = errors.New("temperature measurement error")
 )
 
 type TempRange struct {
@@ -22,22 +22,25 @@ type TempRange struct {
 func NewTempRange(minTemp, maxTemp int) TempRange {
 	return TempRange{lo: minTemp, hi: maxTemp}
 }
+
 func parseCondition() (string, int, error) {
-	var op string
-	_, err := fmt.Scan(&op)
+	var operation string
+	_, err := fmt.Scan(&operation)
 	if err != nil {
-		return "", 0, fmt.Errorf("ERROR: reading operation is failed: %w", err)
+		return "", 0, fmt.Errorf("error: reading operation is failed: %w", err)
 	}
-	if op != "<=" && op != ">=" {
-		return "", 0, fmt.Errorf("ERROR: invalid operation: %w", err)
+	if operation != "<=" && operation != ">=" {
+		return "", 0, fmt.Errorf("error: invalid operation: %q", operation)
 	}
 	var temp int
 	_, err1 := fmt.Scan(&temp)
 	if err1 != nil {
-		return "", 0, fmt.Errorf("ERROR: reading number is failed: %w", err)
+		return "", 0, fmt.Errorf("error: reading number is failed: %w", err)
 	}
-	return op, temp, nil
+
+	return operation, temp, nil
 }
+
 func (r *TempRange) Update(op string, temp int) error {
 	switch op {
 	case ">=":
@@ -53,21 +56,22 @@ func (r *TempRange) Update(op string, temp int) error {
 	}
 	return nil
 }
+
 func (r *TempRange) Optimal() (int, error) {
 	if r.lo <= r.hi {
 		return r.lo, nil
 	}
+
 	return 0, errOptimalTemperature
 }
 
 func main() {
-	var (
-		department, employee int
-	)
+	var department, employee int
 
 	_, err := fmt.Scanln(&department)
 	if err != nil {
 		fmt.Println("Invalid department argument")
+
 		return
 	}
 
@@ -81,6 +85,7 @@ func main() {
 			operation, temperature, err := parseCondition()
 			if err != nil {
 				fmt.Printf("ERROR: invalid employee data")
+
 				return
 			}
 			err = temperatureRange.Update(operation, temperature)
@@ -90,6 +95,7 @@ func main() {
 			optimalTemperature, err := temperatureRange.Optimal()
 			if err != nil {
 				fmt.Println(-1)
+
 				continue
 			}
 			fmt.Println(optimalTemperature)
