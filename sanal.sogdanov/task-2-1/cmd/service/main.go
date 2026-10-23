@@ -1,6 +1,9 @@
 package main
 
-import "fmt"
+import (
+	"errors"
+	"fmt"
+)
 
 const (
 	minAllowedTemperature = 15
@@ -9,8 +12,8 @@ const (
 )
 
 var (
-	errInvalidOperator       = fmt.Errorf("expected <= or >=")
-	errNoSuitableTemperature = fmt.Errorf("no suitable temperature")
+	errInvalidOperator       = errors.New("expected <= or >=")
+	errNoSuitableTemperature = errors.New("no suitable temperature")
 )
 
 type temperatureRange struct {
