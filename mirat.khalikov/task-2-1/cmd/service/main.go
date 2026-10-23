@@ -1,14 +1,18 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+)
 
 const (
-	MIN_D = 1
-	MAX_D = 1000
-	MIN_W = 1
-	MAX_W = 1000
-	MIN_T = 15
-	MAX_T = 30
+	minD = 1
+	maxD = 1000
+
+	minW = 1
+	maxW = 1000
+
+	minT = 15
+	maxT = 30
 )
 
 func parseTemperature(temperature int, condition string, minTemp int, maxTemp int) (int, int) {
@@ -21,42 +25,107 @@ func parseTemperature(temperature int, condition string, minTemp int, maxTemp in
 			maxTemp = temperature
 		}
 	}
+
 	return minTemp, maxTemp
+}
+
+func readDepartments() (int, bool) {
+	var departments int
+
+	_, err := fmt.Scan(&departments)
+	if err != nil {
+		fmt.Println("Invalid input")
+
+		return 0, false
+	}
+
+	if departments < minD || departments > maxD {
+		fmt.Println("Input should be between 1 and 1000")
+
+		return 0, false
+	}
+
+	return departments, true
+}
+
+func readWorkers() (int, bool) {
+	var workers int
+
+	_, err := fmt.Scan(&workers)
+	if err != nil {
+		fmt.Println("Invalid input")
+
+		return 0, false
+	}
+
+	if workers < minW || workers > maxW {
+		fmt.Println("Input should be between 1 and 1000")
+
+		return 0, false
+	}
+
+	return workers, true
+}
+
+func readCondition() (string, bool) {
+	var condition string
+
+	_, err := fmt.Scan(&condition)
+	if err != nil {
+		fmt.Println("Invalid input")
+
+		return "", false
+	}
+
+	if condition != ">=" && condition != "<=" {
+		fmt.Println("Input condition should be non-strict")
+
+		return "", false
+	}
+
+	return condition, true
+}
+
+func readTemperature() (int, bool) {
+	var temperature int
+
+	_, err := fmt.Scan(&temperature)
+	if err != nil {
+		fmt.Println("Invalid input")
+
+		return 0, false
+	}
+
+	if temperature < minT || temperature > maxT {
+		fmt.Println("Input temperature should be between 15 and 30")
+
+		return 0, false
+	}
+
+	return temperature, true
 }
 
 func main() {
 	var (
 		departments int
-		err         error
+		check bool
 	)
 
-	_, err = fmt.Scan(&departments)
-	if err != nil {
-		fmt.Println("Invalid input")
+	departments, check = readDepartments()
+	if !check {
+
 		return
 	}
-
-	if departments < MIN_D || departments > MAX_D {
-		fmt.Println("Input should be between 1 and 1000")
-		return
-	}
-
 	for range departments {
 		var workers int
-		_, err = fmt.Scan(&workers)
+		workers, check = readWorkers()
+		if !check {
 
-		if err != nil {
-			fmt.Println("Invalid input")
 			return
 		}
 
-		if workers < MIN_W || workers > MAX_W {
-			fmt.Println("Input should be between 1 and 1000")
-			return
-		}
-
-		minTemp := MIN_T
-		maxTemp := MAX_T
+		minTemp := minT
+		maxTemp := maxT
 
 		for range workers {
 			var (
@@ -64,25 +133,15 @@ func main() {
 				temperature int
 			)
 
-			_, err = fmt.Scan(&condition)
-			if err != nil {
-				fmt.Println("Invalid input")
+			condition, check = readCondition()
+			if !check {
+
 				return
 			}
 
-			if condition != ">=" && condition != "<=" {
-				fmt.Println("Input condition should be non-strict")
-				return
-			}
+			temperature, check = readTemperature()
+			if !check {
 
-			_, err = fmt.Scan(&temperature)
-			if err != nil {
-				fmt.Println("Invalid input")
-				return
-			}
-
-			if temperature < MIN_T || temperature > MAX_T {
-				fmt.Println("Input temperature should be between 15 and 30")
 				return
 			}
 
