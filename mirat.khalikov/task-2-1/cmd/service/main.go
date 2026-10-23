@@ -35,6 +35,7 @@ func main() {
 		fmt.Println("Invalid input")
 		return
 	}
+
 	if departments < MIN_D || departments > MAX_D {
 		fmt.Println("Input should be between 1 and 1000")
 		return
@@ -43,40 +44,50 @@ func main() {
 	for range departments {
 		var workers int
 		_, err = fmt.Scan(&workers)
+
 		if err != nil {
 			fmt.Println("Invalid input")
 			return
 		}
+
 		if workers < MIN_W || workers > MAX_W {
 			fmt.Println("Input should be between 1 and 1000")
 			return
 		}
+
 		minTemp := MIN_T
 		maxTemp := MAX_T
+
 		for range workers {
 			var (
 				condition   string
 				temperature int
 			)
+
 			_, err = fmt.Scan(&condition)
 			if err != nil {
 				fmt.Println("Invalid input")
 				return
 			}
+
 			if condition != ">=" && condition != "<=" {
 				fmt.Println("Input condition should be non-strict")
 				return
 			}
+
 			_, err = fmt.Scan(&temperature)
 			if err != nil {
 				fmt.Println("Invalid input")
 				return
 			}
+
 			if temperature < MIN_T || temperature > MAX_T {
 				fmt.Println("Input temperature should be between 15 and 30")
 				return
 			}
+
 			minTemp, maxTemp = parseTemperature(temperature, condition, minTemp, maxTemp)
+
 			if minTemp <= maxTemp {
 				fmt.Println(minTemp)
 			} else {
