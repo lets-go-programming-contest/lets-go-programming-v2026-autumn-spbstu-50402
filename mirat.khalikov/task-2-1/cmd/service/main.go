@@ -108,28 +108,22 @@ func main() {
 	if !check {
 		return
 	}
+
 	for range departments {
-		var workers int
-		workers, check = readWorkers()
+		workers, check := readWorkers()
 		if !check {
 			return
 		}
 
-		minTemp := minT
-		maxTemp := maxT
+		minTemp, maxTemp := minT, maxT
 
 		for range workers {
-			var (
-				condition   string
-				temperature int
-			)
-
-			condition, check = readCondition()
+			condition, check := readCondition()
 			if !check {
 				return
 			}
 
-			temperature, check = readTemperature()
+			temperature, check := readTemperature()
 			if !check {
 				return
 			}
