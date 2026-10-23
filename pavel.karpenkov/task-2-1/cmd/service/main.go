@@ -100,6 +100,7 @@ func main() {
 
 				return
 			}
+
 			err = temperatureRange.Update(operation, temperature)
 			if err != nil {
 				fmt.Printf("ERROR: update range failed")
