@@ -8,6 +8,12 @@ import (
 const (
 	minTemp = 15
 	maxTemp = 30
+
+	minDepartments = 1
+	maxDepartments = 1000
+
+	minWorkers = 1
+	maxWorkers = 1000
 )
 
 var (
@@ -15,23 +21,43 @@ var (
 	errWorkersOutOfRange     = errors.New("workers count is out of range")
 	errTemperatureOutOfRange = errors.New("temperature is outside the allowed range")
 	errUnknownOperation      = errors.New("unknown operation")
+	errNoValidTemperature    = errors.New("no valid temperature in bounds")
 )
 
 type bounds struct {
 	left, right int
 }
 
-func (b *bounds) change(sign string, temp int) {
+func newBounds(left, right int) bounds {
+	return bounds{
+		left:  left,
+		right: right,
+	}
+}
+
+func (b *bounds) change(sign string, temp int) error {
 	switch sign {
 	case "<=":
 		b.right = min(b.right, temp)
 	case ">=":
 		b.left = max(b.left, temp)
+	default:
+		return errUnknownOperation
 	}
+
+	return nil
 }
 
-func (b *bounds) check() bool {
+func (b *bounds) valid() bool {
 	return b.left <= b.right
+}
+
+func (b *bounds) optimal() (int, error) {
+	if !b.valid() {
+		return 0, errNoValidTemperature
+	}
+
+	return b.left, nil
 }
 
 func scanDepartments() (int, error) {
@@ -42,7 +68,7 @@ func scanDepartments() (int, error) {
 		return 0, fmt.Errorf("error reading departments count: %w", err)
 	}
 
-	if departments < 1 || departments > 1000 {
+	if departments < minDepartments || departments > maxDepartments {
 		return 0, errDepartmentsOutOfRange
 	}
 
@@ -57,7 +83,7 @@ func scanWorkers() (int, error) {
 		return 0, fmt.Errorf("error reading workers count: %w", err)
 	}
 
-	if workers < 1 || workers > 1000 {
+	if workers < minWorkers || workers > maxWorkers {
 		return 0, errWorkersOutOfRange
 	}
 
@@ -106,10 +132,7 @@ func main() {
 			return
 		}
 
-		temperatureBounds := bounds{
-			left:  minTemp,
-			right: maxTemp,
-		}
+		temperatureBounds := newBounds(minTemp, maxTemp)
 
 		for range workers {
 			sign, temp, err := scanRequest()
@@ -119,13 +142,21 @@ func main() {
 				return
 			}
 
-			temperatureBounds.change(sign, temp)
+			err = temperatureBounds.change(sign, temp)
+			if err != nil {
+				fmt.Println("Error:", err)
 
-			if temperatureBounds.check() {
-				fmt.Println(temperatureBounds.left)
-			} else {
-				fmt.Println(-1)
+				return
 			}
+
+			optimal, err := temperatureBounds.optimal()
+			if err != nil {
+				fmt.Println(-1)
+
+				continue
+			}
+
+			fmt.Println(optimal)
 		}
 	}
 }
