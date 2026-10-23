@@ -166,6 +166,7 @@ func ExecuteSimulation() error {
 			if err != nil {
 				optimalTemp = -1
 			}
+
 			fmt.Println(optimalTemp)
 		}
 	}
