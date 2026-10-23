@@ -8,6 +8,7 @@ func main() {
 	_, err := fmt.Scan(&departments)
 	if err != nil {
 		fmt.Println("Invalid number of departments")
+
 		return
 	}
 
@@ -19,6 +20,7 @@ func main() {
 		_, err = fmt.Scan(&workers)
 		if err != nil {
 			fmt.Println("Invalid number of workers")
+
 			return
 		}
 
@@ -31,19 +33,22 @@ func main() {
 			_, err = fmt.Scan(&sign, &temp)
 			if err != nil {
 				fmt.Println("Invalid input")
+
 				return
 			}
 
-			if sign == ">=" {
+			switch sign {
+			case ">=":
 				if temp > low {
 					low = temp
 				}
-			} else if sign == "<=" {
+			case "<=":
 				if temp < high {
 					high = temp
 				}
-			} else {
+			default:
 				fmt.Println("Invalid operation")
+
 				return
 			}
 
