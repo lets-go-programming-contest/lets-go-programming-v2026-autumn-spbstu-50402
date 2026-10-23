@@ -20,22 +20,25 @@ type TemperatureRange struct {
 	upper int
 }
 
-func NewTemperatureRange(lower, upper int) *TemperatureRange {
-	return &TemperatureRange{
+func NewTemperatureRange(lower, upper int) TemperatureRange {
+	return TemperatureRange{
 		lower: lower,
 		upper: upper,
 	}
 }
 
-func (tr *TemperatureRange) UpdateBounds(operation string, temperature int) {
+func (tr TemperatureRange) UpdateBounds(operation string, temperature int) error {
 	if operation == "<=" && temperature < tr.upper {
 		tr.upper = temperature
 	} else if operation == ">=" && temperature > tr.lower {
 		tr.lower = temperature
+	} else {
+		return errInvalidComparisonOperator
 	}
+	return nil
 }
 
-func (tr *TemperatureRange) GetOptimalTemperature() (int, error) {
+func (tr TemperatureRange) GetOptimalTemperature() (int, error) {
 	if tr.lower <= tr.upper {
 		return tr.lower, nil
 	}
@@ -87,7 +90,12 @@ func main() {
 				return
 			}
 
-			tempRange.UpdateBounds(operation, temperature)
+			err = tempRange.UpdateBounds(operation, temperature)
+			if err != nil {
+				fmt.Printf("failed to update temperature bounds: %v\n", err)
+
+				return
+			}
 
 			optimalTemp, err := tempRange.GetOptimalTemperature()
 			if errors.Is(err, errNoOptimalTemperature) {
