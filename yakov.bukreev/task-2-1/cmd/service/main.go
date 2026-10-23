@@ -6,8 +6,12 @@ import (
 )
 
 const (
-	MinTemp = 15
-	MaxTemp = 30
+	minDepartments = 1
+	maxDepartments = 1000
+	minWorkers     = 1
+	maxWorkers     = 1000
+	minTemp        = 15
+	maxTemp        = 30
 )
 
 var (
@@ -46,13 +50,13 @@ func processDepartment() error {
 		return fmt.Errorf("%w: %w", errInvalidWorkersNumber, err)
 	}
 
-	if workers < 1 || workers > 1000 {
+	if workers < minWorkers || workers > maxWorkers {
 		return errWorkersNumberOutOfRange
 	}
 
 	bounds := TemperatureBounds{
-		low:  MinTemp,
-		high: MaxTemp,
+		low:  minTemp,
+		high: maxTemp,
 	}
 
 	for idx := range workers {
@@ -69,7 +73,7 @@ func processDepartment() error {
 			return fmt.Errorf("%w %d", errInvalidPreferenceSign, idx+1)
 		}
 
-		if temperature < MinTemp || temperature > MaxTemp {
+		if temperature < minTemp || temperature > maxTemp {
 			return fmt.Errorf("%w %d", errInvalidTemperature, idx+1)
 		}
 
@@ -89,7 +93,7 @@ func main() {
 		return
 	}
 
-	if departments < 1 || departments > 1000 {
+	if departments < minDepartments || departments > maxDepartments {
 		fmt.Println("Departments number out of range.")
 
 		return
