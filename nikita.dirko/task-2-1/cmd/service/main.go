@@ -63,7 +63,7 @@ func (cb *TemperatureBoundary) isValid() bool {
 
 func (cb *TemperatureBoundary) OptimalTemperature() (int, error) {
 	if !cb.isValid() {
-		return -1, errTemperatureBounds
+		return 0, errTemperatureBounds
 	}
 
 	return cb.lowerBound, nil
@@ -162,7 +162,10 @@ func ExecuteSimulation() error {
 				return err
 			}
 
-			optimalTemp, _ := tempBounds.OptimalTemperature()
+			optimalTemp, err := tempBounds.OptimalTemperature()
+			if err != nil {
+				optimalTemp = -1
+			}
 			fmt.Println(optimalTemp)
 		}
 	}
