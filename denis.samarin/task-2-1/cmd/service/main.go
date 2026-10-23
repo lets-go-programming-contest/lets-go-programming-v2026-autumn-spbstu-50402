@@ -12,6 +12,13 @@ type temperatureRange struct {
 	upper int
 }
 
+func newTemperatureRange(lower, upper int) temperatureRange {
+	return temperatureRange{
+		lower: lower,
+		upper: upper,
+	}
+}
+
 func (tr *temperatureRange) update(sign string, temp int) {
 	switch sign {
 	case ">=":
@@ -49,7 +56,7 @@ func main() {
 			return
 		}
 
-		tempRange := temperatureRange{lower: minTemp, upper: maxTemp}
+		tempRange := newTemperatureRange(minTemp, maxTemp)
 
 		for range workers {
 			var (
