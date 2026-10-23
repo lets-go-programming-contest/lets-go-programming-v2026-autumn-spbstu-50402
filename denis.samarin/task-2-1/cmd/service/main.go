@@ -53,7 +53,7 @@ func readDepartments() (int, error) {
 
 	_, err := fmt.Scan(&departments)
 	if err != nil {
-		return 0, err
+		return 0, fmt.Errorf("read departments count: %w", err)
 	}
 
 	return departments, nil
@@ -64,21 +64,25 @@ func readWorkers() (int, error) {
 
 	_, err := fmt.Scan(&workers)
 	if err != nil {
-		return 0, err
+		return 0, fmt.Errorf("read workers count: %w", err)
 	}
 
 	return workers, nil
 }
 
 func readRequest() (string, int, error) {
-	var (
-		sign string
-		temp int
-	)
+	var sign string
 
-	_, err := fmt.Scan(&sign, &temp)
+	_, err := fmt.Scan(&sign)
 	if err != nil {
-		return "", 0, err
+		return "", 0, fmt.Errorf("read operation: %w", err)
+	}
+
+	var temp int
+
+	_, err = fmt.Scan(&temp)
+	if err != nil {
+		return "", 0, fmt.Errorf("read temperature: %w", err)
 	}
 
 	return sign, temp, nil
