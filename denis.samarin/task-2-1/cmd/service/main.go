@@ -11,8 +11,8 @@ const (
 )
 
 var (
-	ErrUnknownOperation     = errors.New("unknown operation")
-	ErrNoOptimalTemperature = errors.New("no optimal temperature")
+	errUnknownOperation     = errors.New("unknown operation")
+	errNoOptimalTemperature = errors.New("no optimal temperature")
 )
 
 type temperatureRange struct {
@@ -34,7 +34,7 @@ func (tr *temperatureRange) update(sign string, temp int) error {
 	case "<=":
 		tr.upper = min(tr.upper, temp)
 	default:
-		return fmt.Errorf("%w: %q", ErrUnknownOperation, sign)
+		return fmt.Errorf("%w: %q", errUnknownOperation, sign)
 	}
 
 	return nil
@@ -42,7 +42,7 @@ func (tr *temperatureRange) update(sign string, temp int) error {
 
 func (tr *temperatureRange) optimal() (int, error) {
 	if tr.lower > tr.upper {
-		return 0, ErrNoOptimalTemperature
+		return 0, errNoOptimalTemperature
 	}
 
 	return tr.lower, nil
