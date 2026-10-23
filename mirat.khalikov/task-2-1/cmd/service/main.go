@@ -1,8 +1,6 @@
 package main
 
-import (
-	"fmt"
-)
+import "fmt"
 
 const (
 	minD = 1
@@ -106,21 +104,14 @@ func readTemperature() (int, bool) {
 }
 
 func main() {
-	var (
-		departments int
-		check bool
-	)
-
-	departments, check = readDepartments()
+	departments, check := readDepartments()
 	if !check {
-
 		return
 	}
 	for range departments {
 		var workers int
 		workers, check = readWorkers()
 		if !check {
-
 			return
 		}
 
@@ -135,13 +126,11 @@ func main() {
 
 			condition, check = readCondition()
 			if !check {
-
 				return
 			}
 
 			temperature, check = readTemperature()
 			if !check {
-
 				return
 			}
 
