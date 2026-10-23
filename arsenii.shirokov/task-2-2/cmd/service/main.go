@@ -16,7 +16,7 @@ type MaxHeap []int
 func (h *MaxHeap) Push(x any) {
 	val, isInt := x.(int)
 	if !isInt {
-		panic("MaxHeap: Push expects an int")
+		panic("MaxHeap: push expects an int")
 	}
 
 	*h = append(*h, val)
@@ -42,7 +42,7 @@ func (h *MaxHeap) Swap(i, j int) {
 }
 
 func getPreferredDish(maxHeap *MaxHeap, preference int) (int, error) {
-	if preference < maxHeap.Len() {
+	if preference <= maxHeap.Len() {
 		var result int
 
 		for range preference {
