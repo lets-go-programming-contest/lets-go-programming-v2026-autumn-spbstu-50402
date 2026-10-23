@@ -12,8 +12,6 @@ func main() {
 		return
 	}
 
-	low, high := 15, 30
-
 	for range departments {
 		var workers int
 
@@ -23,6 +21,8 @@ func main() {
 
 			return
 		}
+
+		low, high := 15, 30
 
 		for range workers {
 			var (
