@@ -31,7 +31,18 @@ func (h *MaxHeap) Swap(i, j int) {
 
 func getPreferredDish(h *MaxHeap, preference int) int
 
-func scanPreferences(numberOfDishes int) (*MaxHeap, error)
+func scanPreferences(numberOfDishes int) (*MaxHeap, error) {
+	h := &MaxHeap{}
+	for range numberOfDishes {
+		var priority int
+		if _, err := fmt.Scan(&priority); err != nil {
+			return h, err
+		}
+		h.Push(priority)
+	}
+
+	return h, nil
+}
 
 func main() {
 	var numberOfDishes int
