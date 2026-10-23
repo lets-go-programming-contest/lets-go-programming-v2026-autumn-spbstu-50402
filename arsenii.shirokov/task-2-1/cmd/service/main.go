@@ -40,10 +40,11 @@ func (tr *TemperatureRange) UpdateBounds(operation string, temperature int) erro
 	default:
 		return errInvalidComparisonOperator
 	}
+
 	return nil
 }
 
-func (tr TemperatureRange) GetOptimalTemperature() (int, error) {
+func (tr *TemperatureRange) GetOptimalTemperature() (int, error) {
 	if tr.lower <= tr.upper {
 		return tr.lower, nil
 	}
