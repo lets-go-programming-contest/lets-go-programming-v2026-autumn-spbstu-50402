@@ -27,7 +27,7 @@ func CreateTempRange(lowLevel, highLevel int) TempRange {
 	}
 }
 
-func (tempRange *TempRange) toChangeTemp(operation string, newTemp int) error {
+func (tempRange *TempRange) ToChangeTemp(operation string, newTemp int) error {
 	switch operation {
 	case ">=":
 		if newTemp > tempRange.lowLevel {
@@ -101,7 +101,7 @@ func main() {
 				return
 			}
 
-			err = tempRange.toChangeTemp(operation, newTemp)
+			err = tempRange.ToChangeTemp(operation, newTemp)
 			if errors.Is(err, errInvalidOperator) {
 				fmt.Printf("error changing range of temperature: %v\n", err)
 
