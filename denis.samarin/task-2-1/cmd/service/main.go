@@ -91,6 +91,34 @@ func readRequest() (request, error) {
 	return req, nil
 }
 
+func printOptimalTemperatures(workers int) error {
+	tempRange := newTemperatureRange(minTemp, maxTemp)
+
+	for range workers {
+		req, err := readRequest()
+		if err != nil {
+			return err
+		}
+
+		err = tempRange.update(req)
+		if err != nil {
+			return err
+		}
+
+		optimal, err := tempRange.optimal()
+
+		switch {
+		case err == nil:
+			fmt.Println(optimal)
+		case errors.Is(err, errNoOptimalTemperature):
+			fmt.Println(-1)
+		default:
+			return err
+		}
+	}
+	return nil
+}
+
 func main() {
 	departments, err := readDepartments()
 	if err != nil {
@@ -107,35 +135,11 @@ func main() {
 			return
 		}
 
-		tempRange := newTemperatureRange(minTemp, maxTemp)
+		err = printOptimalTemperatures(workers)
+		if err != nil {
+			fmt.Println(err)
 
-		for range workers {
-			req, err := readRequest()
-			if err != nil {
-				fmt.Println(err)
-
-				return
-			}
-
-			err = tempRange.update(req)
-			if err != nil {
-				fmt.Println(err)
-
-				return
-			}
-
-			optimal, err := tempRange.optimal()
-
-			switch {
-			case err == nil:
-				fmt.Println(optimal)
-			case errors.Is(err, errNoOptimalTemperature):
-				fmt.Println(-1)
-			default:
-				fmt.Println(err)
-
-				return
-			}
+			return
 		}
 	}
 }
