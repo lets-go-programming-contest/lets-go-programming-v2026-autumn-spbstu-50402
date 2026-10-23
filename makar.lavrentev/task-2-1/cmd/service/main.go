@@ -9,43 +9,57 @@ const (
 	startMaxTemp = 30
 )
 
-func UpdateTemps(oprtn string, temp int, lower *int, upper *int) {
-	if oprtn == ">=" && temp > *lower {
-		*lower = temp
-	} else if oprtn == "<=" && temp < *upper {
-		*upper = temp
-	}
+type TemperatureRange struct {
+	lower int
+	upper int
+}
 
-	if *lower <= *upper {
-		fmt.Println(*lower)
+func NewTempRange(lower, upper int) TemperatureRange {
+	return TemperatureRange{
+		lower: lower,
+		upper: upper,
+	}
+}
+
+func (tr *TemperatureRange) UpdateTemps(operation string, temperature int) {
+	if operation == ">=" && temperature > tr.lower {
+		tr.lower = temperature
+	} else if operation == "<=" && temperature < tr.upper {
+		tr.upper = temperature
+	}
+}
+
+func (tr *TemperatureRange) OutputTemps() {
+	if tr.lower <= tr.upper {
+		fmt.Println(tr.lower)
 	} else {
 		fmt.Println(-1)
 	}
 }
 
 func processEmployeeInput(staff int) {
-	lower := startMinTemp
-	upper := startMaxTemp
+	tr := NewTempRange(startMinTemp, startMaxTemp)
 
 	for range staff {
 		var (
-			oprtn string
-			temp  int
+			operation string
+			temperature  int
 		)
 
-		if _, err := fmt.Scan(&oprtn, &temp); err != nil {
+		if _, err := fmt.Scan(&operation, &temperature); err != nil {
 			fmt.Println("Invalid input: ", err)
 
 			return
 		}
 
-		if oprtn != "<=" && oprtn != ">=" {
+		if operation != "<=" && operation != ">=" {
 			fmt.Println("Invalid operation input")
 
 			return
 		}
 
-		UpdateTemps(oprtn, temp, &lower, &upper)
+		tr.UpdateTemps(operation, temperature)
+		tr.OutputTemps()
 	}
 }
 
