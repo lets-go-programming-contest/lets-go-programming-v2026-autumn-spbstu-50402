@@ -31,7 +31,7 @@ type TemperatureBoundary struct {
 
 func NewTemperatureBoundary(lower, upper int) (TemperatureBoundary, error) {
 	if lower > upper {
-		return TemperatureBoundary{}, fmt.Errorf("%w: lower bound %d cannot exceed upper bound %d", errTemperatureBounds, lower, upper)
+		return TemperatureBoundary{}, errTemperatureBounds
 	}
 
 	return TemperatureBoundary{
