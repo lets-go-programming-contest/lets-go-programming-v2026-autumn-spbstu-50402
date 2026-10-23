@@ -27,12 +27,17 @@ func NewTemperatureRange(lower, upper int) TemperatureRange {
 	}
 }
 
-func (tr TemperatureRange) UpdateBounds(operation string, temperature int) error {
-	if operation == "<=" && temperature < tr.upper {
-		tr.upper = temperature
-	} else if operation == ">=" && temperature > tr.lower {
-		tr.lower = temperature
-	} else {
+func (tr *TemperatureRange) UpdateBounds(operation string, temperature int) error {
+	switch operation {
+	case "<=":
+		if temperature < tr.upper {
+			tr.upper = temperature
+		}
+	case ">=":
+		if temperature > tr.lower {
+			tr.lower = temperature
+		}
+	default:
 		return errInvalidComparisonOperator
 	}
 	return nil
