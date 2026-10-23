@@ -8,6 +8,11 @@ const (
 	noSuitableTemperature = -1
 )
 
+var (
+	errInvalidOperator       = fmt.Errorf("expected <= or >=")
+	errNoSuitableTemperature = fmt.Errorf("no suitable temperature")
+)
+
 type temperatureRange struct {
 	low  int
 	high int
@@ -31,7 +36,7 @@ func (state *temperatureRange) applyConstraint(operator string, temperature int)
 			state.high = temperature
 		}
 	default:
-		return fmt.Errorf("%w, got %q", fmt.Errorf("expected <= or >="), operator)
+		return fmt.Errorf("%w, got %q", errInvalidOperator, operator)
 	}
 
 	return nil
@@ -39,7 +44,7 @@ func (state *temperatureRange) applyConstraint(operator string, temperature int)
 
 func (state *temperatureRange) optimalTemperature() (int, error) {
 	if state.low > state.high {
-		return 0, fmt.Errorf("no suitable temperature")
+		return 0, errNoSuitableTemperature
 	}
 
 	return state.low, nil
