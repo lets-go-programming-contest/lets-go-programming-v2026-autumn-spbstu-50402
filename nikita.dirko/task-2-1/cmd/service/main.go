@@ -29,12 +29,12 @@ type TemperatureBoundary struct {
 	upperBound int
 }
 
-func NewTemperatureBoundary(lower, upper int) (*TemperatureBoundary, error) {
+func NewTemperatureBoundary(lower, upper int) (TemperatureBoundary, error) {
 	if lower > upper {
-		return nil, fmt.Errorf("%w: lower bound %d cannot exceed upper bound %d", errTemperatureBounds, lower, upper)
+		return TemperatureBoundary{}, fmt.Errorf("%w: lower bound %d cannot exceed upper bound %d", errTemperatureBounds, lower, upper)
 	}
 
-	return &TemperatureBoundary{
+	return TemperatureBoundary{
 		lowerBound: lower,
 		upperBound: upper,
 	}, nil
