@@ -36,13 +36,17 @@ func newTemperatureBounds() *temperatureBounds {
 	return &b
 }
 
-func (bounds *temperatureBounds) applyBound(sign string, temperature int) {
+func (bounds *temperatureBounds) applyBound(sign string, temperature int) error {
 	switch sign {
 	case ">=":
 		bounds.low = max(bounds.low, temperature)
 	case "<=":
 		bounds.high = min(bounds.high, temperature)
+	default:
+		return errInvalidPreferenceSign
 	}
+
+	return nil
 }
 
 func (bounds *temperatureBounds) getOptimalTemperature() (int, error) {
@@ -84,7 +88,10 @@ func processDepartment() error {
 			return fmt.Errorf("%w %d", errInvalidTemperature, idx+1)
 		}
 
-		bounds.applyBound(sign, temperature)
+		if err := bounds.applyBound(sign, temperature); err != nil {
+			return fmt.Errorf("(worker %d): %w", idx+1, err)
+		}
+
 		optimalTemp, err := bounds.getOptimalTemperature()
 
 		if err != nil {
