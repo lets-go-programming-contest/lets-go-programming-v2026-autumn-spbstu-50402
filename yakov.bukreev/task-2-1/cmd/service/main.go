@@ -93,7 +93,6 @@ func processDepartment() error {
 		}
 
 		optimalTemp, err := bounds.getOptimalTemperature()
-
 		if err != nil {
 			optimalTemp = -1
 		}
