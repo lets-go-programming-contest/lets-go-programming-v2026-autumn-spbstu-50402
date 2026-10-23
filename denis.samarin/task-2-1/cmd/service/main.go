@@ -48,22 +48,54 @@ func (tr *temperatureRange) optimal() (int, error) {
 	return tr.lower, nil
 }
 
-func main() {
+func readDepartments() (int, error) {
 	var departments int
 
 	_, err := fmt.Scan(&departments)
 	if err != nil {
-		fmt.Println("Invalid number of departments")
+		return 0, err
+	}
+
+	return departments, nil
+}
+
+func readWorkers() (int, error) {
+	var workers int
+
+	_, err := fmt.Scan(&workers)
+	if err != nil {
+		return 0, err
+	}
+
+	return workers, nil
+}
+
+func readRequest() (string, int, error) {
+	var (
+		sign string
+		temp int
+	)
+
+	_, err := fmt.Scan(&sign, &temp)
+	if err != nil {
+		return "", 0, err
+	}
+
+	return sign, temp, nil
+}
+
+func main() {
+	departments, err := readDepartments()
+	if err != nil {
+		fmt.Println(err)
 
 		return
 	}
 
 	for range departments {
-		var workers int
-
-		_, err = fmt.Scan(&workers)
+		workers, err := readWorkers()
 		if err != nil {
-			fmt.Println("Invalid number of workers")
+			fmt.Println(err)
 
 			return
 		}
@@ -71,14 +103,9 @@ func main() {
 		tempRange := newTemperatureRange(minTemp, maxTemp)
 
 		for range workers {
-			var (
-				sign string
-				temp int
-			)
-
-			_, err = fmt.Scan(&sign, &temp)
+			sign, temp, err := readRequest()
 			if err != nil {
-				fmt.Println("Invalid input")
+				fmt.Println(err)
 
 				return
 			}
