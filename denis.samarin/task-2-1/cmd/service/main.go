@@ -122,13 +122,16 @@ func main() {
 			}
 
 			optimal, err := tempRange.optimal()
-			if err != nil {
+			switch {
+			case err == nil:
+				fmt.Println(optimal)
+			case errors.Is(err, errNoOptimalTemperature):
 				fmt.Println(-1)
+			default:
+				fmt.Println(err)
 
-				continue
+				return
 			}
-
-			fmt.Println(optimal)
 		}
 	}
 }
