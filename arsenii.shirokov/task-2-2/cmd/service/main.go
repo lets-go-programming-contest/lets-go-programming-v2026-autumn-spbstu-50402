@@ -1,6 +1,8 @@
 package main
 
 import (
+	"container/heap"
+	"errors"
 	"fmt"
 )
 
@@ -29,16 +31,28 @@ func (h *MaxHeap) Swap(i, j int) {
 	(*h)[i], (*h)[j] = (*h)[j], (*h)[i]
 }
 
-func getPreferredDish(h *MaxHeap, preference int) int
+func getPreferredDish(h *MaxHeap, preference int) (int, error) {
+	if preference < h.Len() {
+		var result int
+		for range preference {
+			result = heap.Pop(h).(int)
+		}
+
+		return result, nil
+	}
+
+	return 0, errors.New("preference out of range")
+}
 
 func scanPreferences(numberOfDishes int) (*MaxHeap, error) {
 	h := &MaxHeap{}
+	heap.Init(h)
 	for range numberOfDishes {
 		var priority int
 		if _, err := fmt.Scan(&priority); err != nil {
 			return h, err
 		}
-		h.Push(priority)
+		heap.Push(h, priority)
 	}
 
 	return h, nil
@@ -66,7 +80,12 @@ func main() {
 		return
 	}
 
-	result := getPreferredDish(h, preference)
+	result, err := getPreferredDish(h, preference)
+	if err != nil {
+		fmt.Printf("error when get preferred dish: %v\n", err)
+
+		return
+	}
 
 	fmt.Println(result)
 }
