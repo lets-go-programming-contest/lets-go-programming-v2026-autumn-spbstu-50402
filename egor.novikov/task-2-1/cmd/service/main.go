@@ -121,7 +121,6 @@ func main() {
 
 	for range departments {
 		staff, err := parseStaff()
-
 		if err != nil {
 			fmt.Println(err)
 
@@ -133,7 +132,6 @@ func main() {
 
 		for range staff {
 			err = processStaff(&minTemp, &maxTemp)
-
 			if err != nil {
 				fmt.Println(err)
 
