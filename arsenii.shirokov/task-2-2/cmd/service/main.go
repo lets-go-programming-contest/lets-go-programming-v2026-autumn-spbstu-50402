@@ -13,6 +13,7 @@ func (h *MaxHeap) Push(x any) {
 	if !isInt {
 		panic("MaxHeap: Push expects an int")
 	}
+
 	*h = append(*h, val)
 }
 
@@ -38,10 +39,12 @@ func (h *MaxHeap) Swap(i, j int) {
 func getPreferredDish(maxHeap *MaxHeap, preference int) (int, error) {
 	if preference < maxHeap.Len() {
 		var result int
+
 		for range preference {
-			var ok bool
-			result, ok = heap.Pop(maxHeap).(int)
-			if !ok {
+			var isInt bool
+			result, isInt = heap.Pop(maxHeap).(int)
+
+			if !isInt {
 				return 0, errors.New("expects a container with integers")
 			}
 		}
@@ -55,11 +58,13 @@ func getPreferredDish(maxHeap *MaxHeap, preference int) (int, error) {
 func scanPreferences(numberOfDishes int) (*MaxHeap, error) {
 	maxHeap := &MaxHeap{}
 	heap.Init(maxHeap)
+
 	for range numberOfDishes {
 		var priority int
 		if _, err := fmt.Scan(&priority); err != nil {
 			return maxHeap, fmt.Errorf("error while reading the priority: %w", err)
 		}
+
 		heap.Push(maxHeap, priority)
 	}
 
