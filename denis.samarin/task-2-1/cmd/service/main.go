@@ -122,6 +122,7 @@ func main() {
 			}
 
 			optimal, err := tempRange.optimal()
+
 			switch {
 			case err == nil:
 				fmt.Println(optimal)
