@@ -9,7 +9,11 @@ import (
 type MaxHeap []int
 
 func (h *MaxHeap) Push(x any) {
-	*h = append(*h, x.(int))
+	val, isInt := x.(int)
+	if !isInt {
+		panic("MaxHeap: Push expects an int")
+	}
+	*h = append(*h, val)
 }
 
 func (h *MaxHeap) Pop() any {
@@ -31,11 +35,15 @@ func (h *MaxHeap) Swap(i, j int) {
 	(*h)[i], (*h)[j] = (*h)[j], (*h)[i]
 }
 
-func getPreferredDish(h *MaxHeap, preference int) (int, error) {
-	if preference < h.Len() {
+func getPreferredDish(maxHeap *MaxHeap, preference int) (int, error) {
+	if preference < maxHeap.Len() {
 		var result int
 		for range preference {
-			result = heap.Pop(h).(int)
+			var ok bool
+			result, ok = heap.Pop(maxHeap).(int)
+			if !ok {
+				return 0, errors.New("expects a container with integers")
+			}
 		}
 
 		return result, nil
@@ -45,17 +53,17 @@ func getPreferredDish(h *MaxHeap, preference int) (int, error) {
 }
 
 func scanPreferences(numberOfDishes int) (*MaxHeap, error) {
-	h := &MaxHeap{}
-	heap.Init(h)
+	maxHeap := &MaxHeap{}
+	heap.Init(maxHeap)
 	for range numberOfDishes {
 		var priority int
 		if _, err := fmt.Scan(&priority); err != nil {
-			return h, err
+			return maxHeap, fmt.Errorf("error while reading the priority: %w", err)
 		}
-		heap.Push(h, priority)
+		heap.Push(maxHeap, priority)
 	}
 
-	return h, nil
+	return maxHeap, nil
 }
 
 func main() {
@@ -66,7 +74,7 @@ func main() {
 		return
 	}
 
-	h, err := scanPreferences(numberOfDishes)
+	maxHeap, err := scanPreferences(numberOfDishes)
 	if err != nil {
 		fmt.Printf("error when reading the all preferences: %v\n", err)
 
@@ -80,7 +88,7 @@ func main() {
 		return
 	}
 
-	result, err := getPreferredDish(h, preference)
+	result, err := getPreferredDish(maxHeap, preference)
 	if err != nil {
 		fmt.Printf("error when get preferred dish: %v\n", err)
 
