@@ -8,17 +8,19 @@ const (
 	noSuitableTemperature = -1
 )
 
-type temperatureController interface {
-	applyConstraint(operator string, temperature int) bool
-	optimalTemperature() int
-}
-
 type temperatureRange struct {
 	low  int
 	high int
 }
 
-func (state *temperatureRange) applyConstraint(operator string, temperature int) bool {
+func newTemperatureRange() *temperatureRange {
+	return &temperatureRange{
+		low:  minAllowedTemperature,
+		high: maxAllowedTemperature,
+	}
+}
+
+func (state *temperatureRange) applyConstraint(operator string, temperature int) error {
 	switch operator {
 	case ">=":
 		if temperature > state.low {
@@ -29,18 +31,18 @@ func (state *temperatureRange) applyConstraint(operator string, temperature int)
 			state.high = temperature
 		}
 	default:
-		return false
+		return fmt.Errorf("%w, got %q", fmt.Errorf("expected <= or >="), operator)
 	}
 
-	return true
+	return nil
 }
 
-func (state *temperatureRange) optimalTemperature() int {
+func (state *temperatureRange) optimalTemperature() (int, error) {
 	if state.low > state.high {
-		return noSuitableTemperature
+		return 0, fmt.Errorf("no suitable temperature")
 	}
 
-	return state.low
+	return state.low, nil
 }
 
 func main() {
@@ -61,10 +63,7 @@ func main() {
 			return
 		}
 
-		var controller temperatureController = &temperatureRange{
-			low:  minAllowedTemperature,
-			high: maxAllowedTemperature,
-		}
+		controller := newTemperatureRange()
 
 		for range employeeCount {
 			var (
@@ -78,13 +77,20 @@ func main() {
 				return
 			}
 
-			if !controller.applyConstraint(operator, temperature) {
-				fmt.Println("Expected <= or >=, got:", operator)
+			if err := controller.applyConstraint(operator, temperature); err != nil {
+				fmt.Println("Invalid temperature condition:", err)
 
 				return
 			}
 
-			fmt.Println(controller.optimalTemperature())
+			result, err := controller.optimalTemperature()
+			if err != nil {
+				fmt.Println(noSuitableTemperature)
+
+				continue
+			}
+
+			fmt.Println(result)
 		}
 	}
 }
