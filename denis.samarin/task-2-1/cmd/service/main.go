@@ -1,10 +1,18 @@
 package main
 
-import "fmt"
+import (
+	"errors"
+	"fmt"
+)
 
 const (
 	minTemp = 15
 	maxTemp = 30
+)
+
+var (
+	ErrUnknownOperation     = errors.New("unknown operation")
+	ErrNoOptimalTemperature = errors.New("no optimal temperature")
 )
 
 type temperatureRange struct {
@@ -19,21 +27,25 @@ func newTemperatureRange(lower, upper int) temperatureRange {
 	}
 }
 
-func (tr *temperatureRange) update(sign string, temp int) {
+func (tr *temperatureRange) update(sign string, temp int) error {
 	switch sign {
 	case ">=":
 		tr.lower = max(tr.lower, temp)
 	case "<=":
 		tr.upper = min(tr.upper, temp)
+	default:
+		return fmt.Errorf("%w: %q", ErrUnknownOperation, sign)
 	}
+
+	return nil
 }
 
-func (tr *temperatureRange) optimal() int {
+func (tr *temperatureRange) optimal() (int, error) {
 	if tr.lower > tr.upper {
-		return -1
+		return 0, ErrNoOptimalTemperature
 	}
 
-	return tr.lower
+	return tr.lower, nil
 }
 
 func main() {
@@ -71,14 +83,21 @@ func main() {
 				return
 			}
 
-			if sign != ">=" && sign != "<=" {
-				fmt.Println("Invalid operation")
+			err = tempRange.update(sign, temp)
+			if err != nil {
+				fmt.Println(err)
 
 				return
 			}
 
-			tempRange.update(sign, temp)
-			fmt.Println(tempRange.optimal())
+			optimal, err := tempRange.optimal()
+			if err != nil {
+				fmt.Println(-1)
+
+				continue
+			}
+
+			fmt.Println(optimal)
 		}
 	}
 }
