@@ -57,12 +57,12 @@ func (cb *TemperatureBoundary) Adjust(modifier string, temp int) error {
 	return nil
 }
 
-func (cb *TemperatureBoundary) IsValid() bool {
+func (cb *TemperatureBoundary) isValid() bool {
 	return cb.lowerBound <= cb.upperBound
 }
 
 func (cb *TemperatureBoundary) OptimalTemperature() int {
-	if !cb.IsValid() {
+	if !cb.isValid() {
 		return -1
 	}
 
