@@ -6,11 +6,11 @@ import (
 )
 
 const (
-	minN = 1
-	maxN = 1000
+	minDeps = 1
+	maxDeps = 1000
 
-	minK = 1
-	maxK = 1000
+	minWorkers = 1
+	maxWorkers = 1000
 
 	minT = 15
 	maxT = 30
@@ -26,12 +26,23 @@ type tempBounds struct {
 
 func newTempBounds() *tempBounds {}
 
-func scanN() {}
+func scanDeps() {}
 
-func scanK() {}
+func scanWorkers() {}
 
 func scanBounds() {}
 
-func main() {
+func processDeps() {}
 
+func main() {
+	var deps int
+	deps, err := scanN()
+	if err != nil {
+		fmt.Println("Error: ", err)
+		return
+	}
+	for i := range deps {
+		if err := processDeps(); err != nil {
+			fmt.Println("Error: ", err)
+		}
 }
