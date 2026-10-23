@@ -20,24 +20,33 @@ type TempRange struct {
 	highLevel int
 }
 
-func toChangeTemp(tempRange *TempRange, operation string, newTemp int) (int, error) {
+func CreateTempRange(lowLevel, highLevel int) TempRange {
+	return TempRange{
+		lowLevel:  lowLevel,
+		highLevel: highLevel,
+	}
+}
+
+func (tempRange *TempRange) toChangeTemp(operation string, newTemp int) error {
 	switch operation {
 	case ">=":
 		if newTemp > tempRange.lowLevel {
 			tempRange.lowLevel = newTemp
 		}
-
 	case "<=":
 		if newTemp < tempRange.highLevel {
 			tempRange.highLevel = newTemp
 		}
-
 	default:
-		return 0, fmt.Errorf("%w: %s", errInvalidOperator, operation)
+		return errInvalidOperator
 	}
 
+	return nil
+}
+
+func (tempRange *TempRange) GetOptimalTempRange() (int, error) {
 	if tempRange.lowLevel > tempRange.highLevel {
-		return 0, fmt.Errorf("%w: %s %d", errRangeTemperatureNotFound, operation, newTemp)
+		return 0, errRangeTemperatureNotFound
 	}
 
 	return tempRange.lowLevel, nil
@@ -82,7 +91,7 @@ func main() {
 			return
 		}
 
-		tempRange := TempRange{minTemp, maxTemp}
+		tempRange := CreateTempRange(minTemp, maxTemp)
 
 		for range numberOfEmployees {
 			operation, newTemp, err := readLine()
@@ -92,12 +101,15 @@ func main() {
 				return
 			}
 
-			result, err := toChangeTemp(&tempRange, operation, newTemp)
+			err = tempRange.toChangeTemp(operation, newTemp)
 			if errors.Is(err, errInvalidOperator) {
 				fmt.Printf("error changing range of temperature: %v\n", err)
 
 				return
-			} else if errors.Is(err, errRangeTemperatureNotFound) {
+			}
+
+			result, err := tempRange.GetOptimalTempRange()
+			if errors.Is(err, errRangeTemperatureNotFound) {
 				fmt.Println(-1)
 
 				continue
