@@ -61,12 +61,12 @@ func (cb *TemperatureBoundary) isValid() bool {
 	return cb.lowerBound <= cb.upperBound
 }
 
-func (cb *TemperatureBoundary) OptimalTemperature() int {
+func (cb *TemperatureBoundary) OptimalTemperature() (int, error) {
 	if !cb.isValid() {
-		return -1
+		return -1, errTemperatureBounds
 	}
 
-	return cb.lowerBound
+	return cb.lowerBound, nil
 }
 
 func ParseDepartmentsCount() (int, error) {
@@ -153,7 +153,8 @@ func ExecuteSimulation() error {
 				return err
 			}
 
-			fmt.Println(tempBounds.OptimalTemperature())
+			optimalTemp, _ := tempBounds.OptimalTemperature()
+			fmt.Println(optimalTemp)
 		}
 	}
 
