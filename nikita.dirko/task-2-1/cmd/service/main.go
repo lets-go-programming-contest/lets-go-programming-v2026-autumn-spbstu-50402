@@ -40,18 +40,18 @@ func NewTemperatureBoundary(lower, upper int) (TemperatureBoundary, error) {
 	}, nil
 }
 
-func (cb *TemperatureBoundary) Adjust(modifier string, temp int) error {
-	switch modifier {
+func (cb *TemperatureBoundary) Adjust(constraint Constraint) error {
+	switch constraint.modifier {
 	case ">=":
-		if temp > cb.lowerBound {
-			cb.lowerBound = temp
+		if constraint.temperature > cb.lowerBound {
+			cb.lowerBound = constraint.temperature
 		}
 	case "<=":
-		if temp < cb.upperBound {
-			cb.upperBound = temp
+		if constraint.temperature < cb.upperBound {
+			cb.upperBound = constraint.temperature
 		}
 	default:
-		return fmt.Errorf("%w: operator '%s' is not supported", errInvalidModifier, modifier)
+		return fmt.Errorf("%w: operator '%s' is not supported", errInvalidModifier, constraint.modifier)
 	}
 
 	return nil
@@ -99,30 +99,39 @@ func ParseWorkersCount() (int, error) {
 	return workers, nil
 }
 
-func ParseConstraint() (string, int, error) {
+type Constraint struct {
+	modifier    string
+	temperature int
+}
+
+func NewConstraint(modifier string, temperature int) Constraint {
+	return Constraint{modifier: modifier, temperature: temperature}
+}
+
+func ParseConstraint() (Constraint, error) {
 	var modifier string
 
 	_, err := fmt.Scan(&modifier)
 	if err != nil {
-		return "", 0, fmt.Errorf("invalid modifier input: %w", err)
+		return NewConstraint("", 0), fmt.Errorf("invalid modifier input: %w", err)
 	}
 
 	if modifier != "<=" && modifier != ">=" {
-		return "", 0, errInvalidModifier
+		return NewConstraint("", 0), errInvalidModifier
 	}
 
 	var temperature int
 
 	_, err = fmt.Scan(&temperature)
 	if err != nil {
-		return "", 0, fmt.Errorf("invalid temperature input: %w", err)
+		return NewConstraint("", 0), fmt.Errorf("invalid temperature input: %w", err)
 	}
 
 	if temperature < minTemp || temperature > maxTemp {
-		return "", 0, errInvalidTemperature
+		return NewConstraint("", 0), errInvalidTemperature
 	}
 
-	return modifier, temperature, nil
+	return NewConstraint(modifier, temperature), nil
 }
 
 func ExecuteSimulation() error {
@@ -143,12 +152,12 @@ func ExecuteSimulation() error {
 		}
 
 		for range workerCount {
-			modifier, temperature, err := ParseConstraint()
+			constraint, err := ParseConstraint()
 			if err != nil {
 				return err
 			}
 
-			err = tempBounds.Adjust(modifier, temperature)
+			err = tempBounds.Adjust(constraint)
 			if err != nil {
 				return err
 			}
