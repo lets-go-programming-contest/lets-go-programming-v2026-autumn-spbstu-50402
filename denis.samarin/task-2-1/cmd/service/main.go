@@ -2,6 +2,11 @@ package main
 
 import "fmt"
 
+const (
+	minTemp = 15
+	maxTemp = 30
+)
+
 func main() {
 	var departments int
 
@@ -22,7 +27,7 @@ func main() {
 			return
 		}
 
-		low, high := 15, 30
+		low, high := minTemp, maxTemp
 
 		for range workers {
 			var (
@@ -39,13 +44,9 @@ func main() {
 
 			switch sign {
 			case ">=":
-				if temp > low {
-					low = temp
-				}
+				low = max(low, temp)
 			case "<=":
-				if temp < high {
-					high = temp
-				}
+				high = min(high, temp)
 			default:
 				fmt.Println("Invalid operation")
 
