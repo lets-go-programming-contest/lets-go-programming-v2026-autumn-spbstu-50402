@@ -42,8 +42,8 @@ func processEmployeeInput(staff int) {
 
 	for range staff {
 		var (
-			operation string
-			temperature  int
+			operation   string
+			temperature int
 		)
 
 		if _, err := fmt.Scan(&operation, &temperature); err != nil {
