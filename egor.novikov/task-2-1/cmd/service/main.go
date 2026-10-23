@@ -1,6 +1,9 @@
 package main
 
-import "fmt"
+import (
+	"errors"
+	"fmt"
+)
 
 const (
 	minDepartment  = 1
@@ -16,15 +19,11 @@ func parseDepartment() (int, error) {
 	_, err := fmt.Scan(&departments)
 
 	if err != nil {
-		return 0, fmt.Errorf("Invalid input departments")
+		return 0, errors.New("Invalid input departments")
 	}
 
 	if departments < minDepartment || departments > maxDepartment {
-		return 0, fmt.Errorf(
-			"Depatments must be form %d to %d",
-			minDepartment,
-			maxDepartment,
-		)
+		return 0, errors.New("Depatments must be form 1 to 1000")
 	}
 
 	return departments, nil
@@ -35,15 +34,11 @@ func parseStaff() (int, error) {
 	_, err := fmt.Scan(&staff)
 
 	if err != nil {
-		return 0, fmt.Errorf("Invalid input staff")
+		return 0, errors.New("Invalid input staff")
 	}
 
 	if staff < minStaff || staff > maxStaff {
-		return 0, fmt.Errorf(
-			"Staff must be from %d to %d",
-			minStaff,
-			maxStaff,
-		)
+		return 0, errors.New("Staff must be from 1 to 1000")
 	}
 
 	return staff, nil
@@ -54,24 +49,62 @@ func parseTemperature() (int, error) {
 	_, err := fmt.Scan(&temperature)
 
 	if err != nil {
-		return 0, fmt.Errorf("Invalid input temperature value")
+		return 0, errors.New("Invalid input temperature value")
 	}
 
 	if temperature < minTemperature || temperature > maxTemperature {
-		return 0, fmt.Errorf(
-			"Temperature must be from %d to %d",
-			minTemperature,
-			maxTemperature,
-		)
+		return 0, errors.New("Temperature must be from 15 to 30")
 	}
 
 	return temperature, nil
+}
+
+func parseCondition() (string, error) {
+	var condition string
+	_, err := fmt.Scan(&condition)
+
+	if err != nil {
+		return "", errors.New("Invalid input condition")
+	}
+
+	if condition != ">=" && condition != "<=" {
+		return "", errors.New("Condition of temperature must be '<=' or '>='")
+	}
+
+	return condition, nil
+}
+
+func processStaff(minTemp *int, maxTemp *int) error {
+	condition, err := parseCondition()
+	if err != nil {
+		return err
+	}
+
+	temperature, err := parseTemperature()
+	if err != nil {
+		return err
+	}
+
+	if condition == ">=" && temperature > *minTemp {
+		*minTemp = temperature
+	} else if condition == "<=" && temperature < *maxTemp {
+		*maxTemp = temperature
+	}
+
+	if *maxTemp < *minTemp {
+		fmt.Println("-1")
+	} else {
+		fmt.Println(*minTemp)
+	}
+
+	return nil
 }
 
 func main() {
 	departments, err := parseDepartment()
 	if err != nil {
 		fmt.Println(err)
+
 		return
 	}
 
@@ -79,42 +112,19 @@ func main() {
 		staff, err := parseStaff()
 		if err != nil {
 			fmt.Println(err)
+
 			return
 		}
 
-		maxTempOfDepartment := maxTemperature
-		minTempOfDepartment := minTemperature
+		minTemp := minTemperature
+		maxTemp := maxTemperature
 
 		for range staff {
-			var condition string
-			_, err = fmt.Scan(&condition)
-
-			if err != nil {
-				fmt.Println("Invalid input condition")
-				return
-			}
-
-			if condition != ">=" && condition != "<=" {
-				fmt.Println("Condition of temperature must be '<=' or '>='")
-				return
-			}
-
-			temperature, err := parseTemperature()
+			err = processStaff(&minTemp, &maxTemp)
 			if err != nil {
 				fmt.Println(err)
+
 				return
-			}
-
-			if condition == ">=" && temperature > minTempOfDepartment {
-				minTempOfDepartment = temperature
-			} else if condition == "<=" && temperature < maxTempOfDepartment {
-				maxTempOfDepartment = temperature
-			}
-
-			if maxTempOfDepartment < minTempOfDepartment {
-				fmt.Println("-1")
-			} else {
-				fmt.Println(minTempOfDepartment)
 			}
 		}
 	}
