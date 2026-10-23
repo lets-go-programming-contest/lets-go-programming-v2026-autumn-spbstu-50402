@@ -15,6 +15,11 @@ var (
 	errNoOptimalTemperature = errors.New("no optimal temperature")
 )
 
+type request struct {
+	sign string
+	temp int
+}
+
 type temperatureRange struct {
 	lower int
 	upper int
@@ -27,14 +32,14 @@ func newTemperatureRange(lower, upper int) temperatureRange {
 	}
 }
 
-func (tr *temperatureRange) update(sign string, temp int) error {
-	switch sign {
+func (tr *temperatureRange) update(req request) error {
+	switch req.sign {
 	case ">=":
-		tr.lower = max(tr.lower, temp)
+		tr.lower = max(tr.lower, req.temp)
 	case "<=":
-		tr.upper = min(tr.upper, temp)
+		tr.upper = min(tr.upper, req.temp)
 	default:
-		return fmt.Errorf("%w: %q", errUnknownOperation, sign)
+		return fmt.Errorf("%w: %q", errUnknownOperation, req.sign)
 	}
 
 	return nil
@@ -70,22 +75,20 @@ func readWorkers() (int, error) {
 	return workers, nil
 }
 
-func readRequest() (string, int, error) {
-	var sign string
+func readRequest() (request, error) {
+	var req request
 
-	_, err := fmt.Scan(&sign)
+	_, err := fmt.Scan(&req.sign)
 	if err != nil {
-		return "", 0, fmt.Errorf("read operation: %w", err)
+		return req, fmt.Errorf("read operation: %w", err)
 	}
 
-	var temp int
-
-	_, err = fmt.Scan(&temp)
+	_, err = fmt.Scan(&req.temp)
 	if err != nil {
-		return "", 0, fmt.Errorf("read temperature: %w", err)
+		return req, fmt.Errorf("read temperature: %w", err)
 	}
 
-	return sign, temp, nil
+	return req, nil
 }
 
 func main() {
@@ -107,14 +110,14 @@ func main() {
 		tempRange := newTemperatureRange(minTemp, maxTemp)
 
 		for range workers {
-			sign, temp, err := readRequest()
+			req, err := readRequest()
 			if err != nil {
 				fmt.Println(err)
 
 				return
 			}
 
-			err = tempRange.update(sign, temp)
+			err = tempRange.update(req)
 			if err != nil {
 				fmt.Println(err)
 
