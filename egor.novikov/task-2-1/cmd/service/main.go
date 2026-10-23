@@ -14,16 +14,26 @@ const (
 	maxTemperature = 30
 )
 
+var (
+	errInvalidDepartments     = errors.New("Invalid input departments")
+	errInvalidDepartmentCount = errors.New("Depatments must be form 1 to 1000")
+	errInvalidStaff           = errors.New("Invalid input staff")
+	errInvalidStaffCount      = errors.New("Staff must be from 1 to 1000")
+	errInvalidTemperature     = errors.New("Invalid input temperature value")
+	errTemperatureOutOfRange  = errors.New("Temperature must be from 15 to 30")
+	errInvalidConditionInput  = errors.New("Invalid input condition")
+	errInvalidCondition       = errors.New("Condition of temperature must be '<=' or '>='")
+)
+
 func parseDepartment() (int, error) {
 	var departments int
 	_, err := fmt.Scan(&departments)
-
 	if err != nil {
-		return 0, errors.New("Invalid input departments")
+		return 0, errInvalidDepartments
 	}
 
 	if departments < minDepartment || departments > maxDepartment {
-		return 0, errors.New("Depatments must be form 1 to 1000")
+		return 0, errInvalidDepartmentCount
 	}
 
 	return departments, nil
@@ -32,13 +42,12 @@ func parseDepartment() (int, error) {
 func parseStaff() (int, error) {
 	var staff int
 	_, err := fmt.Scan(&staff)
-
 	if err != nil {
-		return 0, errors.New("Invalid input staff")
+		return 0, errInvalidStaff
 	}
 
 	if staff < minStaff || staff > maxStaff {
-		return 0, errors.New("Staff must be from 1 to 1000")
+		return 0, errInvalidStaffCount
 	}
 
 	return staff, nil
@@ -47,13 +56,12 @@ func parseStaff() (int, error) {
 func parseTemperature() (int, error) {
 	var temperature int
 	_, err := fmt.Scan(&temperature)
-
 	if err != nil {
-		return 0, errors.New("Invalid input temperature value")
+		return 0, errInvalidTemperature
 	}
 
 	if temperature < minTemperature || temperature > maxTemperature {
-		return 0, errors.New("Temperature must be from 15 to 30")
+		return 0, errTemperatureOutOfRange
 	}
 
 	return temperature, nil
@@ -62,13 +70,12 @@ func parseTemperature() (int, error) {
 func parseCondition() (string, error) {
 	var condition string
 	_, err := fmt.Scan(&condition)
-
 	if err != nil {
-		return "", errors.New("Invalid input condition")
+		return "", errInvalidConditionInput
 	}
 
 	if condition != ">=" && condition != "<=" {
-		return "", errors.New("Condition of temperature must be '<=' or '>='")
+		return "", errInvalidCondition
 	}
 
 	return condition, nil
