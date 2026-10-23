@@ -38,7 +38,7 @@ func (tr *TemperatureRange) OutputTemps() {
 }
 
 func processEmployeeInput(staff int) {
-	tr := NewTempRange(startMinTemp, startMaxTemp)
+	tempRange := NewTempRange(startMinTemp, startMaxTemp)
 
 	for range staff {
 		var (
@@ -58,8 +58,8 @@ func processEmployeeInput(staff int) {
 			return
 		}
 
-		tr.UpdateTemps(operation, temperature)
-		tr.OutputTemps()
+		tempRange.UpdateTemps(operation, temperature)
+		tempRange.OutputTemps()
 	}
 }
 
