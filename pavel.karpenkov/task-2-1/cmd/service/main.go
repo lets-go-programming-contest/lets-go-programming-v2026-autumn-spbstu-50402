@@ -15,13 +15,12 @@ var (
 	errOptimalTemperature = errors.New("Temperature measurement error")
 )
 
-type RangeOfTemperature struct {
-	min int
-	max int
+type TempRange struct {
+	lo, hi int
 }
 
-func NewRangeOfTemperature(min, max int) RangeOfTemperature {
-	return RangeOfTemperature{min: min, max: max}
+func NewTempRange(minTemp, maxTemp int) TempRange {
+	return TempRange{lo: minTemp, hi: maxTemp}
 }
 func parseCondition() (string, int, error) {
 	var op string
@@ -39,24 +38,24 @@ func parseCondition() (string, int, error) {
 	}
 	return op, temp, nil
 }
-func (rangeTemperature *RangeOfTemperature) updateRange(operation string, temperature int) error {
-	switch operation {
+func (r *TempRange) Update(op string, temp int) error {
+	switch op {
 	case ">=":
-		if temperature > rangeTemperature.min {
-			rangeTemperature.min = temperature
+		if temp > r.lo {
+			r.lo = temp
 		}
 	case "<=":
-		if temperature < rangeTemperature.max {
-			rangeTemperature.max = temperature
+		if temp < r.hi {
+			r.hi = temp
 		}
 	default:
 		return errInvalidRangeUpdate
 	}
 	return nil
 }
-func (rangeTemperature *RangeOfTemperature) getOptimalTemperature() (int, error) {
-	if rangeTemperature.min <= rangeTemperature.max {
-		return rangeTemperature.min, nil
+func (r *TempRange) Optimal() (int, error) {
+	if r.lo <= r.hi {
+		return r.lo, nil
 	}
 	return 0, errOptimalTemperature
 }
@@ -77,18 +76,18 @@ func main() {
 		if err != nil {
 			fmt.Println("Invalid employee argument")
 		}
-		temperatureRange := NewRangeOfTemperature(minTemp, maxTemp)
+		temperatureRange := NewTempRange(minTemp, maxTemp)
 		for range employee {
 			operation, temperature, err := parseCondition()
 			if err != nil {
 				fmt.Printf("ERROR: invalid employee data")
 				return
 			}
-			err = temperatureRange.updateRange(operation, temperature)
+			err = temperatureRange.Update(operation, temperature)
 			if err != nil {
 				fmt.Printf("ERROR: update range failed")
 			}
-			optimalTemperature, err := temperatureRange.getOptimalTemperature()
+			optimalTemperature, err := temperatureRange.Optimal()
 			if err != nil {
 				fmt.Println(-1)
 				return
