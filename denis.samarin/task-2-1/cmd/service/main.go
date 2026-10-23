@@ -116,6 +116,7 @@ func printOptimalTemperatures(workers int) error {
 			return err
 		}
 	}
+
 	return nil
 }
 
