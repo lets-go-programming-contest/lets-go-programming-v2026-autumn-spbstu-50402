@@ -10,16 +10,18 @@ const (
 	maxTemp = 30
 )
 
+var (
+	errInvalidRangeUpdate = errors.New("Range update failed")
+	errOptimalTemperature = errors.New("Temperature measurement error")
+)
+
 type RangeOfTemperature struct {
 	min int
 	max int
 }
 
-func NewRangeOfTemperature(min, max int) (RangeOfTemperature, error) {
-	if min > max {
-		return nil, errors.New("ERROR: min > max temperature")
-	}
-	return RangeOfTemperature{min: min, max: max}, nil
+func NewRangeOfTemperature(min, max int) RangeOfTemperature {
+	return RangeOfTemperature{min: min, max: max}
 }
 func parseCondition() (string, int, error) {
 	var op string
@@ -36,6 +38,27 @@ func parseCondition() (string, int, error) {
 		return "", 0, fmt.Errorf("ERROR: readint number is failed", err)
 	}
 	return op, temp, nil
+}
+func (rangeTemperature *RangeOfTemperature) updateRange(operation string, temperature int) error {
+	switch operation {
+	case ">=":
+		if temperature > rangeTemperature.min {
+			rangeTemperature.min = temperature
+		}
+	case "<=":
+		if temperature < rangeTemperature.max {
+			rangeTemperature.max = temperature
+		}
+	default:
+		return errInvalidRangeUpdate
+	}
+	return nil
+}
+func (rangeTemperature *RangeOfTemperature) getOptimalTemperature() (int, error) {
+	if rangeTemperature.min <= rangeTemperature.max {
+		return rangeTemperature.min, nil
+	}
+	return 0, errOptimalTemperature
 }
 
 func main() {
@@ -54,9 +77,23 @@ func main() {
 		if err != nil {
 			fmt.Println("Invalid employee argument")
 		}
-		temperatureRange, err := NewRangeOfTemperature(minTemp, maxTemp)
+		temperatureRange := NewRangeOfTemperature(minTemp, maxTemp)
 		for range employee {
 			operation, temperature, err := parseCondition()
+			if err != nil {
+				fmt.Printf("ERROR: invalid employee data")
+				return
+			}
+			err = temperatureRange.updateRange(operation, temperature)
+			if err != nil {
+				fmt.Printf("ERROR: update range failed")
+			}
+			optimalTemperature, err := temperatureRange.getOptimalTemperature()
+			if err != nil {
+				fmt.Println(-1)
+				return
+			}
+			fmt.Println(optimalTemperature)
 		}
 	}
 }
