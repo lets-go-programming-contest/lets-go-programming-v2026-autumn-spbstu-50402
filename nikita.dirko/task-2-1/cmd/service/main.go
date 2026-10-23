@@ -6,11 +6,11 @@ import (
 )
 
 var (
-	ErrInvalidDepartmentCount = errors.New("invalid number of departments provided")
-	ErrInvalidWorkerCount     = errors.New("invalid number of workers provided")
-	ErrInvalidModifier        = errors.New("invalid format of operation modifier")
-	ErrInvalidTemperature     = errors.New("invalid format of temperature value")
-	ErrTemperatureBounds      = errors.New("temperature boundaries violation")
+	errInvalidDepartmentCount = errors.New("invalid number of departments provided")
+	errInvalidWorkerCount     = errors.New("invalid number of workers provided")
+	errInvalidModifier        = errors.New("invalid format of operation modifier")
+	errInvalidTemperature     = errors.New("invalid format of temperature value")
+	errTemperatureBounds      = errors.New("temperature boundaries violation")
 )
 
 const (
@@ -25,7 +25,7 @@ type TemperatureBoundary struct {
 
 func NewTemperatureBoundary(lower, upper int) (*TemperatureBoundary, error) {
 	if lower > upper {
-		return nil, fmt.Errorf("%w: lower bound %d cannot exceed upper bound %d", ErrTemperatureBounds, lower, upper)
+		return nil, fmt.Errorf("%w: lower bound %d cannot exceed upper bound %d", errTemperatureBounds, lower, upper)
 	}
 
 	return &TemperatureBoundary{
@@ -45,7 +45,7 @@ func (cb *TemperatureBoundary) Adjust(modifier string, temp int) error {
 			cb.upperBound = temp
 		}
 	default:
-		return fmt.Errorf("%w: operator '%s' is not supported", ErrInvalidModifier, modifier)
+		return fmt.Errorf("%w: operator '%s' is not supported", errInvalidModifier, modifier)
 	}
 
 	return nil
@@ -72,7 +72,7 @@ func ParseDepartmentsCount() (int, error) {
 	}
 
 	if departments < 1 || departments > 1000 {
-		return 0, ErrInvalidDepartmentCount
+		return 0, errInvalidDepartmentCount
 	}
 
 	return departments, nil
@@ -87,7 +87,7 @@ func ParseWorkersCount() (int, error) {
 	}
 
 	if workers < 1 || workers > 1000 {
-		return 0, ErrInvalidWorkerCount
+		return 0, errInvalidWorkerCount
 	}
 
 	return workers, nil
@@ -102,7 +102,7 @@ func ParseConstraint() (string, int, error) {
 	}
 
 	if modifier != "<=" && modifier != ">=" {
-		return "", 0, ErrInvalidModifier
+		return "", 0, errInvalidModifier
 	}
 
 	var temperature int
@@ -113,7 +113,7 @@ func ParseConstraint() (string, int, error) {
 	}
 
 	if temperature < minTemp || temperature > maxTemp {
-		return "", 0, ErrInvalidTemperature
+		return "", 0, errInvalidTemperature
 	}
 
 	return modifier, temperature, nil
@@ -154,29 +154,8 @@ func ExecuteSimulation() error {
 	return nil
 }
 
-func ErrorHandler(err error) {
-	if err == nil {
-		return
-	}
-
-	switch {
-	case errors.Is(err, ErrInvalidDepartmentCount):
-		fmt.Println("Invalid number of departments")
-	case errors.Is(err, ErrInvalidWorkerCount):
-		fmt.Println("Invalid number of workers")
-	case errors.Is(err, ErrInvalidModifier):
-		fmt.Println("Invalid format of operation")
-	case errors.Is(err, ErrInvalidTemperature):
-		fmt.Println("Invalid format of temperature")
-	case errors.Is(err, ErrTemperatureBounds):
-		fmt.Println("Temperature bounds error occurred")
-	default:
-		fmt.Printf("An unexpected system error occurred: %v\n", err)
-	}
-}
-
 func main() {
 	if err := ExecuteSimulation(); err != nil {
-		ErrorHandler(err)
+		fmt.Println(err)
 	}
 }
