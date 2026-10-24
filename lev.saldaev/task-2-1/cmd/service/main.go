@@ -1,10 +1,18 @@
 package main
 
-import "fmt"
+import (
+	"errors"
+	"fmt"
+)
 
 const (
 	MinTemp = 15
 	MaxTemp = 30
+)
+
+var (
+	errUnknownOperator = errors.New("unknown operator")
+	errNoOptimalTemp   = errors.New("no optimal temperature")
 )
 
 type TempRange struct {
@@ -27,16 +35,18 @@ func (tRange *TempRange) Apply(operator string, temperature int) error {
 			tRange.maxTemp = temperature
 		}
 	default:
-		return fmt.Errorf("unknown operator %q", operator)
+		return fmt.Errorf("%w: %q", errUnknownOperator, operator)
 	}
+
 	return nil
 }
 
-func (tRange *TempRange) Value() int {
+func (tRange *TempRange) Value() (int, error) {
 	if tRange.maxTemp < tRange.minTemp {
-		return -1
+		return 0, errNoOptimalTemp
 	}
-	return tRange.minTemp
+
+	return tRange.minTemp, nil
 }
 
 func main() {
@@ -83,10 +93,16 @@ func main() {
 
 			if err := state.Apply(operator, temperature); err != nil {
 				fmt.Printf("apply: %v\n", err)
+
 				return
 			}
 
-			fmt.Println(state.Value())
+			optimalTemp, err := state.Value()
+			if err != nil {
+				optimalTemp = -1
+			}
+
+			fmt.Println(optimalTemp)
 		}
 	}
 }
