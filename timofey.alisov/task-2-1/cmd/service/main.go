@@ -89,14 +89,14 @@ func main() {
 		tempRange := newTemperatureRange(minTemp, maxTemp)
 
 		for range employees {
-			op, temp, err := readRequirement()
+			operator, temp, err := readRequirement()
 			if err != nil {
 				fmt.Println(err)
 
 				return
 			}
 
-			if err := tempRange.update(op, temp); err != nil {
+			if err := tempRange.update(operator, temp); err != nil {
 				fmt.Println(err)
 
 				return
