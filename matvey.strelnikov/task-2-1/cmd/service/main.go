@@ -146,14 +146,13 @@ func main() {
 		return
 	}
 
-	workers, err := scanWorkers()
-	if err != nil {
-		fmt.Println("Error:", err)
-
-		return
-	}
-
 	for range deps {
+		workers, err := scanWorkers()
+		if err != nil {
+			fmt.Println("Error:", err)
+
+			return
+		}
 		if err := processDeps(newTempBounds(), workers); err != nil {
 			fmt.Println("Error:", err)
 
