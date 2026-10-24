@@ -153,7 +153,7 @@ func main() {
 
 			return
 		}
-		if err := processDeps(newTempBounds(), workers); err != nil {
+		if err = processDeps(newTempBounds(), workers); err != nil {
 			fmt.Println("Error:", err)
 
 			return
