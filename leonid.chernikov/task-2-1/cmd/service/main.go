@@ -12,9 +12,7 @@ const (
 	lowCount  = 1
 )
 
-var (
-	errUnknownSign = errors.New("unknown comparison sign")
-)
+var errUnknownSign = errors.New("unknown comparison sign")
 
 type department struct {
 	low  int
