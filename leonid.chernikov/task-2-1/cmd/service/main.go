@@ -5,7 +5,14 @@ import "fmt"
 const (
 	minTemp = 15
 	maxTemp = 30
+	highMagicCount = 1000
+	lowMagicCount = 1
 )
+
+type department struct {
+	low  int
+	high int
+}
 
 func readInput() (string, int, error) {
 	var (
@@ -21,8 +28,8 @@ func readInput() (string, int, error) {
 	return compSymb, temp, nil
 }
 
-func updateTempBounds(compSymb string, temp int, lmin *int, lmax *int) {
-	if *lmin > *lmax {
+func (d *department) updateTempBounds(compSymb string, temp int) {
+	if d.low > d.high {
 		fmt.Println("-1")
 
 		return
@@ -31,29 +38,29 @@ func updateTempBounds(compSymb string, temp int, lmin *int, lmax *int) {
 	switch compSymb {
 	case ">=":
 		switch {
-		case temp > *lmax:
-			*lmin = temp
+		case temp > d.high:
+			d.low = temp
 
 			fmt.Println("-1")
-		case temp < *lmin:
-			fmt.Println(*lmin)
+		case temp < d.low:
+			fmt.Println(d.low)
 		default:
-			*lmin = temp
+			d.low = temp
 
-			fmt.Println(*lmin)
+			fmt.Println(d.low)
 		}
 	case "<=":
 		switch {
-		case temp > *lmax:
-			fmt.Println(*lmin)
-		case temp < *lmin:
-			*lmax = temp
+		case temp > d.high:
+			fmt.Println(d.low)
+		case temp < d.low:
+			d.high = temp
 
 			fmt.Println("-1")
 		default:
-			*lmax = temp
+			d.high = temp
 
-			fmt.Println(*lmin)
+			fmt.Println(d.low)
 		}
 	default:
 		fmt.Println("invalid comparison symbol")
@@ -70,15 +77,14 @@ func main() {
 		return
 	}
 
-	if departNumber > 1000 || departNumber < 1 {
+	if departNumber > highMagicCount || departNumber < lowMagicCount {
 		fmt.Println("Invalid number of departments")
 
 		return
 	}
 
 	for range departNumber {
-		localMin := minTemp
-		localMax := maxTemp
+		dep := department{low: minTemp, high: maxTemp}
 
 		var employeeNumber int
 
@@ -89,7 +95,7 @@ func main() {
 			return
 		}
 
-		if employeeNumber > 1000 || employeeNumber < 1 {
+		if employeeNumber > highMagicCount || employeeNumber < lowMagicCount {
 			fmt.Println("Invalid number of employees")
 
 			return
@@ -103,7 +109,7 @@ func main() {
 				return
 			}
 
-			updateTempBounds(compSymb, temp, &localMin, &localMax)
+			dep.updateTempBounds(compSymb, temp)
 		}
 	}
 }
