@@ -1,17 +1,49 @@
 package main
 
-import "fmt"
+import (
+	"errors"
+	"fmt"
+)
 
 const (
-	minTemp = 15
-	maxTemp = 30
-	highMagicCount = 1000
-	lowMagicCount = 1
+	minTemp   = 15
+	maxTemp   = 30
+	highCount = 1000
+	lowCount  = 1
+)
+
+var (
+	errUnknownSign = errors.New("unknown comparison sign")
 )
 
 type department struct {
 	low  int
 	high int
+}
+
+func (d *department) update(sign string, temp int) error {
+	switch sign {
+	case ">=":
+		if temp > d.low {
+			d.low = temp
+		}
+	case "<=":
+		if temp < d.high {
+			d.high = temp
+		}
+	default:
+		return errUnknownSign
+	}
+
+	return nil
+}
+
+func (d *department) optimal() int {
+	if d.low > d.high {
+		return -1
+	}
+
+	return d.low
 }
 
 func readInput() (string, int, error) {
@@ -28,45 +60,6 @@ func readInput() (string, int, error) {
 	return compSymb, temp, nil
 }
 
-func (d *department) updateTempBounds(compSymb string, temp int) {
-	if d.low > d.high {
-		fmt.Println("-1")
-
-		return
-	}
-
-	switch compSymb {
-	case ">=":
-		switch {
-		case temp > d.high:
-			d.low = temp
-
-			fmt.Println("-1")
-		case temp < d.low:
-			fmt.Println(d.low)
-		default:
-			d.low = temp
-
-			fmt.Println(d.low)
-		}
-	case "<=":
-		switch {
-		case temp > d.high:
-			fmt.Println(d.low)
-		case temp < d.low:
-			d.high = temp
-
-			fmt.Println("-1")
-		default:
-			d.high = temp
-
-			fmt.Println(d.low)
-		}
-	default:
-		fmt.Println("invalid comparison symbol")
-	}
-}
-
 func main() {
 	var departNumber int
 
@@ -77,7 +70,7 @@ func main() {
 		return
 	}
 
-	if departNumber > highMagicCount || departNumber < lowMagicCount {
+	if departNumber > highCount || departNumber < lowCount {
 		fmt.Println("Invalid number of departments")
 
 		return
@@ -95,7 +88,7 @@ func main() {
 			return
 		}
 
-		if employeeNumber > highMagicCount || employeeNumber < lowMagicCount {
+		if employeeNumber > highCount || employeeNumber < lowCount {
 			fmt.Println("Invalid number of employees")
 
 			return
@@ -109,7 +102,14 @@ func main() {
 				return
 			}
 
-			dep.updateTempBounds(compSymb, temp)
+			err = dep.update(compSymb, temp)
+			if err != nil {
+				fmt.Println("Invalid employee request:", err)
+
+				return
+			}
+
+			fmt.Println(dep.optimal())
 		}
 	}
 }
