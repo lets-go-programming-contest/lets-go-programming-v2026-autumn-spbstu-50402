@@ -22,6 +22,20 @@ func main() {
 			return
 		}
 
-		fmt.Println("department, workers:", workers)
+		for range workers {
+			var (
+				sign string
+				temp int
+			)
+
+			_, err = fmt.Scan(&sign, &temp)
+			if err != nil {
+				fmt.Println("Invalid temperature")
+
+				return
+			}
+
+			fmt.Println("wish:", sign, temp)
+		}
 	}
 }
