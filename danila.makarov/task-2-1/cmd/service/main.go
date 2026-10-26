@@ -2,6 +2,37 @@ package main
 
 import "fmt"
 
+const (
+	minTemp = 15
+	maxTemp = 30
+)
+
+type Wish struct {
+	sign string
+	temp int
+}
+
+func findTemp(wishes []Wish) int {
+	low := minTemp
+	high := maxTemp
+
+	for _, wish := range wishes {
+		if wish.sign == ">=" && wish.temp > low {
+			low = wish.temp
+		}
+
+		if wish.sign == "<=" && wish.temp < high {
+			high = wish.temp
+		}
+	}
+
+	if low > high {
+		return -1
+	}
+
+	return low
+}
+
 func main() {
 	var depCount int
 
@@ -22,6 +53,8 @@ func main() {
 			return
 		}
 
+		wishes := make([]Wish, 0, workers)
+
 		for range workers {
 			var (
 				sign string
@@ -35,7 +68,15 @@ func main() {
 				return
 			}
 
-			fmt.Println("wish:", sign, temp)
+			if sign != ">=" && sign != "<=" {
+				fmt.Println("Invalid sign")
+
+				return
+			}
+
+			wishes = append(wishes, Wish{sign: sign, temp: temp})
+
+			fmt.Println(findTemp(wishes))
 		}
 	}
 }
