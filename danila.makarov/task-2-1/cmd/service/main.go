@@ -7,30 +7,27 @@ const (
 	maxTemp = 30
 )
 
-type Wish struct {
-	sign string
-	temp int
+type TempRange struct {
+	low  int
+	high int
 }
 
-func findTemp(wishes []Wish) int {
-	low := minTemp
-	high := maxTemp
-
-	for _, wish := range wishes {
-		if wish.sign == ">=" && wish.temp > low {
-			low = wish.temp
-		}
-
-		if wish.sign == "<=" && wish.temp < high {
-			high = wish.temp
-		}
+func (r *TempRange) Update(sign string, temp int) {
+	if sign == ">=" && temp > r.low {
+		r.low = temp
 	}
 
-	if low > high {
+	if sign == "<=" && temp < r.high {
+		r.high = temp
+	}
+}
+
+func (r *TempRange) Best() int {
+	if r.low > r.high {
 		return -1
 	}
 
-	return low
+	return r.low
 }
 
 func main() {
@@ -53,7 +50,7 @@ func main() {
 			return
 		}
 
-		wishes := make([]Wish, 0, workers)
+		tempRange := TempRange{low: minTemp, high: maxTemp}
 
 		for range workers {
 			var (
@@ -74,9 +71,9 @@ func main() {
 				return
 			}
 
-			wishes = append(wishes, Wish{sign: sign, temp: temp})
+			tempRange.Update(sign, temp)
 
-			fmt.Println(findTemp(wishes))
+			fmt.Println(tempRange.Best())
 		}
 	}
 }
