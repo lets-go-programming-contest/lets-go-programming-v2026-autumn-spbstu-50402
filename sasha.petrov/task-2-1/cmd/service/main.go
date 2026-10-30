@@ -13,8 +13,8 @@ const (
 	minData = 1
 	maxData = 1000
 
-	bolshe = ">="
-	menshe = "<="
+	atLeast = ">="
+	atMost  = "<="
 )
 
 var errInvalidInput = errors.New("invalid input of data")
@@ -24,8 +24,8 @@ type temperature struct {
 	high int
 }
 
-func newTemperature() *temperature {
-	return &temperature{low: minTemperature, high: maxTemperature}
+func newTemperature(low, high int) *temperature {
+	return &temperature{low: low, high: high}
 }
 
 func (r *temperature) update(operation string, temperature int) error {
@@ -37,7 +37,7 @@ func (r *temperature) update(operation string, temperature int) error {
 		return err
 	}
 
-	if operation == bolshe {
+	if operation == atLeast {
 		r.low = max(r.low, temperature)
 	} else {
 		r.high = min(r.high, temperature)
@@ -47,7 +47,7 @@ func (r *temperature) update(operation string, temperature int) error {
 }
 
 func isKnownOperation(operation string) bool {
-	return operation == bolshe || operation == menshe
+	return operation == atLeast || operation == atLeast
 }
 
 func checkBounds(detailInfo string, value, minValue, maxValue int) error {
@@ -108,7 +108,7 @@ func runTemperature() error {
 			return err
 		}
 
-		limits := newTemperature()
+		limits := newTemperature(minTemperature, maxTemperature)
 
 		for range workers {
 			operaton, temperature, err := readInfoOfTemperature()
