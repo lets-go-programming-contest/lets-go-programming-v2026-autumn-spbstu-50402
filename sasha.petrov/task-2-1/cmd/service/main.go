@@ -132,7 +132,7 @@ func runTemperature() error {
 				return err
 			}
 
-			fmt.Print(answer)
+			fmt.Println(answer)
 		}
 	}
 
