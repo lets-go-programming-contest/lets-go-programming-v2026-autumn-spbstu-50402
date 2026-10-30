@@ -8,7 +8,6 @@ import (
 const (
 	minTemperature = 15
 	maxTemperature = 30
-	noTemperature  = -1
 
 	minData = 1
 	maxData = 1000
@@ -17,7 +16,10 @@ const (
 	atMost  = "<="
 )
 
-var errInvalidInput = errors.New("invalid input of data")
+var (
+	errInvalidInput  = errors.New("invalid input of data")
+	errNoTemperature = errors.New("no correct temperature")
+)
 
 type temperature struct {
 	low  int
@@ -28,7 +30,7 @@ func newTemperature(low, high int) *temperature {
 	return &temperature{low: low, high: high}
 }
 
-func (r *temperature) update(operation string, temperature int) error {
+func (temp *temperature) update(operation string, temperature int) error {
 	if !isKnownOperation(operation) {
 		return fmt.Errorf("%w: unknown operation %q", errInvalidInput, operation)
 	}
@@ -38,16 +40,16 @@ func (r *temperature) update(operation string, temperature int) error {
 	}
 
 	if operation == atLeast {
-		r.low = max(r.low, temperature)
+		temp.low = max(temp.low, temperature)
 	} else {
-		r.high = min(r.high, temperature)
+		temp.high = min(temp.high, temperature)
 	}
 
 	return nil
 }
 
 func isKnownOperation(operation string) bool {
-	return operation == atLeast || operation == atLeast
+	return operation == atLeast || operation == atMost
 }
 
 func checkBounds(detailInfo string, value, minValue, maxValue int) error {
@@ -58,12 +60,12 @@ func checkBounds(detailInfo string, value, minValue, maxValue int) error {
 	return nil
 }
 
-func (r *temperature) result() int {
-	if r.low > r.high {
-		return noTemperature
+func (result *temperature) result() (int, error) {
+	if result.low > result.high {
+		return -1, fmt.Errorf("%w", errNoTemperature)
 	}
 
-	return r.low
+	return result.low, nil
 }
 
 func readData(detailInfo string) (int, error) {
