@@ -8,6 +8,7 @@ import (
 const (
 	minTemperature = 15
 	maxTemperature = 30
+	noTemperature  = -1
 
 	minData = 1
 	maxData = 1000
@@ -60,12 +61,12 @@ func checkBounds(detailInfo string, value, minValue, maxValue int) error {
 	return nil
 }
 
-func (result *temperature) result() (int, error) {
-	if result.low > result.high {
-		return -1, fmt.Errorf("%w", errNoTemperature)
+func (temp *temperature) result() (int, error) {
+	if temp.low > temp.high {
+		return 0, errNoTemperature
 	}
 
-	return result.low, nil
+	return temp.low, nil
 }
 
 func readData(detailInfo string) (int, error) {
@@ -113,16 +114,25 @@ func runTemperature() error {
 		limits := newTemperature(minTemperature, maxTemperature)
 
 		for range workers {
-			operaton, temperature, err := readInfoOfTemperature()
+			operation, temperature, err := readInfoOfTemperature()
 			if err != nil {
 				return err
 			}
 
-			if err := limits.update(operaton, temperature); err != nil {
+			if err := limits.update(operation, temperature); err != nil {
 				return err
 			}
 
-			fmt.Println(limits.result())
+			answer, err := limits.result()
+
+			switch {
+			case errors.Is(err, errNoTemperature):
+				answer = noTemperature
+			case err != nil:
+				return err
+			}
+
+			fmt.Print(answer)
 		}
 	}
 
