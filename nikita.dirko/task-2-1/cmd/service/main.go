@@ -165,6 +165,7 @@ func executeSimulation() error {
 			optimalTemp, err := tempBounds.optimalTemperature()
 			if err != nil {
 				fmt.Println(-1)
+
 				continue
 			}
 
