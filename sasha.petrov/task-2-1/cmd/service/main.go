@@ -1,0 +1,146 @@
+package main
+
+import (
+	"errors"
+	"fmt"
+)
+
+const (
+	minTemperature = 15
+	maxTemperature = 30
+	noTemperature  = -1
+
+	minData = 1
+	maxData = 1000
+
+	atLeast = ">="
+	atMost  = "<="
+)
+
+var (
+	errInvalidInput  = errors.New("invalid input of data")
+	errNoTemperature = errors.New("no correct temperature")
+)
+
+type temperature struct {
+	low  int
+	high int
+}
+
+func newTemperature(low, high int) *temperature {
+	return &temperature{low: low, high: high}
+}
+
+func (temp *temperature) update(operation string, temperature int) error {
+	if !isKnownOperation(operation) {
+		return fmt.Errorf("%w: unknown operation %q", errInvalidInput, operation)
+	}
+
+	if err := checkBounds("temperature", temperature, minTemperature, maxTemperature); err != nil {
+		return err
+	}
+
+	if operation == atLeast {
+		temp.low = max(temp.low, temperature)
+	} else {
+		temp.high = min(temp.high, temperature)
+	}
+
+	return nil
+}
+
+func isKnownOperation(operation string) bool {
+	return operation == atLeast || operation == atMost
+}
+
+func checkBounds(detailInfo string, value, minValue, maxValue int) error {
+	if value < minValue || value > maxValue {
+		return fmt.Errorf("%w: %s %d is not in [%d; %d]", errInvalidInput, detailInfo, value, minValue, maxValue)
+	}
+
+	return nil
+}
+
+func (temp *temperature) result() (int, error) {
+	if temp.low > temp.high {
+		return 0, errNoTemperature
+	}
+
+	return temp.low, nil
+}
+
+func readData(detailInfo string) (int, error) {
+	var data int
+	if _, err := fmt.Scan(&data); err != nil {
+		return 0, fmt.Errorf("read %s: %w", detailInfo, err)
+	}
+
+	if err := checkBounds(detailInfo, data, minData, maxData); err != nil {
+		return 0, err
+	}
+
+	return data, nil
+}
+
+func readInfoOfTemperature() (string, int, error) {
+	var (
+		operation           string
+		temperatureToChange int
+	)
+
+	if _, err := fmt.Scan(&operation); err != nil {
+		return "", 0, fmt.Errorf("read operation: %w", err)
+	}
+
+	if _, err := fmt.Scan(&temperatureToChange); err != nil {
+		return "", 0, fmt.Errorf("read temperature: %w", err)
+	}
+
+	return operation, temperatureToChange, nil
+}
+
+func runTemperature() error {
+	departments, err := readData("departments")
+	if err != nil {
+		return err
+	}
+
+	for range departments {
+		workers, err := readData("workers")
+		if err != nil {
+			return err
+		}
+
+		limits := newTemperature(minTemperature, maxTemperature)
+
+		for range workers {
+			operation, temperature, err := readInfoOfTemperature()
+			if err != nil {
+				return err
+			}
+
+			if err := limits.update(operation, temperature); err != nil {
+				return err
+			}
+
+			answer, err := limits.result()
+
+			switch {
+			case errors.Is(err, errNoTemperature):
+				answer = noTemperature
+			case err != nil:
+				return err
+			}
+
+			fmt.Println(answer)
+		}
+	}
+
+	return nil
+}
+
+func main() {
+	if err := runTemperature(); err != nil {
+		fmt.Printf("error is: %v\n", err)
+	}
+}
