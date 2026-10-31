@@ -9,65 +9,44 @@ const (
 	startMaxTemp = 30
 )
 
-type TemperatureRange struct {
+type temperatureRange struct {
 	lower int
 	upper int
 }
 
-func NewTempRange(lower, upper int) TemperatureRange {
-	return TemperatureRange{
+func newTempRange(lower, upper int) temperatureRange {
+	return temperatureRange{
 		lower: lower,
 		upper: upper,
 	}
 }
 
-func (tr *TemperatureRange) UpdateTemps(operation string, temperature int) {
+func (tr *temperatureRange) updateTemps(operation string, temperature int) error {
+	if operation != "<=" && operation != ">=" {
+		return fmt.Errorf("unsupported operation: %s", operation)
+	}
+
 	if operation == ">=" && temperature > tr.lower {
 		tr.lower = temperature
 	} else if operation == "<=" && temperature < tr.upper {
 		tr.upper = temperature
 	}
+
+	return nil
 }
 
-func (tr *TemperatureRange) OutputTemps() {
+func (tr *temperatureRange) current() int {
 	if tr.lower <= tr.upper {
-		fmt.Println(tr.lower)
-	} else {
-		fmt.Println(-1)
+		return tr.lower
 	}
-}
-
-func processEmployeeInput(staff int) {
-	tempRange := NewTempRange(startMinTemp, startMaxTemp)
-
-	for range staff {
-		var (
-			operation   string
-			temperature int
-		)
-
-		if _, err := fmt.Scan(&operation, &temperature); err != nil {
-			fmt.Println("Invalid input: ", err)
-
-			return
-		}
-
-		if operation != "<=" && operation != ">=" {
-			fmt.Println("Invalid operation input")
-
-			return
-		}
-
-		tempRange.UpdateTemps(operation, temperature)
-		tempRange.OutputTemps()
-	}
+	return -1
 }
 
 func main() {
 	var departments int
 
 	if _, err := fmt.Scan(&departments); err != nil {
-		fmt.Println("Invalid amount of departments")
+		fmt.Println("Invalid amount of departments: ", err)
 
 		return
 	}
@@ -76,11 +55,29 @@ func main() {
 		var staff int
 
 		if _, err := fmt.Scan(&staff); err != nil {
-			fmt.Println("Invalid amount of staff")
+			fmt.Println("Invalid amount of staff: ", err)
 
 			return
 		}
 
-		processEmployeeInput(staff)
+		tempRange := newTempRange(startMinTemp, startMaxTemp)
+		for range staff {
+			var (
+				operation   string
+				temperature int
+			)
+
+			if _, err := fmt.Scan(&operation, &temperature); err != nil {
+				fmt.Println("Invalid input:", err)
+				return
+			}
+
+			if err := tempRange.updateTemps(operation, temperature); err != nil {
+				fmt.Println("Invalid operation:", err)
+				return
+			}
+
+			fmt.Println(tempRange.current())
+		}
 	}
 }
