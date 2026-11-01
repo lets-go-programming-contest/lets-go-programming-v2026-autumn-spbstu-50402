@@ -23,6 +23,10 @@ func (h *MaxHeap) Push(x any) {
 }
 
 func (h *MaxHeap) Pop() any {
+	if len(*h) == 0 {
+		panic("MaxHeap: deletion from an empty heap")
+	}
+
 	endVal := (*h)[len(*h)-1]
 	*h = (*h)[:len(*h)-1]
 
