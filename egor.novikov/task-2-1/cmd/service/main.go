@@ -25,6 +25,43 @@ var (
 	errInvalidCondition       = errors.New("condition of temperature must be '<=' or '>='")
 )
 
+type DepartmentTemp struct {
+	minTemp int
+	maxTemp int
+}
+
+func NewDepartment() *DepartmentTemp {
+	return &DepartmentTemp{
+		minTemp: minTemperature,
+		maxTemp: maxTemperature,
+	}
+}
+
+func (d *DepartmentTemp) UpdateBounds(condition string, temperature int) error {
+	switch condition {
+	case ">=":
+		if temperature > d.minTemp {
+			d.minTemp = temperature
+		}
+	case "<=":
+		if temperature < d.maxTemp {
+			d.maxTemp = temperature
+		}
+	default:
+		return errInvalidCondition
+	}
+
+	return nil
+}
+
+func (d *DepartmentTemp) GetResult() int {
+	if d.maxTemp < d.minTemp {
+		return -1
+	}
+
+	return d.minTemp
+}
+
 func parseDepartment() (int, error) {
 	var departments int
 
@@ -85,7 +122,7 @@ func parseCondition() (string, error) {
 	return condition, nil
 }
 
-func processStaff(minTemp *int, maxTemp *int) error {
+func processStaff(department *DepartmentTemp) error {
 	condition, err := parseCondition()
 	if err != nil {
 		return err
@@ -96,17 +133,12 @@ func processStaff(minTemp *int, maxTemp *int) error {
 		return err
 	}
 
-	if condition == ">=" && temperature > *minTemp {
-		*minTemp = temperature
-	} else if condition == "<=" && temperature < *maxTemp {
-		*maxTemp = temperature
+	err = department.UpdateBounds(condition, temperature)
+	if err != nil {
+		return err
 	}
 
-	if *maxTemp < *minTemp {
-		fmt.Println("-1")
-	} else {
-		fmt.Println(*minTemp)
-	}
+	fmt.Println(department.GetResult())
 
 	return nil
 }
@@ -127,11 +159,10 @@ func main() {
 			return
 		}
 
-		minTemp := minTemperature
-		maxTemp := maxTemperature
+		department := NewDepartment()
 
 		for range staff {
-			err = processStaff(&minTemp, &maxTemp)
+			err = processStaff(department)
 			if err != nil {
 				fmt.Println(err)
 
