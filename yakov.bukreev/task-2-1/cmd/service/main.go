@@ -15,7 +15,6 @@ const (
 )
 
 var (
-	errInvalidWorkersNumber    = errors.New("invalid workers number")
 	errWorkersNumberOutOfRange = errors.New("workers number out of range")
 	errInvalidPreference       = errors.New("invalid preference for worker")
 	errInvalidPreferenceSign   = errors.New("invalid preference sign for worker")
@@ -27,13 +26,13 @@ type temperatureBounds struct {
 	low, high int
 }
 
-func newTemperatureBounds() *temperatureBounds {
+func newTemperatureBounds(l int, h int) temperatureBounds {
 	b := temperatureBounds{
-		low:  minTemp,
-		high: maxTemp,
+		low:  l,
+		high: h,
 	}
 
-	return &b
+	return b
 }
 
 func (bounds *temperatureBounds) applyBound(sign string, temperature int) error {
@@ -61,14 +60,14 @@ func processDepartment() error {
 	var workers int
 
 	if _, err := fmt.Scan(&workers); err != nil {
-		return fmt.Errorf("%w: %w", errInvalidWorkersNumber, err)
+		return fmt.Errorf("invalid workers number: %w", err)
 	}
 
 	if workers < minWorkers || workers > maxWorkers {
 		return errWorkersNumberOutOfRange
 	}
 
-	bounds := newTemperatureBounds()
+	bounds := newTemperatureBounds(minTemp, maxTemp)
 
 	for idx := range workers {
 		var (
@@ -94,10 +93,10 @@ func processDepartment() error {
 
 		optimalTemp, err := bounds.getOptimalTemperature()
 		if err != nil {
-			optimalTemp = -1
+			fmt.Println(-1)
+		} else {
+			fmt.Println(optimalTemp)
 		}
-
-		fmt.Println(optimalTemp)
 	}
 
 	return nil
