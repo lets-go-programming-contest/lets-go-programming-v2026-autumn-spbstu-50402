@@ -30,7 +30,7 @@ func parseDepartment() (int, error) {
 
 	_, err := fmt.Scan(&departments)
 	if err != nil {
-		return 0, errInvalidDepartments
+		return 0, fmt.Errorf("%w: %w", errInvalidDepartments, err)
 	}
 
 	if departments < minDepartment || departments > maxDepartment {
@@ -45,7 +45,7 @@ func parseStaff() (int, error) {
 
 	_, err := fmt.Scan(&staff)
 	if err != nil {
-		return 0, errInvalidStaff
+		return 0, fmt.Errorf("%w: %w", errInvalidStaff, err)
 	}
 
 	if staff < minStaff || staff > maxStaff {
@@ -60,7 +60,7 @@ func parseTemperature() (int, error) {
 
 	_, err := fmt.Scan(&temperature)
 	if err != nil {
-		return 0, errInvalidTemperature
+		return 0, fmt.Errorf("%w: %w", errInvalidTemperature, err)
 	}
 
 	if temperature < minTemperature || temperature > maxTemperature {
@@ -75,7 +75,7 @@ func parseCondition() (string, error) {
 
 	_, err := fmt.Scan(&condition)
 	if err != nil {
-		return "", errInvalidConditionInput
+		return "", fmt.Errorf("%w: %w", errInvalidConditionInput, err)
 	}
 
 	if condition != ">=" && condition != "<=" {
