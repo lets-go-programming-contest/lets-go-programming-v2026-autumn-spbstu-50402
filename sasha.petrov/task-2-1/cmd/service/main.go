@@ -130,7 +130,7 @@ func runTemperature() error {
 			case errors.Is(err, errNoTemperature):
 				answer = noTemperature
 			case err != nil:
-				return err
+				return fmt.Errorf("calculate temperature: %w", err)
 			}
 
 			fmt.Println(answer)
