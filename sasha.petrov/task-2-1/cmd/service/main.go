@@ -18,8 +18,9 @@ const (
 )
 
 var (
-	errInvalidInput  = errors.New("invalid input of data")
-	errNoTemperature = errors.New("no correct temperature")
+	errOutOfRange       = errors.New("value is out of range")
+	errUnknownOperation = errors.New("unknown operation")
+	errNoTemperature    = errors.New("no correct temperature")
 )
 
 type temperature struct {
@@ -33,11 +34,11 @@ func newTemperature(low, high int) *temperature {
 
 func (temp *temperature) update(operation string, temperature int) error {
 	if !isKnownOperation(operation) {
-		return fmt.Errorf("%w: unknown operation %q", errInvalidInput, operation)
+		return fmt.Errorf("update by %q: %w", operation, errUnknownOperation)
 	}
 
-	if err := checkBounds("temperature", temperature, minTemperature, maxTemperature); err != nil {
-		return err
+	if err := checkBounds(temperature, minTemperature, maxTemperature); err != nil {
+		return fmt.Errorf("update to %d: %w", temperature, err)
 	}
 
 	if operation == atLeast {
@@ -53,9 +54,9 @@ func isKnownOperation(operation string) bool {
 	return operation == atLeast || operation == atMost
 }
 
-func checkBounds(detailInfo string, value, minValue, maxValue int) error {
+func checkBounds(value, minValue, maxValue int) error {
 	if value < minValue || value > maxValue {
-		return fmt.Errorf("%w: %s %d is not in [%d; %d]", errInvalidInput, detailInfo, value, minValue, maxValue)
+		return errOutOfRange
 	}
 
 	return nil
@@ -69,14 +70,14 @@ func (temp *temperature) result() (int, error) {
 	return temp.low, nil
 }
 
-func readData(detailInfo string) (int, error) {
+func readData() (int, error) {
 	var data int
 	if _, err := fmt.Scan(&data); err != nil {
-		return 0, fmt.Errorf("read %s: %w", detailInfo, err)
+		return 0, fmt.Errorf("scan data: %w", err)
 	}
 
-	if err := checkBounds(detailInfo, data, minData, maxData); err != nil {
-		return 0, err
+	if err := checkBounds(data, minData, maxData); err != nil {
+		return 0, fmt.Errorf("data %d: %w", data, err)
 	}
 
 	return data, nil
@@ -100,15 +101,15 @@ func readInfoOfTemperature() (string, int, error) {
 }
 
 func runTemperature() error {
-	departments, err := readData("departments")
+	departments, err := readData()
 	if err != nil {
-		return err
+		return fmt.Errorf("read departments: %w", err)
 	}
 
 	for range departments {
-		workers, err := readData("workers")
+		workers, err := readData()
 		if err != nil {
-			return err
+			return fmt.Errorf("read workers: %w", err)
 		}
 
 		limits := newTemperature(minTemperature, maxTemperature)
