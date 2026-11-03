@@ -11,18 +11,30 @@ const (
 )
 
 var (
-	ErrInvalidOperation     = errors.New("invalid operation")
-	ErrNoOptimalTemperature = errors.New("cannot get optimal temperature")
+	errInvalidOperation     = errors.New("invalid operation")
+	errNoOptimalTemperature = errors.New("cannot get optimal temperature")
 )
 
-func GetEmployeeData() (string, int, error) {
+type TemperatureRange struct {
+	lower int
+	upper int
+}
+
+func newTemperatureRange(lower, upper int) TemperatureRange {
+	return TemperatureRange{
+		lower: lower,
+		upper: upper,
+	}
+}
+
+func getEmployeeData() (string, int, error) {
 	var operation string
 	if _, err := fmt.Scan(&operation); err != nil {
 		return "", 0, fmt.Errorf("failed to scan operation: %w", err)
 	}
 
 	if operation != "<=" && operation != ">=" {
-		return "", 0, fmt.Errorf("%w: entered %q", ErrInvalidOperation, operation)
+		return "", 0, fmt.Errorf("%w: entered %q", errInvalidOperation, operation)
 	}
 
 	var temperature int
@@ -33,29 +45,29 @@ func GetEmployeeData() (string, int, error) {
 	return operation, temperature, nil
 }
 
-func UpdateBounds(operation string, temperature int, lower *int, upper *int) error {
+func (tr *TemperatureRange) updateBounds(operation string, temperature int) error {
 	switch operation {
 	case "<=":
-		if temperature < *upper {
-			*upper = temperature
+		if temperature < tr.upper {
+			tr.upper = temperature
 		}
 	case ">=":
-		if temperature > *lower {
-			*lower = temperature
+		if temperature > tr.lower {
+			tr.lower = temperature
 		}
 	default:
-		return ErrInvalidOperation
+		return errInvalidOperation
 	}
 
 	return nil
 }
 
-func GetOptimalTemperature(lower *int, upper *int) (int, error) {
-	if *lower <= *upper {
-		return *lower, nil
+func (tr *TemperatureRange) getOptimalTemperature() (int, error) {
+	if tr.lower <= tr.upper {
+		return tr.lower, nil
 	}
 
-	return 0, ErrNoOptimalTemperature
+	return 0, errNoOptimalTemperature
 }
 
 func main() {
@@ -74,25 +86,24 @@ func main() {
 			return
 		}
 
-		lower := minTemp
-		upper := maxTemp
+		tempRange := newTemperatureRange(minTemp, maxTemp)
 
 		for range employees {
-			operation, temperature, err := GetEmployeeData()
+			operation, temperature, err := getEmployeeData()
 			if err != nil {
 				fmt.Printf("cannot get employee data: %v\n", err)
 
 				return
 			}
 
-			err = UpdateBounds(operation, temperature, &lower, &upper)
+			err = tempRange.updateBounds(operation, temperature)
 			if err != nil {
 				fmt.Printf("cannot update temperature bounds: %v\n", err)
 
 				return
 			}
 
-			optimalTemp, err := GetOptimalTemperature(&lower, &upper)
+			optimalTemp, err := tempRange.getOptimalTemperature()
 			if err != nil {
 				fmt.Println(-1)
 
