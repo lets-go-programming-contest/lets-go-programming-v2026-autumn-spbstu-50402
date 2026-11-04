@@ -128,7 +128,9 @@ func solveDepartment(reader io.Reader, writer io.Writer) error {
 			return fmt.Errorf("employee %d: %w", employee+1, err)
 		}
 
-		bounds.apply(oper, temp)
+		if err := bounds.apply(oper, temp); err != nil {
+			return fmt.Errorf("employee %d: %w", employee+1, err)
+		}
 
 		if _, err := fmt.Fprintln(writer, bounds.optimal()); err != nil {
 			return fmt.Errorf("write answer: %w", err)
