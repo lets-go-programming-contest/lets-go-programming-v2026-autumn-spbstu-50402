@@ -62,13 +62,17 @@ func newTempRange(low, high int) tempRange {
 	return tempRange{low: low, high: high}
 }
 
-func (r *tempRange) apply(oper operator, temp int) {
+func (r *tempRange) apply(oper operator, temp int) error {
 	switch oper {
 	case opGreaterEq:
 		r.low = max(r.low, temp)
 	case opLessEq:
 		r.high = min(r.high, temp)
+	default:
+		return fmt.Errorf("%w: %d", errUnknownOperator, oper)
 	}
+
+	return nil
 }
 
 func (r *tempRange) optimal() (int, error) {
