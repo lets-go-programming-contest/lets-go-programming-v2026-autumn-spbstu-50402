@@ -120,27 +120,16 @@ func solveDepartment(reader io.Reader, writer io.Writer) error {
 		return err
 	}
 
-	func (r *tempRange) apply(oper operator, temp int) error {
-		switch oper {
-		case opGreaterEq:
-			r.low = max(r.low, temp)
-		case opLessEq:
-			r.high = min(r.high, temp)
-		default:
-			return fmt.Errorf("%w: %d", errUnknownOperator, oper)
-		}
+	bounds := newTempRange(minTemp, maxTemp)
 
-		return nil
-	}
-
-	for employee := range employees {
+	for range employees {
 		oper, temp, err := readConstraint(reader)
 		if err != nil {
-			return fmt.Errorf("employee %d: %w", employee+1, err)
+			return err
 		}
 
 		if err := bounds.apply(oper, temp); err != nil {
-			return fmt.Errorf("employee %d: %w", employee+1, err)
+			return err
 		}
 
 		answer, err := bounds.optimal()
@@ -162,9 +151,9 @@ func solveDepartments(reader io.Reader, writer io.Writer) error {
 		return err
 	}
 
-	for department := range departments {
+	for range departments {
 		if err := solveDepartment(reader, writer); err != nil {
-			return fmt.Errorf("department %d: %w", department+1, err)
+			return err
 		}
 	}
 
