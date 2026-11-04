@@ -15,7 +15,45 @@ const (
 
 var errInvalidOperation = errors.New("invalid operation")
 
+type temperatureState struct {
+	lowerBound int
+	upperBound int
+}
+
+func newTemperatureState() temperatureState {
+	return temperatureState{
+		lowerBound: minTemperature,
+		upperBound: maxTemperature,
+	}
+}
+
+func (state *temperatureState) applyRequirement(operation string, temperature int) error {
+	switch operation {
+	case ">=":
+		if temperature > state.lowerBound {
+			state.lowerBound = temperature
+		}
+	case "<=":
+		if temperature < state.upperBound {
+			state.upperBound = temperature
+		}
+	default:
+		return errInvalidOperation
+	}
+
+	return nil
+}
+
+func (state *temperatureState) result() int {
+	if state.lowerBound > state.upperBound {
+		return -1
+	}
+
+	return state.lowerBound
+}
+
 func main() {
+	// Buffer input to reduce reads from stdin.
 	reader := bufio.NewReader(os.Stdin)
 	writer := bufio.NewWriter(os.Stdout)
 
@@ -46,8 +84,7 @@ func main() {
 }
 
 func processDepartment(reader *bufio.Reader, writer *bufio.Writer, employees int) error {
-	lowerBound := minTemperature
-	upperBound := maxTemperature
+	state := newTemperatureState()
 
 	var (
 		temperature int
@@ -59,25 +96,11 @@ func processDepartment(reader *bufio.Reader, writer *bufio.Writer, employees int
 			return fmt.Errorf("read employee requirement %w", err)
 		}
 
-		switch operation {
-		case ">=":
-			if temperature > lowerBound {
-				lowerBound = temperature
-			}
-		case "<=":
-			if temperature < upperBound {
-				upperBound = temperature
-			}
-		default:
-			return errInvalidOperation
+		if err := state.applyRequirement(operation, temperature); err != nil {
+			return err
 		}
 
-		result := lowerBound
-		if lowerBound > upperBound {
-			result = -1
-		}
-
-		if _, err := fmt.Fprintln(writer, result); err != nil {
+		if _, err := fmt.Fprintln(writer, state.result()); err != nil {
 			return fmt.Errorf("write department temperature %w", err)
 		}
 	}
