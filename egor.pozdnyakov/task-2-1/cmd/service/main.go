@@ -160,15 +160,16 @@ func solveDepartments(reader io.Reader, writer io.Writer) error {
 	return nil
 }
 
-func solve(input io.Reader, output io.Writer) error {
+func solve(input io.Reader, output io.Writer) (err error) {
 	writer := bufio.NewWriter(output)
-	solveErr := solveDepartments(bufio.NewReader(input), writer)
 
-	if err := writer.Flush(); err != nil {
-		return errors.Join(solveErr, fmt.Errorf("flush output: %w", err))
-	}
+	defer func() {
+		if flushErr := writer.Flush(); flushErr != nil {
+			err = errors.Join(err, fmt.Errorf("flush output: %w", flushErr))
+		}
+	}()
 
-	return solveErr
+	return solveDepartments(bufio.NewReader(input), writer)
 }
 
 func main() {
