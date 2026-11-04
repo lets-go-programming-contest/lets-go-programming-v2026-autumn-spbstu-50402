@@ -15,19 +15,19 @@ var (
 	errOptimalTemperature = errors.New("cannot get optimal temperature")
 )
 
-type TemperatureRange struct {
+type temperatureRange struct {
 	low  int
 	high int
 }
 
-func newTemperatureRange(low, high int) TemperatureRange {
-	return TemperatureRange{
+func newTemperatureRange(low, high int) temperatureRange {
+	return temperatureRange{
 		low:  low,
 		high: high,
 	}
 }
 
-func (tr *TemperatureRange) update(operator string, temp int) error {
+func (tr *temperatureRange) update(operator string, temp int) error {
 	switch operator {
 	case ">=":
 		if temp > tr.low {
@@ -44,7 +44,7 @@ func (tr *TemperatureRange) update(operator string, temp int) error {
 	return nil
 }
 
-func (tr *TemperatureRange) optimal() (int, error) {
+func (tr *temperatureRange) optimal() (int, error) {
 	if tr.low <= tr.high {
 		return tr.low, nil
 	}
@@ -59,7 +59,7 @@ func readRequirement() (string, int, error) {
 	}
 
 	if operator != ">=" && operator != "<=" {
-		return "", 0, fmt.Errorf("%w: %s", errInvalidOperator, operator)
+		return "", 0, fmt.Errorf("%w: %q", errInvalidOperator, operator)
 	}
 
 	var temp int
