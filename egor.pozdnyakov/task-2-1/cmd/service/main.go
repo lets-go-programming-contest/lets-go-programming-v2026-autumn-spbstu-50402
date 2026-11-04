@@ -108,7 +108,6 @@ func readConstraint(reader io.Reader) (operator, int, error) {
 	}
 
 	oper, err := newOperator(raw)
-
 	if err != nil {
 		return 0, 0, err
 	}
