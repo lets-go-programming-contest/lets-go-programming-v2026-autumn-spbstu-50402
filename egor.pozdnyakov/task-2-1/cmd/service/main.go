@@ -115,7 +115,7 @@ func readConstraint(reader io.Reader) (operator, int, error) {
 }
 
 func solveDepartment(reader io.Reader, writer io.Writer) error {
-	employees, err := readCount(reader, "K", maxEmployees)
+	employees, err := readCount(reader, "employees count", maxEmployees)
 	if err != nil {
 		return err
 	}
@@ -157,7 +157,7 @@ func solveDepartment(reader io.Reader, writer io.Writer) error {
 }
 
 func solveDepartments(reader io.Reader, writer io.Writer) error {
-	departments, err := readCount(reader, "N", maxDepartments)
+	departments, err := readCount(reader, "departments count", maxDepartments)
 	if err != nil {
 		return err
 	}
