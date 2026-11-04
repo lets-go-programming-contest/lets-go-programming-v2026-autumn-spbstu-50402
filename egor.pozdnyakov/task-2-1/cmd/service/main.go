@@ -13,12 +13,15 @@ const (
 	minTemp = 15
 	maxTemp = 30
 	noTemp  = -1
-)
 
-const (
 	minCount       = 1
 	maxDepartments = 1000
 	maxEmployees   = 1000
+)
+
+var (
+	errUnknownOperator = errors.New("unknown operator")
+	errOutOfRange      = errors.New("value out of range")
 )
 
 type operator int
@@ -49,11 +52,6 @@ func parseOperator(raw string) (operator, error) {
 		return 0, fmt.Errorf("%w %q", errUnknownOperator, raw)
 	}
 }
-
-var (
-	errUnknownOperator = errors.New("unknown operator")
-	errOutOfRange      = errors.New("value out of range")
-)
 
 type tempRange struct {
 	low  int
