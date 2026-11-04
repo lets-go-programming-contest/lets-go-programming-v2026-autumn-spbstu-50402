@@ -58,8 +58,8 @@ type tempRange struct {
 	high int
 }
 
-func newTempRange() *tempRange {
-	return &tempRange{low: minTemp, high: maxTemp}
+func newTempRange(low, high int) tempRange {
+	return tempRange{low: low, high: high}
 }
 
 func (r *tempRange) apply(oper operator, temp int) {
