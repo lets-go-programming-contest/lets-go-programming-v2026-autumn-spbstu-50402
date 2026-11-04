@@ -17,13 +17,13 @@ const (
 )
 
 var (
-	errDepsValueTooLow         = errors.New("deps input is too low")
-	errDepsValueTooHigh        = errors.New("deps input is too high")
-	errWorkersValueTooLow      = errors.New("workers input is too low")
-	errWorkersValueTooHigh     = errors.New("workers input is too high")
-	errTemperatureTooLow       = errors.New("temperature input is too low")
-	errTemperatureTooHigh      = errors.New("temperature input is too high")
-	errUnknownBoundSign        = errors.New("unknown sign for bound")
+	errDepsValueTooLow     = errors.New("deps input is too low")
+	errDepsValueTooHigh    = errors.New("deps input is too high")
+	errWorkersValueTooLow  = errors.New("workers input is too low")
+	errWorkersValueTooHigh = errors.New("workers input is too high")
+	errTemperatureTooLow   = errors.New("temperature input is too low")
+	errTemperatureTooHigh  = errors.New("temperature input is too high")
+	errUnknownBoundSign    = errors.New("unknown sign for bound")
 )
 
 type boundsInterface interface {
@@ -56,6 +56,7 @@ func (b *tempBounds) compareBounds(sign string, temperature int) error {
 	default:
 		return errUnknownBoundSign
 	}
+
 	return nil
 }
 
