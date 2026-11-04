@@ -1,6 +1,9 @@
 package main
 
-import "fmt"
+import (
+	"errors"
+	"fmt"
+)
 
 const (
 	minD = 1
@@ -19,15 +22,16 @@ type Temperature struct {
 }
 
 func (t *Temperature) Update(temperature int, condition string) error {
-	if condition == ">=" {
+	switch condition {
+	case ">=":
 		if temperature > t.minimal {
 			t.minimal = temperature
 		}
-	} else if condition == "<=" {
+	case "<=":
 		if temperature < t.maximal {
 			t.maximal = temperature
 		}
-	} else {
+	default:
 
 		return fmt.Errorf("invalid condition: %s", condition)
 	}
@@ -40,13 +44,11 @@ func readDepartments() (int, error) {
 
 	_, err := fmt.Scan(&departments)
 	if err != nil {
-
 		return 0, fmt.Errorf("invalid input: %w", err)
 	}
 
 	if departments < minD || departments > maxD {
-
-		return 0, fmt.Errorf("input should be between 1 and 1000")
+		return 0, errors.New("input should be between 1 and 1000")
 	}
 
 	return departments, nil
@@ -57,13 +59,11 @@ func readWorkers() (int, error) {
 
 	_, err := fmt.Scan(&workers)
 	if err != nil {
-
 		return 0, fmt.Errorf("invalid input: %w", err)
 	}
 
 	if workers < minW || workers > maxW {
-
-		return 0, fmt.Errorf("input should be between 1 and 1000")
+		return 0, errors.New("input should be between 1 and 1000")
 	}
 
 	return workers, nil
@@ -74,13 +74,11 @@ func readCondition() (string, error) {
 
 	_, err := fmt.Scan(&condition)
 	if err != nil {
-
 		return "", fmt.Errorf("invalid input: %w", err)
 	}
 
 	if condition != ">=" && condition != "<=" {
-
-		return "", fmt.Errorf("input condition should be non-strict")
+		return "", errors.New("input condition should be non-strict")
 	}
 
 	return condition, nil
@@ -91,13 +89,11 @@ func readTemperature() (int, error) {
 
 	_, err := fmt.Scan(&temperature)
 	if err != nil {
-
 		return 0, fmt.Errorf("invalid input: %w", err)
 	}
 
 	if temperature < minT || temperature > maxT {
-
-		return 0, fmt.Errorf("input temperature should be between 15 and 30")
+		return 0, errors.New("input temperature should be between 15 and 30")
 	}
 
 	return temperature, nil
@@ -107,7 +103,6 @@ func main() {
 	departments, err := readDepartments()
 	if err != nil {
 		fmt.Println(err)
-
 		return
 	}
 
@@ -115,7 +110,6 @@ func main() {
 		workers, err := readWorkers()
 		if err != nil {
 			fmt.Println(err)
-
 			return
 		}
 
@@ -125,21 +119,18 @@ func main() {
 			condition, err := readCondition()
 			if err != nil {
 				fmt.Println(err)
-
 				return
 			}
 
 			temperature, err := readTemperature()
 			if err != nil {
 				fmt.Println(err)
-
 				return
 			}
 
 			err = temp.Update(temperature, condition)
 			if err != nil {
 				fmt.Println(err)
-
 				return
 			}
 
