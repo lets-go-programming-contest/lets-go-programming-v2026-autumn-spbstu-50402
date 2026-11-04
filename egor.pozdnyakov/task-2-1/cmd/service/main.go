@@ -22,6 +22,7 @@ const (
 var (
 	errUnknownOperator = errors.New("unknown operator")
 	errOutOfRange      = errors.New("value out of range")
+	errNoOptimalTemp   = errors.New("no optimal temperature")
 )
 
 type operator int
@@ -60,12 +61,12 @@ func (r *tempRange) apply(oper operator, temp int) {
 	}
 }
 
-func (r *tempRange) optimal() int {
+func (r *tempRange) optimal() (int, error) {
 	if r.low > r.high {
-		return noTemp
+		return 0, errNoOptimalTemp
 	}
 
-	return r.low
+	return r.low, nil
 }
 
 func readCount(reader io.Reader, name string, limit int) (int, error) {
@@ -132,7 +133,12 @@ func solveDepartment(reader io.Reader, writer io.Writer) error {
 			return fmt.Errorf("employee %d: %w", employee+1, err)
 		}
 
-		if _, err := fmt.Fprintln(writer, bounds.optimal()); err != nil {
+		answer, err := bounds.optimal()
+		if errors.Is(err, errNoOptimalTemp) {
+			answer = noTemp
+		}
+
+		if _, err := fmt.Fprintln(writer, answer); err != nil {
 			return fmt.Errorf("write answer: %w", err)
 		}
 	}
