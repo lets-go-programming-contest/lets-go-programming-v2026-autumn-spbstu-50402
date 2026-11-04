@@ -21,9 +21,19 @@ const (
 
 var (
 	errUnknownOperator = errors.New("unknown operator")
-	errOutOfRange      = errors.New("value out of range")
 	errNoOptimalTemp   = errors.New("no optimal temperature")
 )
+
+type countError struct {
+	name  string
+	value int
+	lower int
+	upper int
+}
+
+func (e *countError) Error() string {
+	return fmt.Sprintf("invalid %s: expected %d..%d, actual %d", e.name, e.lower, e.upper, e.value)
+}
 
 type operator int
 
@@ -77,7 +87,7 @@ func readCount(reader io.Reader, name string, limit int) (int, error) {
 	}
 
 	if value < minCount || value > limit {
-		return 0, fmt.Errorf("%w: %s = %d, want %d..%d", errOutOfRange, name, value, minCount, limit)
+		return 0, &countError{name: name, value: value, lower: minCount, upper: limit}
 	}
 
 	return value, nil
