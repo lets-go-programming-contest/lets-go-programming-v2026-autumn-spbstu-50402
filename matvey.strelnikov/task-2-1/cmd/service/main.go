@@ -24,29 +24,53 @@ var (
 	errTemperatureTooLow       = errors.New("temperature input is too low")
 	errTemperatureTooHigh      = errors.New("temperature input is too high")
 	errUnknownBoundSign        = errors.New("unknown sign for bound")
-	errInvalidDepsInput        = errors.New("invalid input for deps")
-	errInvalidWorkersInput     = errors.New("invalid input for workers")
-	errInvalidBoundInput       = errors.New("invalid input for new bound")
-	errInvalidTemperatureInput = errors.New("invalid input for temperature request")
 )
+
+type boundsInterface interface {
+	compareBounds(sign string, t int) error
+	getResult() int
+}
 
 type tempBounds struct {
 	lowest  int
 	highest int
 }
 
-func newTempBounds() *tempBounds {
-	return &tempBounds{
-		lowest:  minT,
-		highest: maxT,
+func newTempBounds(low, high int) tempBounds {
+	return tempBounds{
+		lowest:  low,
+		highest: high,
 	}
+}
+
+func (b *tempBounds) compareBounds(sign string, t int) error {
+	switch sign {
+	case "<=":
+		if t < b.highest {
+			b.highest = t
+		}
+	case ">=":
+		if t > b.lowest {
+			b.lowest = t
+		}
+	default:
+		return errUnknownBoundSign
+	}
+	return nil
+}
+
+func (b *tempBounds) getResult() int {
+	if b.lowest > b.highest {
+		return -1
+	}
+	return b.lowest
 }
 
 func scanDeps() (int, error) {
 	var deps int
 
 	if _, err := fmt.Scan(&deps); err != nil {
-		return 0, errInvalidDepsInput
+		return 0, fmt.Errorf("invalid input for deps: %w", err)
 	}
 
 	if deps < minDeps {
@@ -64,7 +88,7 @@ func scanWorkers() (int, error) {
 	var workers int
 
 	if _, err := fmt.Scan(&workers); err != nil {
-		return 0, errInvalidWorkersInput
+		return 0, fmt.Errorf("invalid input for workers: %w", err)
 	}
 
 	if workers < minWorkers {
@@ -82,7 +106,7 @@ func scanBound() (string, int, error) {
 	var sign string
 
 	if _, err := fmt.Scan(&sign); err != nil {
-		return "", 0, errInvalidBoundInput
+		return "", 0, fmt.Errorf("invalid input for new bound: %w", err)
 	}
 
 	if sign != "<=" && sign != ">=" {
@@ -92,7 +116,7 @@ func scanBound() (string, int, error) {
 	var temperature int
 
 	if _, err := fmt.Scan(&temperature); err != nil {
-		return "", 0, errInvalidTemperatureInput
+		return "", 0, fmt.Errorf("invalid input for temperature: %w", err)
 	}
 
 	if temperature < minT {
@@ -106,35 +130,19 @@ func scanBound() (string, int, error) {
 	return sign, temperature, nil
 }
 
-func processDeps(bounds *tempBounds, workers int) error {
+func processDeps(workers int) error {
+	tmp := newTempBounds(minT, maxT)
+	var b boundsInterface = &tmp
 	for range workers {
 		sign, temperature, err := scanBound()
 		if err != nil {
 			return err
 		}
-
-		switch sign {
-		case "<=":
-			if temperature < bounds.highest {
-				bounds.highest = temperature
-			}
-
-		case ">=":
-			if temperature > bounds.lowest {
-				bounds.lowest = temperature
-			}
-
-		default:
-			return errUnknownBoundSign
+		if err = b.compareBounds(sign, temperature); err != nil {
+			return err
 		}
-
-		if bounds.lowest > bounds.highest {
-			fmt.Println(-1)
-		} else {
-			fmt.Println(bounds.lowest)
-		}
+		fmt.Println(b.getResult())
 	}
-
 	return nil
 }
 
@@ -154,7 +162,7 @@ func main() {
 			return
 		}
 
-		if err = processDeps(newTempBounds(), workers); err != nil {
+		if err = processDeps(workers); err != nil {
 			fmt.Println("Error:", err)
 
 			return
