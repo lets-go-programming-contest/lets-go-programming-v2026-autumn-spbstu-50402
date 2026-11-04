@@ -134,7 +134,7 @@ func scanBound() (string, int, error) {
 
 func processDeps(workers int) error {
 	tmp := newTempBounds(minT, maxT)
-	var boundsInterface bounds = &tmp
+	var bounds boundsInterface = &tmp
 
 	for range workers {
 		sign, temperature, err := scanBound()
