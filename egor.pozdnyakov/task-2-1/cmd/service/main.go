@@ -92,7 +92,10 @@ func readConstraint(reader io.Reader) (operator, int, error) {
 		return 0, 0, fmt.Errorf("read constraint: %w", err)
 	}
 
-	oper, err := parseOperator(raw)
+	func newTempRange(low, high int) tempRange {
+		return tempRange{low: low, high: high}
+	}
+
 	if err != nil {
 		return 0, 0, err
 	}
