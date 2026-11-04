@@ -43,15 +43,15 @@ func newTempBounds(low, high int) tempBounds {
 	}
 }
 
-func (b *tempBounds) compareBounds(sign string, t int) error {
+func (b *tempBounds) compareBounds(sign string, temperature int) error {
 	switch sign {
 	case "<=":
-		if t < b.highest {
-			b.highest = t
+		if temperature < b.highest {
+			b.highest = temperature
 		}
 	case ">=":
-		if t > b.lowest {
-			b.lowest = t
+		if temperature > b.lowest {
+			b.lowest = temperature
 		}
 	default:
 		return errUnknownBoundSign
@@ -63,6 +63,7 @@ func (b *tempBounds) getResult() int {
 	if b.lowest > b.highest {
 		return -1
 	}
+
 	return b.lowest
 }
 
@@ -132,17 +133,22 @@ func scanBound() (string, int, error) {
 
 func processDeps(workers int) error {
 	tmp := newTempBounds(minT, maxT)
-	var b boundsInterface = &tmp
+	bounds := &tmp
+
 	for range workers {
 		sign, temperature, err := scanBound()
 		if err != nil {
 			return err
 		}
-		if err = b.compareBounds(sign, temperature); err != nil {
+
+		err = bounds.compareBounds(sign, temperature)
+		if err != nil {
 			return err
 		}
-		fmt.Println(b.getResult())
+
+		fmt.Println(bounds.getResult())
 	}
+
 	return nil
 }
 
