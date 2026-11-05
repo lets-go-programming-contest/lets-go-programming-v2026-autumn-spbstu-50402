@@ -16,12 +16,12 @@ var (
 	errInvalidOperation   = errors.New("invalid operation")
 )
 
-type TempRange struct {
-	lo, hi int
+type tempRange struct {
+	lowerBound, upperBound int
 }
 
-func NewTempRange(minTemp, maxTemp int) TempRange {
-	return TempRange{lo: minTemp, hi: maxTemp}
+func newTempRange(minTemp, maxTemp int) tempRange {
+	return tempRange{lowerBound: minTemp, upperBound: maxTemp}
 }
 
 func parseCondition() (string, int, error) {
@@ -36,25 +36,25 @@ func parseCondition() (string, int, error) {
 		return "", 0, fmt.Errorf("%w: %q", errInvalidOperation, operation)
 	}
 
-	var temp int
+	var temperature int
 
-	_, err1 := fmt.Scan(&temp)
-	if err1 != nil {
+	_, err = fmt.Scan(&temperature)
+	if err != nil {
 		return "", 0, fmt.Errorf("error: reading number is failed: %w", err)
 	}
 
-	return operation, temp, nil
+	return operation, temperature, nil
 }
 
-func (r *TempRange) Update(op string, temp int) error {
-	switch op {
+func (limits *tempRange) update(operation string, temperature int) error {
+	switch operation {
 	case ">=":
-		if temp > r.lo {
-			r.lo = temp
+		if temperature > limits.lowerBound {
+			limits.lowerBound = temperature
 		}
 	case "<=":
-		if temp < r.hi {
-			r.hi = temp
+		if temperature < limits.upperBound {
+			limits.upperBound = temperature
 		}
 	default:
 		return errInvalidRangeUpdate
@@ -63,9 +63,9 @@ func (r *TempRange) Update(op string, temp int) error {
 	return nil
 }
 
-func (r *TempRange) Optimal() (int, error) {
-	if r.lo <= r.hi {
-		return r.lo, nil
+func (limits *tempRange) optimal() (int, error) {
+	if limits.lowerBound <= limits.upperBound {
+		return limits.lowerBound, nil
 	}
 
 	return 0, errOptimalTemperature
@@ -76,7 +76,7 @@ func main() {
 
 	_, err := fmt.Scanln(&department)
 	if err != nil {
-		fmt.Println("Invalid department argument")
+		fmt.Println("Invalid department argument:", err)
 
 		return
 	}
@@ -86,29 +86,29 @@ func main() {
 
 		_, err := fmt.Scanln(&employee)
 		if err != nil {
-			fmt.Println("Invalid employee argument")
+			fmt.Println("Invalid employee argument:", err)
 
 			return
 		}
 
-		temperatureRange := NewTempRange(minTemp, maxTemp)
+		temperatureRange := newTempRange(minTemp, maxTemp)
 
 		for range employee {
 			operation, temperature, err := parseCondition()
 			if err != nil {
-				fmt.Printf("ERROR: invalid employee data")
+				fmt.Printf("invalid employee data:", err)
 
 				return
 			}
 
-			err = temperatureRange.Update(operation, temperature)
+			err = temperatureRange.update(operation, temperature)
 			if err != nil {
-				fmt.Printf("ERROR: update range failed")
+				fmt.Printf("update range failed:", err)
 
 				return
 			}
 
-			optimalTemperature, err := temperatureRange.Optimal()
+			optimalTemperature, err := temperatureRange.optimal()
 			if err != nil {
 				fmt.Println(-1)
 
