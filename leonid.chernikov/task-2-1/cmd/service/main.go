@@ -13,6 +13,7 @@ const (
 )
 
 var errUnknownSign = errors.New("unknown comparison sign")
+var errNoOptimalTemp = errors.New("no temperature suits all employees")
 
 type department struct {
 	low  int
@@ -36,12 +37,12 @@ func (d *department) update(sign string, temp int) error {
 	return nil
 }
 
-func (d *department) optimal() int {
+func (d *department) optimal() (int, error) {
 	if d.low > d.high {
-		return -1
+		return 0, errNoOptimalTemp
 	}
 
-	return d.low
+	return d.low, nil
 }
 
 func readInput() (string, int, error) {
@@ -63,7 +64,7 @@ func main() {
 
 	_, err := fmt.Scan(&departNumber)
 	if err != nil {
-		fmt.Println("Input department number error")
+		fmt.Println("Input department number error: ", err)
 
 		return
 	}
@@ -81,7 +82,7 @@ func main() {
 
 		_, err := fmt.Scan(&employeeNumber)
 		if err != nil {
-			fmt.Println("Input employee number error")
+			fmt.Println("Input employee number error: ", err)
 
 			return
 		}
@@ -95,7 +96,7 @@ func main() {
 		for range employeeNumber {
 			compSymb, temp, err := readInput()
 			if err != nil {
-				fmt.Println("Input employee request error")
+				fmt.Println("Input employee request error: ", err)
 
 				return
 			}
@@ -107,7 +108,14 @@ func main() {
 				return
 			}
 
-			fmt.Println(dep.optimal())
+			optimalTemp, err := dep.optimal()
+			if err != nil {
+				fmt.Println(-1)
+
+				continue
+			}
+
+			fmt.Println(optimalTemp)
 		}
 	}
 }
