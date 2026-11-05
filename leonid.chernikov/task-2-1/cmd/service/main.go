@@ -12,8 +12,10 @@ const (
 	lowCount  = 1
 )
 
-var errUnknownSign = errors.New("unknown comparison sign")
-var errNoOptimalTemp = errors.New("no temperature suits all employees")
+var (
+	errUnknownSign   = errors.New("unknown comparison sign")
+	errNoOptimalTemp = errors.New("no temperature suits all employees")
+)
 
 type department struct {
 	low  int
