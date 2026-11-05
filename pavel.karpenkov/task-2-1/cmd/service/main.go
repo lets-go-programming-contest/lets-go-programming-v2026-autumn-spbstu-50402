@@ -96,14 +96,14 @@ func main() {
 		for range employee {
 			operation, temperature, err := parseCondition()
 			if err != nil {
-				fmt.Printf("invalid employee data:", err)
+				fmt.Println("invalid employee data:", err)
 
 				return
 			}
 
 			err = temperatureRange.update(operation, temperature)
 			if err != nil {
-				fmt.Printf("update range failed:", err)
+				fmt.Println("update range failed:", err)
 
 				return
 			}
