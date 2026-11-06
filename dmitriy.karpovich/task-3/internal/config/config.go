@@ -11,6 +11,12 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
+var (
+	errMultipleYAMLDocuments = errors.New("configuration file must contain exactly one YAML document")
+	errMissingInputFile      = errors.New("required field input-file is missing")
+	errMissingOutputFile     = errors.New("required field output-file is missing")
+)
+
 type Config struct {
 	InputFile  string `yaml:"input-file"`
 	OutputFile string `yaml:"output-file"`
@@ -26,6 +32,7 @@ func Load(path string) (Config, error) {
 	if err != nil {
 		return Config{}, fmt.Errorf("decode configuration file %q: %w", path, err)
 	}
+
 	cfg, err = validate(cfg)
 	if err != nil {
 		return Config{}, err
@@ -39,15 +46,20 @@ func decode(data []byte) (Config, error) {
 	decoder.KnownFields(true)
 
 	var cfg Config
-	if err := decoder.Decode(&cfg); err != nil {
-		return Config{}, err
+
+	err := decoder.Decode(&cfg)
+	if err != nil {
+		return Config{}, fmt.Errorf("decode YAML configuration: %w", err)
 	}
 
 	var extra any
-	if err := decoder.Decode(&extra); err != io.EOF {
+
+	err = decoder.Decode(&extra)
+	if !errors.Is(err, io.EOF) {
 		if err == nil {
-			return Config{}, errors.New("configuration file must contain exactly one YAML document")
+			return Config{}, errMultipleYAMLDocuments
 		}
+
 		return Config{}, fmt.Errorf("read trailing YAML document: %w", err)
 	}
 
@@ -59,10 +71,12 @@ func validate(cfg Config) (Config, error) {
 	cfg.OutputFile = strings.TrimSpace(cfg.OutputFile)
 
 	if cfg.InputFile == "" {
-		return Config{}, errors.New("required field input-file is missing")
+		return Config{}, errMissingInputFile
 	}
+
 	if cfg.OutputFile == "" {
-		return Config{}, errors.New("required field output-file is missing")
+		return Config{}, errMissingOutputFile
 	}
+
 	return cfg, nil
 }

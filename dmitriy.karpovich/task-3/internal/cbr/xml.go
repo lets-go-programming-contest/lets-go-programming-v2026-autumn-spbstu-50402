@@ -2,6 +2,7 @@ package cbr
 
 import (
 	"encoding/xml"
+	"errors"
 	"fmt"
 	"math"
 	"os"
@@ -11,8 +12,15 @@ import (
 	"github.com/voyadger01/task-3/internal/currency"
 )
 
+var (
+	errInvalidXMLRoot       = errors.New("invalid XML root element")
+	errEmptyXMLDocument     = errors.New("XML document does not contain Valute elements")
+	errMissingCharCode      = errors.New("charCode is missing")
+	errNonFiniteCurrencyVal = errors.New("value must be a finite number")
+)
+
 type xmlDocument struct {
-	XMLName xml.Name
+	XMLName xml.Name  `xml:"ValCurs"`
 	Rates   []xmlRate `xml:"Valute"`
 }
 
@@ -32,29 +40,37 @@ func ReadFile(path string) ([]currency.Rate, error) {
 	if err != nil {
 		return nil, fmt.Errorf("process XML file %q: %w", path, err)
 	}
+
 	return rates, nil
 }
 
 func Parse(data []byte) ([]currency.Rate, error) {
 	var document xmlDocument
-	if err := xml.Unmarshal(data, &document); err != nil {
+
+	err := xml.Unmarshal(data, &document)
+	if err != nil {
 		return nil, fmt.Errorf("decode XML document: %w", err)
 	}
+
 	if document.XMLName.Local != "ValCurs" {
-		return nil, fmt.Errorf("invalid XML root element: expected ValCurs, got %q", document.XMLName.Local)
+		return nil, fmt.Errorf("%w: got %q", errInvalidXMLRoot, document.XMLName.Local)
 	}
+
 	if len(document.Rates) == 0 {
-		return nil, fmt.Errorf("XML document does not contain Valute elements")
+		return nil, errEmptyXMLDocument
 	}
 
 	rates := make([]currency.Rate, 0, len(document.Rates))
+
 	for index, item := range document.Rates {
 		rate, err := parseRate(item, index+1)
 		if err != nil {
 			return nil, err
 		}
+
 		rates = append(rates, rate)
 	}
+
 	return rates, nil
 }
 
@@ -66,16 +82,18 @@ func parseRate(item xmlRate, position int) (currency.Rate, error) {
 
 	charCode := strings.TrimSpace(item.CharCode)
 	if charCode == "" {
-		return currency.Rate{}, fmt.Errorf("currency #%d: CharCode is missing", position)
+		return currency.Rate{}, fmt.Errorf("currency #%d: %w", position, errMissingCharCode)
 	}
 
 	valueText := strings.ReplaceAll(strings.TrimSpace(item.Value), ",", ".")
+
 	value, err := strconv.ParseFloat(valueText, 64)
 	if err != nil {
 		return currency.Rate{}, fmt.Errorf("currency %s: invalid Value %q: %w", charCode, item.Value, err)
 	}
+
 	if math.IsNaN(value) || math.IsInf(value, 0) {
-		return currency.Rate{}, fmt.Errorf("currency %s: Value must be a finite number", charCode)
+		return currency.Rate{}, fmt.Errorf("currency %s: %w", charCode, errNonFiniteCurrencyVal)
 	}
 
 	return currency.Rate{

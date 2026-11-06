@@ -3,7 +3,6 @@ package main
 import (
 	"flag"
 
-
 	"github.com/voyadger01/task-3/internal/cbr"
 	"github.com/voyadger01/task-3/internal/config"
 	"github.com/voyadger01/task-3/internal/currency"
@@ -12,6 +11,7 @@ import (
 
 func main() {
 	configPath := flag.String("config", "config.yaml", "path to config file")
+
 	flag.Parse()
 
 	cfg, err := config.Load(*configPath)
@@ -26,7 +26,8 @@ func main() {
 
 	currency.SortByValueDescending(rates)
 
-	if err := storage.WriteJSON(cfg.OutputFile, rates); err != nil {
+	err = storage.WriteJSON(cfg.OutputFile, rates)
+	if err != nil {
 		panic(err)
 	}
 }
