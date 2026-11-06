@@ -6,18 +6,20 @@ import (
 )
 
 const (
-	startMinTemp = 15
-	startMaxTemp = 30
+	startMinTemp       = 15
+	startMaxTemp       = 30
+	invalidTemperature = -1
 )
 
 var errUnsupportedOperation = errors.New("unsupported operation")
+var errInvalidRange = errors.New("temperatureRange: lower bound exceeds upper bound")
 
 type temperatureRange struct {
 	lower int
 	upper int
 }
 
-func newTempRange(lower, upper int) temperatureRange {
+func newTemperatureRange(lower, upper int) temperatureRange {
 	return temperatureRange{
 		lower: lower,
 		upper: upper,
@@ -25,25 +27,24 @@ func newTempRange(lower, upper int) temperatureRange {
 }
 
 func (tr *temperatureRange) updateTemps(operation string, temperature int) error {
-	if operation != "<=" && operation != ">=" {
+	switch operation {
+	case ">=":
+		tr.lower = max(tr.lower, temperature)
+	case "<=":
+		tr.upper = min(tr.upper, temperature)
+	default:
 		return fmt.Errorf("%w: %s", errUnsupportedOperation, operation)
-	}
-
-	if operation == ">=" && temperature > tr.lower {
-		tr.lower = temperature
-	} else if operation == "<=" && temperature < tr.upper {
-		tr.upper = temperature
 	}
 
 	return nil
 }
 
-func (tr *temperatureRange) current() int {
+func (tr *temperatureRange) current() (int, error) {
 	if tr.lower <= tr.upper {
-		return tr.lower
+		return tr.lower, nil
 	}
 
-	return -1
+	return 0, errInvalidRange
 }
 
 func main() {
@@ -64,7 +65,7 @@ func main() {
 			return
 		}
 
-		tempRange := newTempRange(startMinTemp, startMaxTemp)
+		tempRange := newTemperatureRange(startMinTemp, startMaxTemp)
 
 		for range staff {
 			var (
@@ -84,7 +85,12 @@ func main() {
 				return
 			}
 
-			fmt.Println(tempRange.current())
+			temp, err := tempRange.current()
+			if err != nil {
+				fmt.Println(invalidTemperature)
+			} else {
+				fmt.Println(temp)
+			}
 		}
 	}
 }
