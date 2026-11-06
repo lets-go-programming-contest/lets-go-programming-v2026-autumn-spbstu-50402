@@ -1,7 +1,6 @@
 package main
 
 import (
-	"bytes"
 	"cmp"
 	"encoding/json"
 	"encoding/xml"
@@ -52,7 +51,7 @@ func winDecoder(charset string, input io.Reader) (io.Reader, error) {
 	return input, nil
 }
 
-func toFloat(s string) (float64) {
+func toFloat(s string) float64 {
 	s = strings.Replace(s, ",", ".", 1)
 	val, _ := strconv.ParseFloat(s, 64)
 	return val
@@ -62,7 +61,7 @@ func sortFunc(a, b JSONValute) int {
 	return cmp.Compare(a.Value, b.Value)
 }
 
-func main() {
+func parseConfig() Config {
 	configPath := flag.String("config", "", "YAML-config path")
 	flag.Parse()
 	if *configPath == "" {
@@ -73,49 +72,69 @@ func main() {
 	if err != nil {
 		panic("Config import error")
 	}
-	
+
 	var cfg Config
 	err = yaml.Unmarshal(yamlConf, &cfg)
 	if err != nil {
 		panic("YAML decode error")
 	}
 
-	data, err := os.ReadFile(cfg.InputFile)
+	return cfg
+}
+
+func decodeXML(inputFile string) (*ValCurs, error) {
+	file, err := os.Open(inputFile)
 	if err != nil {
 		panic("XML read error")
 	}
+	defer file.Close()
 
-	decoder := xml.NewDecoder(bytes.NewReader(data))
+	decoder := xml.NewDecoder(file)
 	decoder.CharsetReader = winDecoder
 
 	var curs ValCurs
 	err = decoder.Decode(&curs)
-	if err != nil {
-		fmt.Printf("XML parce error: %v", err)
-		return
-	}
+	return &curs, err
+}
 
+func simplifyData(curs *ValCurs) []JSONValute {
 	var valutes []JSONValute
-	for _, v := range(curs.Valutes) {
+	for _, v := range curs.Valutes {
 		val := toFloat(v.Value)
 		valutes = append(valutes, JSONValute{
-			NumCode: v.NumCode,
+			NumCode:  v.NumCode,
 			CharCode: v.CharCode,
-			Value: val,
+			Value:    val,
 		})
 	}
+	return valutes
+}
 
-	slices.SortFunc(valutes, sortFunc)
-
+func writeJSON(valutes []JSONValute, outputFile string) {
 	jsonData, err := json.MarshalIndent(valutes, "", "    ")
 	if err != nil {
 		fmt.Printf("JSON serializing error: %v", err)
 		return
 	}
 
-	err = os.WriteFile(cfg.OutputFile, jsonData, os.ModePerm)
+	err = os.WriteFile(outputFile, jsonData, os.ModePerm)
 	if err != nil {
 		fmt.Printf("JSON writing error: %v", err)
 		return
 	}
+}
+
+func main() {
+	cfg := parseConfig()
+
+	curs, err := decodeXML(cfg.InputFile)
+	if err != nil {
+		panic("XML parse error")
+	}
+
+	valutes := simplifyData(curs)
+
+	slices.SortFunc(valutes, sortFunc)
+
+	writeJSON(valutes, cfg.OutputFile)
 }
