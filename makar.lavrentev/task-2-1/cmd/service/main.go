@@ -11,8 +11,10 @@ const (
 	invalidTemperature = -1
 )
 
-var errUnsupportedOperation = errors.New("unsupported operation")
-var errInvalidRange = errors.New("temperatureRange: lower bound exceeds upper bound")
+var (
+	errUnsupportedOperation = errors.New("unsupported operation")
+	errInvalidRange         = errors.New("temperatureRange: lower bound exceeds upper bound")
+)
 
 type temperatureRange struct {
 	lower int
