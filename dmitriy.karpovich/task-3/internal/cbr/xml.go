@@ -1,6 +1,7 @@
 package cbr
 
 import (
+	"bytes"
 	"encoding/xml"
 	"errors"
 	"fmt"
@@ -10,6 +11,7 @@ import (
 	"strings"
 
 	"github.com/voyadger01/task-3/internal/currency"
+	"golang.org/x/net/html/charset"
 )
 
 var (
@@ -47,7 +49,10 @@ func ReadFile(path string) ([]currency.Rate, error) {
 func Parse(data []byte) ([]currency.Rate, error) {
 	var document xmlDocument
 
-	err := xml.Unmarshal(data, &document)
+	decoder := xml.NewDecoder(bytes.NewReader(data))
+	decoder.CharsetReader = charset.NewReaderLabel
+
+	err := decoder.Decode(&document)
 	if err != nil {
 		return nil, fmt.Errorf("decode XML document: %w", err)
 	}
