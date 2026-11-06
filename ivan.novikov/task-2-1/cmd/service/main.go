@@ -15,13 +15,13 @@ var (
 	errNoOptimalTemperature = errors.New("cannot get optimal temperature")
 )
 
-type TemperatureRange struct {
+type temperatureRange struct {
 	lower int
 	upper int
 }
 
-func newTemperatureRange(lower, upper int) TemperatureRange {
-	return TemperatureRange{
+func newTemperatureRange(lower, upper int) temperatureRange {
+	return temperatureRange{
 		lower: lower,
 		upper: upper,
 	}
@@ -45,7 +45,7 @@ func getEmployeeData() (string, int, error) {
 	return operation, temperature, nil
 }
 
-func (tr *TemperatureRange) updateBounds(operation string, temperature int) error {
+func (tr *temperatureRange) updateBounds(operation string, temperature int) error {
 	switch operation {
 	case "<=":
 		if temperature < tr.upper {
@@ -62,7 +62,7 @@ func (tr *TemperatureRange) updateBounds(operation string, temperature int) erro
 	return nil
 }
 
-func (tr *TemperatureRange) getOptimalTemperature() (int, error) {
+func (tr *temperatureRange) getOptimalTemperature() (int, error) {
 	if tr.lower <= tr.upper {
 		return tr.lower, nil
 	}
