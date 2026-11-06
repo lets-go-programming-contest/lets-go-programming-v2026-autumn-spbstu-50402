@@ -17,7 +17,6 @@ import (
 var (
 	errInvalidXMLRoot       = errors.New("invalid XML root element")
 	errEmptyXMLDocument     = errors.New("XML document does not contain Valute elements")
-	errMissingCharCode      = errors.New("charCode is missing")
 	errNonFiniteCurrencyVal = errors.New("value must be a finite number")
 )
 
@@ -98,19 +97,30 @@ func parseRate(item xmlRate, position int) (currency.Rate, error) {
 	}
 
 	charCode := strings.TrimSpace(item.CharCode)
-	if charCode == "" {
-		return currency.Rate{}, fmt.Errorf("currency #%d: %w", position, errMissingCharCode)
-	}
 
+	value := 0.0
 	valueText := strings.ReplaceAll(strings.TrimSpace(item.Value), ",", ".")
 
-	value, err := strconv.ParseFloat(valueText, 64)
-	if err != nil {
-		return currency.Rate{}, fmt.Errorf("currency %s: invalid Value %q: %w", charCode, item.Value, err)
-	}
+	if valueText != "" {
+		parsedValue, parseErr := strconv.ParseFloat(valueText, 64)
+		if parseErr != nil {
+			return currency.Rate{}, fmt.Errorf(
+				"currency #%d: invalid Value %q: %w",
+				position,
+				item.Value,
+				parseErr,
+			)
+		}
 
-	if math.IsNaN(value) || math.IsInf(value, 0) {
-		return currency.Rate{}, fmt.Errorf("currency %s: %w", charCode, errNonFiniteCurrencyVal)
+		if math.IsNaN(parsedValue) || math.IsInf(parsedValue, 0) {
+			return currency.Rate{}, fmt.Errorf(
+				"currency #%d: %w",
+				position,
+				errNonFiniteCurrencyVal,
+			)
+		}
+
+		value = parsedValue
 	}
 
 	return currency.Rate{
