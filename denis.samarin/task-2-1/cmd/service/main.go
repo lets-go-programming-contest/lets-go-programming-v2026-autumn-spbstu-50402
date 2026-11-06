@@ -20,6 +20,13 @@ type request struct {
 	temp int
 }
 
+func newRequest(sign string, temp int) request {
+	return request{
+		sign: sign,
+		temp: temp,
+	}
+}
+
 type temperatureRange struct {
 	lower int
 	upper int
@@ -65,22 +72,25 @@ func readCount() (int, error) {
 }
 
 func readRequest() (request, error) {
-	var req request
+	var (
+		sign string
+		temp int
+	)
 
-	_, err := fmt.Scan(&req.sign)
+	_, err := fmt.Scan(&sign)
 	if err != nil {
-		return req, fmt.Errorf("read operation: %w", err)
+		return request{}, fmt.Errorf("read operation: %w", err)
 	}
 
-	_, err = fmt.Scan(&req.temp)
+	_, err = fmt.Scan(&temp)
 	if err != nil {
-		return req, fmt.Errorf("read temperature: %w", err)
+		return request{}, fmt.Errorf("read temperature: %w", err)
 	}
 
-	return req, nil
+	return newRequest(sign, temp), nil
 }
 
-func printOptimalTemperatures(workers int) error {
+func processDepartment(workers int) error {
 	tempRange := newTemperatureRange(minTemp, maxTemp)
 
 	for range workers {
@@ -121,7 +131,7 @@ func run() error {
 			return fmt.Errorf("read workers: %w", err)
 		}
 
-		err = printOptimalTemperatures(workers)
+		err = processDepartment(workers)
 		if err != nil {
 			return err
 		}
