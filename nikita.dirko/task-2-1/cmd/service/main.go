@@ -51,7 +51,7 @@ func (cb *temperatureBoundary) adjust(constraint constraint) error {
 			cb.upperBound = constraint.temperature
 		}
 	default:
-		return fmt.Errorf("%w: operator '%q' is not supported", errInvalidModifier, constraint.modifier)
+		return fmt.Errorf("%w: operator %q is not supported", errInvalidModifier, constraint.modifier)
 	}
 
 	return nil
