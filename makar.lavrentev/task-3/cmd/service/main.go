@@ -2,11 +2,14 @@ package main
 
 import (
 	"bytes"
+	"cmp"
+	"encoding/json"
 	"encoding/xml"
 	"flag"
 	"fmt"
 	"io"
 	"os"
+	"slices"
 	"strconv"
 	"strings"
 
@@ -37,9 +40,9 @@ type Valute struct {
 }
 
 type JSONValute struct {
-	NumCode  string  `json:"NumCode"`
-	CharCode string  `json:"CharCode"`
-	Value    float64 `json:"Value"`
+	NumCode  string  `json:"num_code"`
+	CharCode string  `json:"char_code"`
+	Value    float64 `json:"value"`
 }
 
 func winDecoder(charset string, input io.Reader) (io.Reader, error) {
@@ -53,6 +56,10 @@ func toFloat(s string) (float64) {
 	s = strings.Replace(s, ",", ".", 1)
 	val, _ := strconv.ParseFloat(s, 64)
 	return val
+}
+
+func sortFunc(a, b JSONValute) int {
+	return cmp.Compare(a.Value, b.Value)
 }
 
 func main() {
@@ -85,6 +92,7 @@ func main() {
 	err = decoder.Decode(&curs)
 	if err != nil {
 		fmt.Printf("XML parce error: %v", err)
+		return
 	}
 
 	var valutes []JSONValute
@@ -97,5 +105,17 @@ func main() {
 		})
 	}
 
-	
+	slices.SortFunc(valutes, sortFunc)
+
+	jsonData, err := json.MarshalIndent(valutes, "", "    ")
+	if err != nil {
+		fmt.Printf("JSON serializing error: %v", err)
+		return
+	}
+
+	err = os.WriteFile(cfg.OutputFile, jsonData, os.ModePerm)
+	if err != nil {
+		fmt.Printf("JSON writing error: %v", err)
+		return
+	}
 }
