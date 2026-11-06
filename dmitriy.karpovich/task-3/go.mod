@@ -1,4 +1,4 @@
-module github.com/voyadger01/task3
+module github.com/voyadger01/task-3
 
 go 1.22.7
 
