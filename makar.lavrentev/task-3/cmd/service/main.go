@@ -1,8 +1,8 @@
 package main
 
 import (
+	"encoding/xml"
 	"flag"
-	"log"
 	"os"
 
 	"gopkg.in/yaml.v3"
@@ -13,21 +13,38 @@ type Config struct {
 	OutputFile string `yaml:"output-file"`
 }
 
+type ValCurs struct {
+	XMLName xml.Name `xml:"ValCurs"`
+	Date    string   `xml:"Date,attr"`
+	Name    string   `xml:"name,attr"`
+	Valutes []Valute `xml:"Valute"`
+}
+
+type Valute struct {
+	ID        string `xml:"ID,attr"`
+	NumCode   string `xml:"NumCode"`
+	CharCode  string `xml:"CharCode"`
+	Nominal   int    `xml:"Nominal"`
+	Name      string `xml:"Name"`
+	Value     string `xml:"Value"`
+	VunitRate string `xml:"VunitRate"`
+}
+
 func main() {
 	configPath := flag.String("config", "", "YAML-config path")
 	flag.Parse()
 	if *configPath == "" {
-		log.Fatal("Invalid config flag")
+		panic("Invalid config flag")
 	}
 
 	yamlConf, err := os.ReadFile(*configPath)
 	if err != nil {
-		log.Fatalf("Config import error: %v", err)
+		panic("Config import error")
 	}
 	
 	var cfg Config
 	err = yaml.Unmarshal(yamlConf, &cfg)
 	if err != nil {
-		log.Fatalf("YAML decode error: %v", err)
+		panic("YAML decode error")
 	}
 }
