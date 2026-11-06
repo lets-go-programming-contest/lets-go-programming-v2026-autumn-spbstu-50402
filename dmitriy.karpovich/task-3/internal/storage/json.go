@@ -10,6 +10,11 @@ import (
 	"github.com/voyadger01/task-3/internal/currency"
 )
 
+const (
+	filePerms = 0o644
+	dirPerms = 0o755
+)
+
 func WriteJSON(path string, rates []currency.Rate) error {
 	path = strings.TrimSpace(path)
 	if path == "" {
@@ -25,7 +30,7 @@ func WriteJSON(path string, rates []currency.Rate) error {
 	if err := createParentDirectory(path); err != nil {
 		return err
 	}
-	if err := os.WriteFile(path, data, 0o644); err != nil {
+	if err := os.WriteFile(path, data, filePerms); err != nil {
 		return fmt.Errorf("write JSON file %q: %w", path, err)
 	}
 	return nil
@@ -33,7 +38,7 @@ func WriteJSON(path string, rates []currency.Rate) error {
 
 func createParentDirectory(path string) error {
 	directory := filepath.Dir(path)
-	if err := os.MkdirAll(directory, 0o755); err != nil {
+	if err := os.MkdirAll(directory, dirPerms); err != nil {
 		return fmt.Errorf("create output directory %q: %w", directory, err)
 	}
 	return nil
