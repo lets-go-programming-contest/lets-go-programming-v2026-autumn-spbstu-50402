@@ -80,9 +80,21 @@ func Parse(data []byte) ([]currency.Rate, error) {
 }
 
 func parseRate(item xmlRate, position int) (currency.Rate, error) {
-	numCode, err := strconv.Atoi(strings.TrimSpace(item.NumCode))
-	if err != nil {
-		return currency.Rate{}, fmt.Errorf("currency #%d: invalid NumCode %q: %w", position, item.NumCode, err)
+	numCode := 0
+	numCodeText := strings.TrimSpace(item.NumCode)
+
+	if numCodeText != "" {
+		parsedNumCode, parseErr := strconv.Atoi(numCodeText)
+		if parseErr != nil {
+			return currency.Rate{}, fmt.Errorf(
+				"currency #%d: invalid NumCode %q: %w",
+				position,
+				item.NumCode,
+				parseErr,
+			)
+		}
+
+		numCode = parsedNumCode
 	}
 
 	charCode := strings.TrimSpace(item.CharCode)
