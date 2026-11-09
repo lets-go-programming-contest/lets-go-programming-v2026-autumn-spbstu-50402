@@ -65,7 +65,7 @@ func toFloat(s string) float64 {
 }
 
 func sortFunc(a, b JSONValute) int {
-	return cmp.Compare(a.Value, b.Value)
+	return cmp.Compare(b.Value, a.Value)
 }
 
 func parseConfig() Config {
