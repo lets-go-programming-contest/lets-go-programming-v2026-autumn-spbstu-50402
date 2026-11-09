@@ -16,6 +16,11 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
+const (
+	dirPerm  = 0o755
+	filePerm = 0o600
+)
+
 type Config struct {
 	InputFile  string `yaml:"input-file"`
 	OutputFile string `yaml:"output-file"`
@@ -30,7 +35,7 @@ type ValCurs struct {
 
 type Valute struct {
 	ID        string `xml:"ID,attr"`
-	NumCode   string `xml:"NumCode"`
+	NumCode   int    `xml:"NumCode"`
 	CharCode  string `xml:"CharCode"`
 	Nominal   int    `xml:"Nominal"`
 	Name      string `xml:"Name"`
@@ -39,7 +44,7 @@ type Valute struct {
 }
 
 type JSONValute struct {
-	NumCode  string  `json:"num_code"`
+	NumCode  int     `json:"num_code"`
 	CharCode string  `json:"char_code"`
 	Value    float64 `json:"value"`
 }
@@ -85,7 +90,7 @@ func parseConfig() Config {
 	return cfg
 }
 
-func decodeXML(inputFile string) (*ValCurs, error) {
+func decodeXML(inputFile string) *ValCurs {
 	file, err := os.Open(inputFile)
 	if err != nil {
 		panic(err)
@@ -99,20 +104,22 @@ func decodeXML(inputFile string) (*ValCurs, error) {
 	decoder.CharsetReader = winDecoder
 
 	var curs ValCurs
-	err = decoder.Decode(&curs)
 
-	return &curs, err
+	if err := decoder.Decode(&curs); err != nil {
+		panic(err)
+	}
+
+	return &curs
 }
 
 func simplifyData(curs *ValCurs) []JSONValute {
 	valutes := make([]JSONValute, 0, len(curs.Valutes))
 
 	for _, v := range curs.Valutes {
-		val := toFloat(v.Value)
 		valutes = append(valutes, JSONValute{
 			NumCode:  v.NumCode,
 			CharCode: v.CharCode,
-			Value:    val,
+			Value:    toFloat(v.Value),
 		})
 	}
 
@@ -126,24 +133,19 @@ func writeJSON(valutes []JSONValute, outputFile string) {
 	}
 
 	if dir := filepath.Dir(outputFile); dir != "" {
-		if err := os.MkdirAll(dir, 0755); err != nil {
+		if err := os.MkdirAll(dir, dirPerm); err != nil {
 			panic(err)
 		}
 	}
 
-	if err := os.WriteFile(outputFile, jsonData, 0600); err != nil {
+	if err := os.WriteFile(outputFile, jsonData, filePerm); err != nil {
 		panic(err)
 	}
 }
 
 func main() {
 	cfg := parseConfig()
-
-	curs, err := decodeXML(cfg.InputFile)
-	if err != nil {
-		panic(err)
-	}
-
+	curs := decodeXML(cfg.InputFile)
 	valutes := simplifyData(curs)
 
 	slices.SortFunc(valutes, sortFunc)
