@@ -30,12 +30,13 @@ func ParseFile(path string) ([]Currency, error) {
 	if err != nil {
 		return nil, fmt.Errorf("open input file %q: %w", path, err)
 	}
-	defer file.Close()
+	defer func() { _ = file.Close() }()
 
 	decoder := xml.NewDecoder(file)
 
 	var document valCurs
 	err = decoder.Decode(&document)
+
 	if err != nil {
 		return nil, fmt.Errorf("decode xml document: %w", err)
 	}
@@ -62,6 +63,7 @@ func (v valute) convert() (Currency, error) {
 
 	normalized := strings.ReplaceAll(strings.TrimSpace(v.Value), ",", ".")
 	value, err := strconv.ParseFloat(normalized, 64)
+
 	if err != nil {
 		return Currency{}, fmt.Errorf("parse currency value %q: %w", v.Value, err)
 	}

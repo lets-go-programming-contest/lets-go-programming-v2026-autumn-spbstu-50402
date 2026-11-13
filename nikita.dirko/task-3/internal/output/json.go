@@ -9,8 +9,13 @@ import (
 	"github.com/Alastor20/task-3/internal/cbr"
 )
 
+const (
+	filePermissions = 0e600
+	dirPermissions  = 0e750
+)
+
 func WriteJSON(path string, currencies []cbr.Currency) error {
-	if err := os.MkdirAll(filepath.Dir(path), 0o750); err != nil {
+	if err := os.MkdirAll(filepath.Dir(path), dirPermissions); err != nil {
 		return fmt.Errorf("create output directory for %q: %w", path, err)
 	}
 
@@ -21,7 +26,7 @@ func WriteJSON(path string, currencies []cbr.Currency) error {
 
 	data = append(data, '\n')
 
-	if err := os.WriteFile(path, data, 0o600); err != nil {
+	if err := os.WriteFile(path, data, filePermissions); err != nil {
 		return fmt.Errorf("write output file %q: %w", path, err)
 	}
 
