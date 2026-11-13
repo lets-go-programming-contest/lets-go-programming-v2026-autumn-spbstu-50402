@@ -10,8 +10,8 @@ import (
 )
 
 const (
-	filePermissions = 0e600
-	dirPermissions  = 0e750
+	filePermissions = 0o600
+	dirPermissions  = 0o750
 )
 
 func WriteJSON(path string, currencies []cbr.Currency) error {
