@@ -3,7 +3,9 @@ package main
 import (
 	"flag"
 
+	"github.com/Alastor20/task-3/internal/cbr"
 	"github.com/Alastor20/task-3/internal/config"
+	"github.com/Alastor20/task-3/internal/output"
 )
 
 func main() {
@@ -11,7 +13,19 @@ func main() {
 
 	flag.Parse()
 
-	_, err := config.Load(*confPath)
+	cfg, err := config.Load(*confPath)
+	if err != nil {
+		panic(err)
+	}
+
+	currencies, err := cbr.ParseFile(cfg.InputFile)
+	if err != nil {
+		panic(err)
+	}
+
+	cbr.SortByValueDesc(currencies)
+
+	err = output.WriteJSON(cfg.OutputFile, currencies)
 	if err != nil {
 		panic(err)
 	}
