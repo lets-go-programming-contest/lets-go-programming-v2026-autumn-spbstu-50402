@@ -19,8 +19,8 @@ func Load(path string) (Config, error) {
 	}
 
 	var cfg Config
-	err = yaml.Unmarshal(data, &cfg)
 
+	err = yaml.Unmarshal(data, &cfg)
 	if err != nil {
 		return Config{}, fmt.Errorf("parse config file %q: %w", path, err)
 	}
