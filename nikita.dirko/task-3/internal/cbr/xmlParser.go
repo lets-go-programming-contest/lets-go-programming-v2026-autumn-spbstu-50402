@@ -3,9 +3,12 @@ package cbr
 import (
 	"encoding/xml"
 	"fmt"
+	"io"
 	"os"
 	"strconv"
 	"strings"
+
+	"golang.org/x/text/encoding/charmap"
 )
 
 type Currency struct {
@@ -33,6 +36,9 @@ func ParseFile(path string) ([]Currency, error) {
 	defer func() { _ = file.Close() }()
 
 	decoder := xml.NewDecoder(file)
+	decoder.CharsetReader = func(_ string, input io.Reader) (io.Reader, error) {
+		return charmap.Windows1251.NewDecoder().Reader(input), nil
+	}
 
 	var document valCurs
 	err = decoder.Decode(&document)
