@@ -1,5 +1,11 @@
 package main
 
 import (
-	"fmt"
+	"flag"
 )
+
+func main() {
+	_ = flag.String("config", "", "path to yaml config")
+
+	flag.Parse()
+}
