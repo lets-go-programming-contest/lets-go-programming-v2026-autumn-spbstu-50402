@@ -1,10 +1,9 @@
+
 package config
 
 import (
 	"bytes"
-	"errors"
 	"fmt"
-	"io"
 	"os"
 	"strings"
 
@@ -12,9 +11,8 @@ import (
 )
 
 var (
-	errMultipleYAMLDocuments = errors.New("configuration file must contain exactly one YAML document")
-	errMissingInputFile      = errors.New("required field input-file is missing")
-	errMissingOutputFile     = errors.New("required field output-file is missing")
+	errMissingInputFile  = fmt.Errorf("required field input-file is missing")
+	errMissingOutputFile = fmt.Errorf("required field output-file is missing")
 )
 
 type Config struct {
@@ -50,17 +48,6 @@ func decode(data []byte) (Config, error) {
 	err := decoder.Decode(&cfg)
 	if err != nil {
 		return Config{}, fmt.Errorf("decode YAML configuration: %w", err)
-	}
-
-	var extra any
-
-	err = decoder.Decode(&extra)
-	if !errors.Is(err, io.EOF) {
-		if err == nil {
-			return Config{}, errMultipleYAMLDocuments
-		}
-
-		return Config{}, fmt.Errorf("read trailing YAML document: %w", err)
 	}
 
 	return cfg, nil
