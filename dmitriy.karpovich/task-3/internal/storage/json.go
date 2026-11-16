@@ -1,3 +1,4 @@
+
 package storage
 
 import (
@@ -7,36 +8,33 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
-
-	"github.com/voyadger01/task-3/internal/currency"
 )
 
 var errEmptyOutputPath = errors.New("output file path is empty")
 
 const (
-	filePerms = 0e600
-	dirPerms  = 0e750
+	filePerms = 0o600
+	dirPerms  = 0o750
 )
 
-func WriteJSON(path string, rates []currency.Rate) error {
+func WriteJSON(path string, data any) error {
 	path = strings.TrimSpace(path)
+
 	if path == "" {
 		return errEmptyOutputPath
 	}
 
-	data, err := json.MarshalIndent(rates, "", "    ")
+	encoded, err := json.MarshalIndent(data, "", " ")
 	if err != nil {
 		return fmt.Errorf("encode JSON data: %w", err)
 	}
-
-	data = append(data, '\n')
 
 	err = createParentDirectory(path)
 	if err != nil {
 		return err
 	}
 
-	err = os.WriteFile(path, data, filePerms)
+	err = os.WriteFile(path, encoded, filePerms)
 	if err != nil {
 		return fmt.Errorf("write JSON file %q: %w", path, err)
 	}
