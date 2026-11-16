@@ -1,8 +1,8 @@
-
 package config
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
 	"os"
 	"strings"
@@ -11,8 +11,8 @@ import (
 )
 
 var (
-	errMissingInputFile  = fmt.Errorf("required field input-file is missing")
-	errMissingOutputFile = fmt.Errorf("required field output-file is missing")
+	errMissingInputFile  = errors.New("required field input-file is missing")
+	errMissingOutputFile = errors.New("required field output-file is missing")
 )
 
 type Config struct {

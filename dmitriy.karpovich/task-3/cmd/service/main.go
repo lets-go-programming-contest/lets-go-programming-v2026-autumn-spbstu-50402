@@ -19,7 +19,7 @@ func main() {
 		panic(err)
 	}
 
-	rates, err := cbr.ReadFile(cfg.InputFile)
+	rates, err := cbr.ParseFile(cfg.InputFile)
 	if err != nil {
 		panic(err)
 	}
