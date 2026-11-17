@@ -74,3 +74,11 @@ func Read(path string) ([]Quote, error) {
 func charsetReader(_ string, input io.Reader) (io.Reader, error) {
 	return charmap.Windows1251.NewDecoder().Reader(input), nil
 }
+
+func SortByValue(list []Quote) {
+	for i := 1; i < len(list); i++ {
+		for j := i; j > 0 && list[j].Value > list[j-1].Value; j-- {
+			list[j], list[j-1] = list[j-1], list[j]
+		}
+	}
+}

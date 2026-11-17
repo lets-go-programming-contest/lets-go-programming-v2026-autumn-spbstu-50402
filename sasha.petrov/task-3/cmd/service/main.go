@@ -44,5 +44,5 @@ func main() {
 		panic(err)
 	}
 
-	_ = list
+	rate.SortByValue(list)
 }
