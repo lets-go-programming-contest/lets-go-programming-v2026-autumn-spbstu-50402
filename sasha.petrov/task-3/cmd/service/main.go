@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"github.com/Sp0146001/task-3/internal/rate"
+	"github.com/Sp0146001/task-3/internal/report"
 	"gopkg.in/yaml.v3"
 )
 
@@ -45,4 +46,8 @@ func main() {
 	}
 
 	rate.SortByValue(list)
+
+	if err := report.Write(cfg.OutputFile, list); err != nil {
+		panic(err)
+	}
 }
