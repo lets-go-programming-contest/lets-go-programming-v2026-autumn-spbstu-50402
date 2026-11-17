@@ -4,6 +4,7 @@ import (
 	"flag"
 	"os"
 
+	"github.com/Sp0146001/task-3/internal/rate"
 	"gopkg.in/yaml.v3"
 )
 
@@ -37,4 +38,11 @@ func main() {
 	if cfg.InputFile == "" || cfg.OutputFile == "" {
 		panic("config: input-file and output-file are required")
 	}
+
+	list, err := rate.Read(cfg.InputFile)
+	if err != nil {
+		panic(err)
+	}
+
+	_ = list
 }
