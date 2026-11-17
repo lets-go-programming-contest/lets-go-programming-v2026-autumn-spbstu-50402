@@ -14,6 +14,7 @@ func WriteJSON(valutes []model.Valute, outputFile string) {
 	if err != nil {
 		panic(err)
 	}
+
 	if err := os.WriteFile(outputFile, jsonData, filePerm); err != nil {
 		panic(err)
 	}
