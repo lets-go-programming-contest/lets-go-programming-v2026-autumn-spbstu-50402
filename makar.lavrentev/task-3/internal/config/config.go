@@ -12,7 +12,7 @@ type Config struct {
 	OutputFile string `yaml:"output-file"`
 }
 
-func ParseConfig() Config {
+func ReadConfig() string {
 	configPath := flag.String("config", "", "YAML-config path")
 	flag.Parse()
 
@@ -20,7 +20,11 @@ func ParseConfig() Config {
 		panic("invalid config flag")
 	}
 
-	yamlConf, err := os.ReadFile(*configPath)
+	return *configPath
+}
+
+func ParseConfig(configPath string) Config {
+	yamlConf, err := os.ReadFile(configPath)
 	if err != nil {
 		panic(err)
 	}

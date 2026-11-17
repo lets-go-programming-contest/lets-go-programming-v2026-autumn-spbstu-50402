@@ -2,27 +2,32 @@ package model
 
 import (
 	"encoding/xml"
+	"strconv"
+	"strings"
 )
 
+type CommaFloat float64
+
+func (c *CommaFloat) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
+	var s string
+	if err := d.DecodeElement(&s, &start); err != nil {
+		return err
+	}
+	s = strings.Replace(s, ",", ".", 1)
+	val, err := strconv.ParseFloat(s, 64)
+	if err != nil {
+		return err
+	}
+	*c = CommaFloat(val)
+	return nil
+}
+
 type ValCurs struct {
-	XMLName xml.Name `xml:"ValCurs"`
-	Date    string   `xml:"Date,attr"`
-	Name    string   `xml:"name,attr"`
 	Valutes []Valute `xml:"Valute"`
 }
 
 type Valute struct {
-	ID        string `xml:"ID,attr"`
-	NumCode   int    `xml:"NumCode"`
-	CharCode  string `xml:"CharCode"`
-	Nominal   int    `xml:"Nominal"`
-	Name      string `xml:"Name"`
-	Value     string `xml:"Value"`
-	VunitRate string `xml:"VunitRate"`
-}
-
-type JSONValute struct {
-	NumCode  int     `json:"num_code"`
-	CharCode string  `json:"char_code"`
-	Value    float64 `json:"value"`
+	NumCode  int        `xml:"NumCode" json:"num_code"`
+	CharCode string     `xml:"CharCode" json:"char_code"`
+	Value    CommaFloat `xml:"Value" json:"value"`
 }

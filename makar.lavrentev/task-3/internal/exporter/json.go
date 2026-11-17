@@ -13,7 +13,7 @@ const (
 	filePerm = 0o600
 )
 
-func WriteJSON(valutes []model.JSONValute, outputFile string) {
+func WriteJSON(valutes []model.Valute, outputFile string) {
 	jsonData, err := json.MarshalIndent(valutes, "", "    ")
 	if err != nil {
 		panic(err)

@@ -10,9 +10,9 @@ import (
 )
 
 func main() {
-	cfg := config.ParseConfig()
+	cfgPath := config.ReadConfig()
+	cfg := config.ParseConfig(cfgPath)
 	curs := parser.DecodeXML(cfg.InputFile)
-	valutes := service.SimplifyData(curs)
-	slices.SortFunc(valutes, service.SortFunc)
-	exporter.WriteJSON(valutes, cfg.OutputFile)
+	slices.SortFunc(curs.Valutes, service.SortFunc)
+	exporter.WriteJSON(curs.Valutes, cfg.OutputFile)
 }
