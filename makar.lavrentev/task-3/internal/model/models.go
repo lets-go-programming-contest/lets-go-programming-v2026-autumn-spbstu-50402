@@ -10,14 +10,14 @@ import (
 type CommaFloat float64
 
 func (c *CommaFloat) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
-	var s string
-	if err := d.DecodeElement(&s, &start); err != nil {
+	var str string
+	if err := d.DecodeElement(&str, &start); err != nil {
 		return fmt.Errorf("decode element: %w", err)
 	}
 
-	s = strings.Replace(s, ",", ".", 1)
+	str = strings.Replace(str, ",", ".", 1)
 
-	val, err := strconv.ParseFloat(s, 64)
+	val, err := strconv.ParseFloat(str, 64)
 	if err != nil {
 		return fmt.Errorf("parse float: %w", err)
 	}

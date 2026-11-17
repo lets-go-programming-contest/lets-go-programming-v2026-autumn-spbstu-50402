@@ -7,6 +7,5 @@ import (
 )
 
 func SortFunc(a, b model.Valute) int {
-
 	return cmp.Compare(b.Value, a.Value)
 }
