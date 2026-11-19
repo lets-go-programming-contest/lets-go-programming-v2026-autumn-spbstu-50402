@@ -5,8 +5,6 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-
-	"github.com/Alastor20/task-3/internal/cbr"
 )
 
 const (
@@ -14,19 +12,17 @@ const (
 	dirPermissions  = 0o750
 )
 
-func WriteJSON(path string, currencies []cbr.Currency) error {
+func WriteJSON(path string, data any) error {
 	if err := os.MkdirAll(filepath.Dir(path), dirPermissions); err != nil {
 		return fmt.Errorf("create output directory for %q: %w", path, err)
 	}
 
-	data, err := json.MarshalIndent(currencies, "", "  ")
+	encoded, err := json.MarshalIndent(data, "", "  ")
 	if err != nil {
-		return fmt.Errorf("encode currencies to json: %w", err)
+		return fmt.Errorf("encode data to json: %w", err)
 	}
 
-	data = append(data, '\n')
-
-	if err := os.WriteFile(path, data, filePermissions); err != nil {
+	if err := os.WriteFile(path, encoded, filePermissions); err != nil {
 		return fmt.Errorf("write output file %q: %w", path, err)
 	}
 
