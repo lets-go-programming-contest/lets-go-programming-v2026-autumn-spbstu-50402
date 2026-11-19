@@ -20,7 +20,6 @@ type Currency struct {
 }
 
 type valCurs struct {
-	XMLName    xml.Name   `xml:"ValCurs"`
 	Currencies []Currency `xml:"Valute"`
 }
 
