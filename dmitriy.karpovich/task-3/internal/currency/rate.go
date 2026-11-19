@@ -3,57 +3,61 @@ package currency
 import (
 	"errors"
 	"fmt"
+	"math"
 	"sort"
 	"strconv"
 	"strings"
 )
 
 var (
-	errEmptyCurrencyValue = errors.New("currency Value is empty")
-	ErrInvalidNumCode     = errors.New("invalid NumCode")
+	ErrInvalidNumCode = errors.New("invalid NumCode")
+	ErrInvalidValue   = errors.New("invalid currency Value")
 )
 
-type Rate struct {
-	NumCode  int     `json:"num_code"`
-	CharCode string  `json:"char_code"`
-	Value    float64 `json:"value"`
+type NumCode int
+
+func (code *NumCode) UnmarshalText(text []byte) error {
+	value := strings.TrimSpace(string(text))
+	if value == "" {
+		*code = 0
+
+		return nil
+	}
+
+	parsed, err := strconv.Atoi(value)
+	if err != nil {
+		return fmt.Errorf("%w: %q", ErrInvalidNumCode, value)
+	}
+
+	*code = NumCode(parsed)
+
+	return nil
 }
 
-func NewRate(numCodeText, charCode, valueText string) (Rate, error) {
-	var numCode int
+type RateValue float64
 
-	numCodeText = strings.TrimSpace(numCodeText)
-
-	if numCodeText != "" {
-		parsedNumCode, err := strconv.Atoi(numCodeText)
-		if err != nil {
-			return Rate{}, fmt.Errorf(
-				"%w: %q: %w",
-				ErrInvalidNumCode,
-				numCodeText,
-				err,
-			)
-		}
-
-		numCode = parsedNumCode
+func (value *RateValue) UnmarshalText(text []byte) error {
+	original := strings.TrimSpace(string(text))
+	if original == "" {
+		return fmt.Errorf("%w: value is empty", ErrInvalidValue)
 	}
 
-	valueText = strings.ReplaceAll(strings.TrimSpace(valueText), ",", ".")
+	normalized := strings.ReplaceAll(original, ",", ".")
 
-	if valueText == "" {
-		return Rate{}, errEmptyCurrencyValue
+	parsed, err := strconv.ParseFloat(normalized, 64)
+	if err != nil || math.IsNaN(parsed) || math.IsInf(parsed, 0) {
+		return fmt.Errorf("%w: %q", ErrInvalidValue, original)
 	}
 
-	parsedValue, err := strconv.ParseFloat(valueText, 64)
-	if err != nil {
-		return Rate{}, fmt.Errorf("invalid Value %q: %w", valueText, err)
-	}
+	*value = RateValue(parsed)
 
-	return Rate{
-		NumCode:  numCode,
-		CharCode: strings.TrimSpace(charCode),
-		Value:    parsedValue,
-	}, nil
+	return nil
+}
+
+type Rate struct {
+	NumCode  NumCode   `json:"num_code"  xml:"NumCode"`
+	CharCode string    `json:"char_code" xml:"CharCode"`
+	Value    RateValue `json:"value"     xml:"Value"`
 }
 
 func SortByValueDescending(rates []Rate) {

@@ -1,6 +1,7 @@
 package cbr
 
 import (
+	"bytes"
 	"encoding/xml"
 	"fmt"
 	"os"
@@ -10,74 +11,33 @@ import (
 )
 
 type xmlDocument struct {
-	XMLName xml.Name  `xml:"ValCurs"`
-	Rates   []xmlRate `xml:"Valute"`
-}
-
-type xmlRate struct {
-	rate currency.Rate
-}
-
-func (r *xmlRate) UnmarshalXML(
-	decoder *xml.Decoder,
-	start xml.StartElement,
-) error {
-	var item struct {
-		NumCode  string `xml:"NumCode"`
-		CharCode string `xml:"CharCode"`
-		Value    string `xml:"Value"`
-	}
-
-	err := decoder.DecodeElement(&item, &start)
-	if err != nil {
-		return fmt.Errorf("decode Valute element: %w", err)
-	}
-
-	rate, err := currency.NewRate(
-		item.NumCode,
-		item.CharCode,
-		item.Value,
-	)
-	if err != nil {
-		return fmt.Errorf("parse currency rate: %w", err)
-	}
-
-	r.rate = rate
-
-	return nil
-}
-
-func panicIfErr(err error) {
-	if err != nil {
-		panic(err)
-	}
+	Rates []currency.Rate `xml:"Valute"`
 }
 
 func ParseFile(path string) ([]currency.Rate, error) {
-	file, err := os.Open(path)
+	data, err := os.ReadFile(path)
 	if err != nil {
-		return nil, fmt.Errorf("open XML file %q: %w", path, err)
+		return nil, fmt.Errorf("read XML file %q: %w", path, err)
 	}
 
-	defer func() {
-		panicIfErr(file.Close())
-	}()
+	rates, err := parse(data)
+	if err != nil {
+		return nil, fmt.Errorf("parse XML file %q: %w", path, err)
+	}
 
+	return rates, nil
+}
+
+func parse(data []byte) ([]currency.Rate, error) {
 	var document xmlDocument
 
-	decoder := xml.NewDecoder(file)
+	decoder := xml.NewDecoder(bytes.NewReader(data))
 	decoder.CharsetReader = charset.NewReaderLabel
 
-	err = decoder.Decode(&document)
+	err := decoder.Decode(&document)
 	if err != nil {
 		return nil, fmt.Errorf("decode XML document: %w", err)
 	}
 
-	rates := make([]currency.Rate, 0, len(document.Rates))
-
-	for _, item := range document.Rates {
-		rates = append(rates, item.rate)
-	}
-
-	return rates, nil
+	return document.Rates, nil
 }

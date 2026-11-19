@@ -16,9 +16,8 @@ const (
 	dirPerms  = 0o750
 )
 
-func WriteJSON(path string, data any) error {
+func WriteJSON[T any](path string, data T) error {
 	path = strings.TrimSpace(path)
-
 	if path == "" {
 		return errEmptyOutputPath
 	}
