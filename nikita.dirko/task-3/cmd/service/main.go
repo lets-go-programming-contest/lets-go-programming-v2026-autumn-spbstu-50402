@@ -1,32 +1,40 @@
 package main
 
 import (
+	"errors"
 	"flag"
 
 	"github.com/Alastor20/task-3/internal/cbr"
 	"github.com/Alastor20/task-3/internal/config"
+	"github.com/Alastor20/task-3/internal/must"
 	"github.com/Alastor20/task-3/internal/output"
 )
 
+var errConfigPathNotSet = errors.New("config path is not specified")
+
 func main() {
-	confPath := flag.String("config", "", "path to config file")
+	configPath, err := readConfigPath()
+	must.NoError(err)
 
-	flag.Parse()
-
-	cfg, err := config.Load(*confPath)
-	if err != nil {
-		panic(err)
-	}
+	cfg, err := config.Load(configPath)
+	must.NoError(err)
 
 	currencies, err := cbr.ParseFile(cfg.InputFile)
-	if err != nil {
-		panic(err)
-	}
+	must.NoError(err)
 
 	cbr.SortByValueDesc(currencies)
 
-	err = output.WriteJSON(cfg.OutputFile, currencies)
-	if err != nil {
-		panic(err)
+	must.NoError(output.WriteJSON(cfg.OutputFile, currencies))
+}
+
+func readConfigPath() (string, error) {
+	configPath := flag.String("config", "", "path to config file")
+
+	flag.Parse()
+
+	if *configPath == "" {
+		return "", errConfigPathNotSet
 	}
+
+	return *configPath, nil
 }

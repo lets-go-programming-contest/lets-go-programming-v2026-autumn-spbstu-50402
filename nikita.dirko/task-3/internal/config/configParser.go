@@ -1,10 +1,16 @@
 package config
 
 import (
+	"errors"
 	"fmt"
 	"os"
 
 	"gopkg.in/yaml.v3"
+)
+
+var (
+	errInputFileNotSet  = errors.New("input file is not specified")
+	errOutputFileNotSet = errors.New("output file is not specified")
 )
 
 type Config struct {
@@ -25,5 +31,22 @@ func Load(path string) (Config, error) {
 		return Config{}, fmt.Errorf("parse config file %q: %w", path, err)
 	}
 
+	err = cfg.Validate()
+	if err != nil {
+		return Config{}, fmt.Errorf("validate config file %q: %w", path, err)
+	}
+
 	return cfg, nil
+}
+
+func (cfg Config) Validate() error {
+	if cfg.InputFile == "" {
+		return errInputFileNotSet
+	}
+
+	if cfg.OutputFile == "" {
+		return errOutputFileNotSet
+	}
+
+	return nil
 }
