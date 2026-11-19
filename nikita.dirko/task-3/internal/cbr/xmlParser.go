@@ -8,6 +8,8 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/Alastor20/task-3/internal/decimal"
+	"github.com/Alastor20/task-3/internal/must"
 	"golang.org/x/text/encoding/charmap"
 )
 
@@ -18,14 +20,8 @@ type Currency struct {
 }
 
 type valCurs struct {
-	XMLName xml.Name `xml:"ValCurs"`
-	Values  []valute `xml:"Valute"`
-}
-
-type valute struct {
-	NumCode  string `xml:"NumCode"`
-	CharCode string `xml:"CharCode"`
-	Value    string `xml:"Value"`
+	XMLName    xml.Name   `xml:"ValCurs"`
+	Currencies []Currency `xml:"Valute"`
 }
 
 func ParseFile(path string) ([]Currency, error) {
@@ -34,7 +30,9 @@ func ParseFile(path string) ([]Currency, error) {
 		return nil, fmt.Errorf("open input file %q: %w", path, err)
 	}
 
-	defer func() { _ = file.Close() }()
+	defer func() {
+		must.NoError(file.Close())
+	}()
 
 	decoder := xml.NewDecoder(file)
 	decoder.CharsetReader = func(_ string, input io.Reader) (io.Reader, error) {
@@ -48,42 +46,46 @@ func ParseFile(path string) ([]Currency, error) {
 		return nil, fmt.Errorf("decode xml document: %w", err)
 	}
 
-	currencies := make([]Currency, 0, len(document.Values))
-
-	for _, rawValute := range document.Values {
-		currency, err := rawValute.convert()
-		if err != nil {
-			return nil, err
-		}
-
-		currencies = append(currencies, currency)
+	if document.Currencies == nil {
+		document.Currencies = []Currency{}
 	}
 
-	return currencies, nil
+	return document.Currencies, nil
 }
 
-func (v valute) convert() (Currency, error) {
-	numCode := 0
-
-	if trimmedNumCode := strings.TrimSpace(v.NumCode); trimmedNumCode != "" {
-		parsedNumCode, err := strconv.Atoi(trimmedNumCode)
-		if err != nil {
-			return Currency{}, fmt.Errorf("parse code %q: %w", v.NumCode, err)
-		}
-
-		numCode = parsedNumCode
+func (currency *Currency) UnmarshalXML(decoder *xml.Decoder, start xml.StartElement) error {
+	var payload struct {
+		NumCode  string        `xml:"NumCode"`
+		CharCode string        `xml:"CharCode"`
+		Value    decimal.Value `xml:"Value"`
 	}
 
-	normalized := strings.ReplaceAll(strings.TrimSpace(v.Value), ",", ".")
+	if err := decoder.DecodeElement(&payload, &start); err != nil {
+		return fmt.Errorf("decode valute element: %w", err)
+	}
 
-	value, err := strconv.ParseFloat(normalized, 64)
+	numCode, err := parseNumCode(payload.NumCode)
 	if err != nil {
-		return Currency{}, fmt.Errorf("parse currency value %q: %w", v.Value, err)
+		return err
 	}
 
-	return Currency{
-		NumCode:  numCode,
-		CharCode: strings.TrimSpace(v.CharCode),
-		Value:    value,
-	}, nil
+	currency.NumCode = numCode
+	currency.CharCode = strings.TrimSpace(payload.CharCode)
+	currency.Value = float64(payload.Value)
+
+	return nil
+}
+
+func parseNumCode(raw string) (int, error) {
+	trimmed := strings.TrimSpace(raw)
+	if trimmed == "" {
+		return 0, nil
+	}
+
+	numCode, err := strconv.Atoi(trimmed)
+	if err != nil {
+		return 0, fmt.Errorf("parse num code %q: %w", raw, err)
+	}
+
+	return numCode, nil
 }
