@@ -32,9 +32,9 @@ func (value *Decimal) UnmarshalXML(decoder *xml.Decoder, start xml.StartElement)
 }
 
 type Quote struct {
-	NumCode  int     `xml:"NumCode" json:"num_code"`
-	CharCode string  `xml:"CharCode" json:"char_code"`
-	Value    Decimal `xml:"Value" json:"value"`
+	NumCode  int     `json:"num_code"  xml:"NumCode"`
+	CharCode string  `json:"char_code" xml:"CharCode"`
+	Value    Decimal `json:"value"     xml:"Value"`
 }
 
 func Read(path string, result any) error {
