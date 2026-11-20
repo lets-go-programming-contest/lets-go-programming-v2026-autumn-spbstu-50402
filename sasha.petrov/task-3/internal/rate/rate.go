@@ -37,25 +37,20 @@ type Quote struct {
 	Value    Decimal `xml:"Value" json:"value"`
 }
 
-func Read(path string) ([]Quote, error) {
+func Read(path string, result any) error {
 	data, err := os.ReadFile(path)
 	if err != nil {
-		return nil, fmt.Errorf("read xml %q: %w", path, err)
-	}
-
-	var curs struct {
-		XMLName xml.Name `xml:"ValCurs"`
-		Items   []Quote  `xml:"Valute"`
+		return fmt.Errorf("read xml %q: %w", path, err)
 	}
 
 	decoder := xml.NewDecoder(bytes.NewReader(data))
 	decoder.CharsetReader = charsetReader
 
-	if err := decoder.Decode(&curs); err != nil {
-		return nil, fmt.Errorf("parse xml %q: %w", path, err)
+	if err := decoder.Decode(result); err != nil {
+		return fmt.Errorf("parse xml %q: %w", path, err)
 	}
 
-	return curs.Items, nil
+	return nil
 }
 
 func charsetReader(_ string, input io.Reader) (io.Reader, error) {

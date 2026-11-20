@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/xml"
 	"flag"
 
 	"github.com/Sp0146001/task-3/internal/config"
@@ -24,14 +25,18 @@ func main() {
 		panic(err)
 	}
 
-	list, err := rate.Read(cfg.InputFile)
-	if err != nil {
+	var curs struct {
+		XMLName xml.Name     `xml:"ValCurs"`
+		Items   []rate.Quote `xml:"Valute"`
+	}
+
+	if err := rate.Read(cfg.InputFile, &curs); err != nil {
 		panic(err)
 	}
 
-	rate.SortByValue(list)
+	rate.SortByValue(curs.Items)
 
-	if err := report.Write(cfg.OutputFile, list); err != nil {
+	if err := report.Write(cfg.OutputFile, curs.Items); err != nil {
 		panic(err)
 	}
 }
