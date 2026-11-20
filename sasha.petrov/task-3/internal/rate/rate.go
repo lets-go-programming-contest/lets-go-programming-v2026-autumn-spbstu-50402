@@ -12,42 +12,29 @@ import (
 	"golang.org/x/text/encoding/charmap"
 )
 
-type Quote struct {
-	NumCode  int     `json:"num_code"`
-	CharCode string  `json:"char_code"`
-	Value    float64 `json:"value"`
-}
+type Decimal float64
 
-func (quote *Quote) UnmarshalXML(decoder *xml.Decoder, start xml.StartElement) error {
-	var raw struct {
-		NumCode  string `xml:"NumCode"`
-		CharCode string `xml:"CharCode"`
-		Value    string `xml:"Value"`
+func (value *Decimal) UnmarshalXML(decoder *xml.Decoder, start xml.StartElement) error {
+	var text string
+
+	if err := decoder.DecodeElement(&text, &start); err != nil {
+		return fmt.Errorf("decode value: %w", err)
 	}
 
-	if err := decoder.DecodeElement(&raw, &start); err != nil {
-		return fmt.Errorf("decode valute: %w", err)
-	}
-
-	quote.CharCode = strings.TrimSpace(raw.CharCode)
-
-	if code := strings.TrimSpace(raw.NumCode); code != "" {
-		numCode, err := strconv.Atoi(code)
-		if err != nil {
-			return fmt.Errorf("num code %q: %w", raw.NumCode, err)
-		}
-
-		quote.NumCode = numCode
-	}
-
-	value, err := strconv.ParseFloat(strings.Replace(raw.Value, ",", ".", 1), 64)
+	number, err := strconv.ParseFloat(strings.Replace(text, ",", ".", 1), 64)
 	if err != nil {
-		return fmt.Errorf("value %q: %w", raw.Value, err)
+		return fmt.Errorf("parse value %q: %w", text, err)
 	}
 
-	quote.Value = value
+	*value = Decimal(number)
 
 	return nil
+}
+
+type Quote struct {
+	NumCode  int     `xml:"NumCode" json:"num_code"`
+	CharCode string  `xml:"CharCode" json:"char_code"`
+	Value    Decimal `xml:"Value" json:"value"`
 }
 
 func Read(path string) ([]Quote, error) {
