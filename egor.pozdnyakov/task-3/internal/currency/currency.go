@@ -53,3 +53,9 @@ func ReadXML(path string) ([]Currency, error) {
 
 	return parsed.Currencies, nil
 }
+
+func SortByValueDesc(currencies []Currency) {
+	sort.SliceStable(currencies, func(i, j int) bool {
+		return currencies[i].Value > currencies[j].Value
+	})
+}
