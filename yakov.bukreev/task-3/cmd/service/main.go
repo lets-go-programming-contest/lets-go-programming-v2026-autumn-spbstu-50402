@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/BukreevYas/task-3/internal/config"
+	"github.com/BukreevYas/task-3/internal/report"
 )
 
 func main() {
@@ -16,5 +17,10 @@ func main() {
 		panic(err)
 	}
 
-	fmt.Println(cfg.InputFile)
+	data, err := report.ParseReport(cfg.InputFile)
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println(data[0].Value)
 }
