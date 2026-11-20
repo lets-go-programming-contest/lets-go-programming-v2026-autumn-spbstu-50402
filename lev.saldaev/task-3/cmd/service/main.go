@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"path/filepath"
 	"sort"
 	"strconv"
 	"strings"
@@ -16,7 +17,10 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-const filePermissions = 0o600
+const (
+	filePermissions = 0o600
+	dirPermissions  = 0o750
+)
 
 type config struct {
 	InputFile  string `yaml:"input-file"`
@@ -74,6 +78,9 @@ func loadConfig(path string) (config, error) {
 	if err != nil {
 		return config{}, fmt.Errorf("decode config file %q: %w", path, err)
 	}
+
+	cfg.InputFile = strings.TrimSpace(cfg.InputFile)
+	cfg.OutputFile = strings.TrimSpace(cfg.OutputFile)
 
 	return cfg, nil
 }
@@ -138,6 +145,11 @@ func writeJSON(path string, rates []rate) error {
 	data, err := json.MarshalIndent(rates, "", "  ")
 	if err != nil {
 		return fmt.Errorf("encode rates as JSON: %w", err)
+	}
+
+	err = os.MkdirAll(filepath.Dir(path), dirPermissions)
+	if err != nil {
+		return fmt.Errorf("create output directory for %q: %w", path, err)
 	}
 
 	err = os.WriteFile(path, data, filePermissions)
