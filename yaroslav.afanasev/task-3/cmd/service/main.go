@@ -24,8 +24,10 @@ func main() {
 func readConfigPath() (string, error) {
 	configPath := flag.String("config", "", "path to config file")
 	flag.Parse()
+
 	if *configPath == "" {
 		return "", errConfigPathNotSet
 	}
+
 	return *configPath, nil
 }
