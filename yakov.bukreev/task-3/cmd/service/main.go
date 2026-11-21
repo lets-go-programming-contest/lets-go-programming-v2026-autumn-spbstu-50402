@@ -18,7 +18,7 @@ func main() {
 		panic(err)
 	}
 
-	data, err := report.ParseReport(cfg.InputFile)
+	data, err := report.ReadXml(cfg.InputFile)
 	if err != nil {
 		panic(err)
 	}

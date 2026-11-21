@@ -19,7 +19,7 @@ type reportData struct {
 	Currecies []CurrencyInfo `xml:"Valute"`
 }
 
-func ParseReport(path string) ([]CurrencyInfo, error) {
+func ReadXml(path string) ([]CurrencyInfo, error) {
 	report, err := os.ReadFile(path)
 	if err != nil {
 		return nil, fmt.Errorf("Failed to read report file %q: %w", path, err)
