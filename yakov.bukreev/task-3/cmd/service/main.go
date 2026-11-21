@@ -1,0 +1,37 @@
+package main
+
+import (
+	"flag"
+	"sort"
+
+	"github.com/BukreevYas/task-3/internal/config"
+	"github.com/BukreevYas/task-3/internal/report"
+)
+
+const (
+	filePerm = 0o644
+	dirPerm  = 0o750
+)
+
+func main() {
+	path := flag.String("config", "", "configuration file path")
+	flag.Parse()
+
+	cfg, err := config.LoadConfig(*path)
+	if err != nil {
+		panic(err)
+	}
+
+	data, err := report.ReadXML(cfg.InputFile)
+	if err != nil {
+		panic(err)
+	}
+
+	sort.Slice(data, func(i, j int) bool {
+		return data[i].Value > data[j].Value
+	})
+
+	if err := report.WriteJSON(cfg.OutputFile, filePerm, dirPerm, data); err != nil {
+		panic(err)
+	}
+}
