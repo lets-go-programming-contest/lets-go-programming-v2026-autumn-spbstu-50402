@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"sort"
 
 	"github.com/BukreevYas/task-3/internal/config"
 	"github.com/BukreevYas/task-3/internal/report"
@@ -21,6 +22,10 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+
+	sort.Slice(data, func(i, j int) bool {
+		return data[i].Value > data[j].Value
+	})
 
 	fmt.Println(data[0].Value)
 }
