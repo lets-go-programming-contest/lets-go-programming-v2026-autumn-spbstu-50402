@@ -8,6 +8,11 @@ import (
 	"github.com/BukreevYas/task-3/internal/report"
 )
 
+const (
+	filePerm = 0o644
+	dirPerm  = 0o750
+)
+
 func main() {
 	path := flag.String("config", "", "configuration file path")
 	flag.Parse()
@@ -26,7 +31,7 @@ func main() {
 		return data[i].Value > data[j].Value
 	})
 
-	if err := report.WriteJSON(cfg.OutputFile, 0o644, 0o750, data); err != nil {
+	if err := report.WriteJSON(cfg.OutputFile, filePerm, dirPerm, data); err != nil {
 		panic(err)
 	}
 }
