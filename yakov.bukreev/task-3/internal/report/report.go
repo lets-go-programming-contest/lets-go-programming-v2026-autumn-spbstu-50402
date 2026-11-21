@@ -6,6 +6,7 @@ import (
 	"encoding/xml"
 	"fmt"
 	"os"
+	"path/filepath"
 
 	"golang.org/x/net/html/charset"
 )
@@ -40,13 +41,18 @@ func ReadXml(path string) ([]CurrencyInfo, error) {
 	return data.Currecies, nil
 }
 
-func WriteJson(path string, mode os.FileMode, data []CurrencyInfo) error {
+func WriteJson(path string, fileMode, dirMode os.FileMode, data []CurrencyInfo) error {
 	jsonBytes, err := json.MarshalIndent(data, "", "    ")
 	if err != nil {
 		return fmt.Errorf("Failed to marshal json data for file %q: %w", path, err)
 	}
 
-	if err := os.WriteFile(path, jsonBytes, mode); err != nil {
+	dir := filepath.Dir(path)
+	if err := os.MkdirAll(dir, dirMode); err != nil {
+		return fmt.Errorf("Failed to create directory %q: %w", dir, err)
+	}
+
+	if err := os.WriteFile(path, jsonBytes, fileMode); err != nil {
 		return fmt.Errorf("Failed to write json file %q: %w", path, err)
 	}
 

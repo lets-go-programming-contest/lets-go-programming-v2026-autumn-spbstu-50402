@@ -26,7 +26,7 @@ func main() {
 		return data[i].Value > data[j].Value
 	})
 
-	if err := report.WriteJson(cfg.OutputFile, 0644, data); err != nil {
+	if err := report.WriteJson(cfg.OutputFile, 0644, 0750, data); err != nil {
 		panic(err)
 	}
 }
