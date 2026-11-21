@@ -2,7 +2,6 @@ package main
 
 import (
 	"flag"
-	"fmt"
 	"sort"
 
 	"github.com/BukreevYas/task-3/internal/config"
@@ -27,5 +26,7 @@ func main() {
 		return data[i].Value > data[j].Value
 	})
 
-	fmt.Println(data[0].Value)
+	if err := report.WriteJson(cfg.OutputFile, 0644, data); err != nil {
+		panic(err)
+	}
 }

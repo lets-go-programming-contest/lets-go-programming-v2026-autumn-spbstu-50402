@@ -2,6 +2,7 @@ package report
 
 import (
 	"bytes"
+	"encoding/json"
 	"encoding/xml"
 	"fmt"
 	"os"
@@ -10,9 +11,9 @@ import (
 )
 
 type CurrencyInfo struct {
-	NumCode  int     `xml:"NumCode"`
-	CharCode string  `xml:"CharCode"`
-	Value    float32 `xml:"Value"`
+	NumCode  int     `xml:"NumCode"   json:"num_code"`
+	CharCode string  `xml:"CharCode"  json:"char_code"`
+	Value    float32 `xml:"Value"     json:"value"`
 }
 
 type reportData struct {
@@ -37,4 +38,17 @@ func ReadXml(path string) ([]CurrencyInfo, error) {
 	}
 
 	return data.Currecies, nil
+}
+
+func WriteJson(path string, mode os.FileMode, data []CurrencyInfo) error {
+	jsonBytes, err := json.MarshalIndent(data, "", "    ")
+	if err != nil {
+		return fmt.Errorf("Failed to marshal json data for file %q: %w", path, err)
+	}
+
+	if err := os.WriteFile(path, jsonBytes, mode); err != nil {
+		return fmt.Errorf("Failed to write json file %q: %w", path, err)
+	}
+
+	return nil
 }
