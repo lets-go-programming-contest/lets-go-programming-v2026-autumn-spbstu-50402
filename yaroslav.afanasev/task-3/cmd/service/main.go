@@ -3,7 +3,9 @@ package main
 import (
 	"errors"
 	"flag"
+	"fmt"
 
+	"github.com/Jaroslaw-super1/task-3/internal/config"
 	"github.com/Jaroslaw-super1/task-3/internal/must"
 )
 
@@ -13,8 +15,10 @@ func main() {
 	configPath, err := readConfigPath()
 	must.NoError(err)
 
-	println(configPath)
-	println(err)
+	cfg, err := config.Load(configPath)
+	must.NoError(err)
+
+	fmt.Printf("Input: %s, Output: %s\n", cfg.InputFile, cfg.OutputFile)
 }
 
 func readConfigPath() (string, error) {
