@@ -18,7 +18,6 @@ import (
 var (
 	errUnsupportedEncoding = errors.New("unsupported XML encoding")
 	errTrailingXML         = errors.New("unexpected data after </ValCurs>")
-	errMissingCharCode     = errors.New("missing CharCode")
 	errInvalidValue        = errors.New("invalid Value")
 )
 
@@ -58,6 +57,7 @@ func Read(path string) ([]Currency, error) {
 	}
 
 	currencies := make([]Currency, 0, len(rates.Currencies))
+
 	for index, item := range rates.Currencies {
 		rate, err := parseCurrency(item)
 		if err != nil {
@@ -118,9 +118,6 @@ func parseCurrency(item currencyXML) (Currency, error) {
 	}
 
 	charCode := strings.TrimSpace(item.CharCode)
-	if charCode == "" {
-		return Currency{}, errMissingCharCode
-	}
 
 	valueText := strings.ReplaceAll(strings.TrimSpace(item.Value), ",", ".")
 
