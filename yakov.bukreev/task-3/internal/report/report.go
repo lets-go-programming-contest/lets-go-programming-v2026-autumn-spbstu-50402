@@ -12,19 +12,19 @@ import (
 )
 
 type CurrencyInfo struct {
-	NumCode  int     `xml:"NumCode"   json:"num_code"`
-	CharCode string  `xml:"CharCode"  json:"char_code"`
-	Value    float32 `xml:"Value"     json:"value"`
+	NumCode  int     `json:"num_code"   xml:"NumCode"`
+	CharCode string  `json:"char_code"  xml:"CharCode"`
+	Value    float32 `json:"value"      xml:"Value"`
 }
 
 type reportData struct {
 	Currecies []CurrencyInfo `xml:"Valute"`
 }
 
-func ReadXml(path string) ([]CurrencyInfo, error) {
+func ReadXML(path string) ([]CurrencyInfo, error) {
 	report, err := os.ReadFile(path)
 	if err != nil {
-		return nil, fmt.Errorf("Failed to read report file %q: %w", path, err)
+		return nil, fmt.Errorf("failed to read report file %q: %w", path, err)
 	}
 
 	report = bytes.ReplaceAll(report, []byte(","), []byte("."))
@@ -35,25 +35,25 @@ func ReadXml(path string) ([]CurrencyInfo, error) {
 	decoder.CharsetReader = charset.NewReaderLabel
 
 	if err := decoder.Decode(&data); err != nil {
-		return nil, fmt.Errorf("Failed to unmarshal report file %q: %w", path, err)
+		return nil, fmt.Errorf("failed to unmarshal report file %q: %w", path, err)
 	}
 
 	return data.Currecies, nil
 }
 
-func WriteJson(path string, fileMode, dirMode os.FileMode, data []CurrencyInfo) error {
+func WriteJSON(path string, fileMode, dirMode os.FileMode, data []CurrencyInfo) error {
 	jsonBytes, err := json.MarshalIndent(data, "", "    ")
 	if err != nil {
-		return fmt.Errorf("Failed to marshal json data for file %q: %w", path, err)
+		return fmt.Errorf("failed to marshal json data for file %q: %w", path, err)
 	}
 
 	dir := filepath.Dir(path)
 	if err := os.MkdirAll(dir, dirMode); err != nil {
-		return fmt.Errorf("Failed to create directory %q: %w", dir, err)
+		return fmt.Errorf("failed to create directory %q: %w", dir, err)
 	}
 
 	if err := os.WriteFile(path, jsonBytes, fileMode); err != nil {
-		return fmt.Errorf("Failed to write json file %q: %w", path, err)
+		return fmt.Errorf("failed to write json file %q: %w", path, err)
 	}
 
 	return nil

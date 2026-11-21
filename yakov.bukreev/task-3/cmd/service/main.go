@@ -17,7 +17,7 @@ func main() {
 		panic(err)
 	}
 
-	data, err := report.ReadXml(cfg.InputFile)
+	data, err := report.ReadXML(cfg.InputFile)
 	if err != nil {
 		panic(err)
 	}
@@ -26,7 +26,7 @@ func main() {
 		return data[i].Value > data[j].Value
 	})
 
-	if err := report.WriteJson(cfg.OutputFile, 0644, 0750, data); err != nil {
+	if err := report.WriteJSON(cfg.OutputFile, 0o644, 0o750, data); err != nil {
 		panic(err)
 	}
 }
