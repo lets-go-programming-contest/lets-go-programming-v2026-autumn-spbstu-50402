@@ -2,6 +2,7 @@ package output
 
 import (
 	"encoding/json"
+	"fmt"
 	"os"
 	"path/filepath"
 
@@ -16,12 +17,17 @@ const (
 func WriteJSON(path string, currencies []currency.Currency) error {
 	data, err := json.MarshalIndent(currencies, "", "  ")
 	if err != nil {
-		return err
+		return fmt.Errorf("encode currencies as JSON: %w", err)
 	}
 
-	if err := os.MkdirAll(filepath.Dir(path), dirPerm); err != nil {
-		return err
+	dir := filepath.Dir(path)
+	if err := os.MkdirAll(dir, dirPerm); err != nil {
+		return fmt.Errorf("create output directory %q: %w", dir, err)
 	}
 
-	return os.WriteFile(path, append(data, '\n'), filePerm)
+	if err := os.WriteFile(path, append(data, '\n'), filePerm); err != nil {
+		return fmt.Errorf("write JSON file %q: %w", path, err)
+	}
+
+	return nil
 }

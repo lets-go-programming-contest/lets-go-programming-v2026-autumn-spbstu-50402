@@ -3,6 +3,7 @@ package currency
 import (
 	"bytes"
 	"encoding/xml"
+	"errors"
 	"fmt"
 	"io"
 	"math"
@@ -12,6 +13,13 @@ import (
 	"strings"
 
 	"golang.org/x/text/encoding/charmap"
+)
+
+var (
+	errUnsupportedEncoding = errors.New("unsupported XML encoding")
+	errTrailingXML         = errors.New("unexpected data after </ValCurs>")
+	errMissingCharCode     = errors.New("missing CharCode")
+	errInvalidValue        = errors.New("invalid Value")
 )
 
 type currencyXML struct {
@@ -32,32 +40,57 @@ type Currency struct {
 }
 
 func Read(path string) ([]Currency, error) {
-	file, err := os.Open(path)
+	data, err := os.ReadFile(path)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("read XML: %w", err)
 	}
-	defer file.Close()
 
-	decoder := xml.NewDecoder(file)
-	decoder.CharsetReader = func(charset string, input io.Reader) (io.Reader, error) {
-		if strings.EqualFold(charset, "windows-1251") {
-			return charmap.Windows1251.NewDecoder().Reader(input), nil
-		}
-		return nil, fmt.Errorf("unsupported XML encoding %q", charset)
-	}
+	decoder := xml.NewDecoder(bytes.NewReader(data))
+	decoder.CharsetReader = readCharset
 
 	var rates ratesXML
 	if err := decoder.Decode(&rates); err != nil {
 		return nil, fmt.Errorf("decode XML: %w", err)
 	}
 
+	if err := checkXMLTail(decoder); err != nil {
+		return nil, err
+	}
+
+	currencies := make([]Currency, 0, len(rates.Currencies))
+	for index, item := range rates.Currencies {
+		rate, err := parseCurrency(item)
+		if err != nil {
+			return nil, fmt.Errorf("currency %d: %w", index+1, err)
+		}
+
+		currencies = append(currencies, rate)
+	}
+
+	sort.SliceStable(currencies, func(i, j int) bool {
+		return currencies[i].Value > currencies[j].Value
+	})
+
+	return currencies, nil
+}
+
+func readCharset(charset string, input io.Reader) (io.Reader, error) {
+	if strings.EqualFold(charset, "windows-1251") {
+		return charmap.Windows1251.NewDecoder().Reader(input), nil
+	}
+
+	return nil, fmt.Errorf("%w: %q", errUnsupportedEncoding, charset)
+}
+
+func checkXMLTail(decoder *xml.Decoder) error {
 	for {
 		token, err := decoder.Token()
-		if err == io.EOF {
-			break
+		if errors.Is(err, io.EOF) {
+			return nil
 		}
+
 		if err != nil {
-			return nil, fmt.Errorf("decode XML: %w", err)
+			return fmt.Errorf("decode XML: %w", err)
 		}
 
 		switch token := token.(type) {
@@ -68,37 +101,41 @@ func Read(path string) ([]Currency, error) {
 				continue
 			}
 		}
-		return nil, fmt.Errorf("unexpected data after </ValCurs>")
+
+		return errTrailingXML
+	}
+}
+
+func parseCurrency(item currencyXML) (Currency, error) {
+	numCodeText := strings.TrimSpace(item.NumCode)
+	if numCodeText == "" {
+		numCodeText = "0"
 	}
 
-	currencies := make([]Currency, 0, len(rates.Currencies))
-	for i, item := range rates.Currencies {
-		numCode, err := strconv.Atoi(strings.TrimSpace(item.NumCode))
-		if err != nil {
-			return nil, fmt.Errorf("currency %d: invalid NumCode %q", i+1, item.NumCode)
-		}
-
-		charCode := strings.TrimSpace(item.CharCode)
-		if charCode == "" {
-			return nil, fmt.Errorf("currency %d: missing CharCode", i+1)
-		}
-
-		valueText := strings.ReplaceAll(strings.TrimSpace(item.Value), ",", ".")
-		value, err := strconv.ParseFloat(valueText, 64)
-		if err != nil || math.IsNaN(value) || math.IsInf(value, 0) {
-			return nil, fmt.Errorf("currency %s: invalid Value %q", charCode, item.Value)
-		}
-
-		currencies = append(currencies, Currency{
-			NumCode:  numCode,
-			CharCode: charCode,
-			Value:    value,
-		})
+	numCode, err := strconv.Atoi(numCodeText)
+	if err != nil {
+		return Currency{}, fmt.Errorf("invalid NumCode %q: %w", item.NumCode, err)
 	}
 
-	sort.SliceStable(currencies, func(i, j int) bool {
-		return currencies[i].Value > currencies[j].Value
-	})
+	charCode := strings.TrimSpace(item.CharCode)
+	if charCode == "" {
+		return Currency{}, errMissingCharCode
+	}
 
-	return currencies, nil
+	valueText := strings.ReplaceAll(strings.TrimSpace(item.Value), ",", ".")
+
+	value, err := strconv.ParseFloat(valueText, 64)
+	if err != nil {
+		return Currency{}, fmt.Errorf("%w %q: %w", errInvalidValue, item.Value, err)
+	}
+
+	if math.IsNaN(value) || math.IsInf(value, 0) {
+		return Currency{}, fmt.Errorf("%w %q", errInvalidValue, item.Value)
+	}
+
+	return Currency{
+		NumCode:  numCode,
+		CharCode: charCode,
+		Value:    value,
+	}, nil
 }

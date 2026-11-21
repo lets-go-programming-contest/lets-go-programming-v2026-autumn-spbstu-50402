@@ -1,6 +1,7 @@
 package config
 
 import (
+	"bytes"
 	"errors"
 	"fmt"
 	"io"
@@ -10,40 +11,46 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
+var (
+	errMultipleDocuments = errors.New("expected one YAML document")
+	errMissingPaths      = errors.New("input-file and output-file are required")
+)
+
 type Config struct {
 	InputFile  string `yaml:"input-file"`
 	OutputFile string `yaml:"output-file"`
 }
 
 func Load(path string) (Config, error) {
-	var cfg Config
-
-	file, err := os.Open(path)
+	data, err := os.ReadFile(path)
 	if err != nil {
-		return cfg, err
+		return Config{}, fmt.Errorf("read YAML: %w", err)
 	}
-	defer file.Close()
 
-	decoder := yaml.NewDecoder(file)
+	decoder := yaml.NewDecoder(bytes.NewReader(data))
 	decoder.KnownFields(true)
 
+	var cfg Config
 	if err := decoder.Decode(&cfg); err != nil {
-		return cfg, fmt.Errorf("decode YAML: %w", err)
+		return Config{}, fmt.Errorf("decode YAML: %w", err)
 	}
 
 	var extra any
-	if err := decoder.Decode(&extra); err != io.EOF {
-		if err != nil {
-			return cfg, fmt.Errorf("decode YAML: %w", err)
-		}
-		return cfg, errors.New("expected one YAML document")
+
+	err = decoder.Decode(&extra)
+	if err == nil {
+		return Config{}, errMultipleDocuments
+	}
+
+	if !errors.Is(err, io.EOF) {
+		return Config{}, fmt.Errorf("decode YAML: %w", err)
 	}
 
 	cfg.InputFile = strings.TrimSpace(cfg.InputFile)
 	cfg.OutputFile = strings.TrimSpace(cfg.OutputFile)
 
 	if cfg.InputFile == "" || cfg.OutputFile == "" {
-		return cfg, errors.New("input-file and output-file are required")
+		return Config{}, errMissingPaths
 	}
 
 	return cfg, nil
