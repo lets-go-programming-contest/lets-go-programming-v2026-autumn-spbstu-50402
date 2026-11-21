@@ -3,12 +3,19 @@ package currency
 import (
 	"bytes"
 	"encoding/xml"
+	"encoding/json"
+	"path/filepath"
 	"fmt"
 	"os"
 	"strconv"
 	"strings"
 
 	"golang.org/x/net/html/charset"
+)
+
+const (
+	dirPerm  = 0o755
+	filePerm = 0o644
 )
 
 type Value float64
@@ -58,4 +65,21 @@ func SortByValueDesc(currencies []Currency) {
 	sort.SliceStable(currencies, func(i, j int) bool {
 		return currencies[i].Value > currencies[j].Value
 	})
+}
+
+func WriteJSON(path string, currencies []Currency) error {
+	if err := os.MkdirAll(filepath.Dir(path), dirPerm); err != nil {
+		return fmt.Errorf("create output directory: %w", err)
+	}
+
+	data, err := json.MarshalIndent(currencies, "", "    ")
+	if err != nil {
+		return fmt.Errorf("encode currencies: %w", err)
+	}
+
+	if err := os.WriteFile(path, data, filePerm); err != nil {
+		return fmt.Errorf("write output file: %w", err)
+	}
+
+	return nil
 }
