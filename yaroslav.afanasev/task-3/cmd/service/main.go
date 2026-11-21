@@ -3,12 +3,15 @@ package main
 import (
 	"errors"
 	"flag"
+
+	"github.com/Jaroslaw-super1/task-3/internal/must"
 )
 
 var errConfigPathNotSet = errors.New("config path is not specified")
 
 func main() {
 	configPath, err := readConfigPath()
+	must.NoError(err)
 
 	println(configPath)
 	println(err)
