@@ -1,4 +1,3 @@
-// Package config reads and validates the application's YAML configuration.
 package config
 
 import (
@@ -16,13 +15,11 @@ var (
 	errEmptyOutputFile = errors.New("output-file is required in config")
 )
 
-// Config contains paths used by the currency conversion application.
 type Config struct {
 	InputFile  string `yaml:"input-file"`
 	OutputFile string `yaml:"output-file"`
 }
 
-// Load reads a YAML configuration from path and checks its required fields.
 func Load(path string) (Config, error) {
 	if strings.TrimSpace(path) == "" {
 		return Config{}, fmt.Errorf("validate config path: %w", errEmptyConfigPath)

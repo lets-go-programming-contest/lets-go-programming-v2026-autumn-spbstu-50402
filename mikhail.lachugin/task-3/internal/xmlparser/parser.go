@@ -13,10 +13,8 @@ import (
 	"golang.org/x/net/html/charset"
 )
 
-// ErrEmptyInputPath means the XML source path is blank.
 var ErrEmptyInputPath = errors.New("XML input path is empty")
 
-// ParseFile opens and parses a currency XML file.
 func ParseFile(path string) ([]currency.Currency, error) {
 	if strings.TrimSpace(path) == "" {
 		return nil, ErrEmptyInputPath
@@ -42,7 +40,6 @@ func ParseFile(path string) ([]currency.Currency, error) {
 	return currencies, nil
 }
 
-// Parse decodes a currency XML document from reader.
 func Parse(reader io.Reader) ([]currency.Currency, error) {
 	decoder := xml.NewDecoder(reader)
 	decoder.CharsetReader = charset.NewReaderLabel

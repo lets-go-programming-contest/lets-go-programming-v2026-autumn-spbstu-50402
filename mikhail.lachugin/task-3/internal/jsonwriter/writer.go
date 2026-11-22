@@ -1,4 +1,3 @@
-// Package jsonwriter writes currencies as JSON.
 package jsonwriter
 
 import (
@@ -18,10 +17,8 @@ const (
 	jsonIndent = "    "
 )
 
-// ErrEmptyOutputPath means the JSON destination path is blank.
 var ErrEmptyOutputPath = errors.New("JSON output path is empty")
 
-// WriteFile creates the output directory when needed and writes currencies to path.
 func WriteFile(path string, currencies []currency.Currency) error {
 	if strings.TrimSpace(path) == "" {
 		return ErrEmptyOutputPath
@@ -52,7 +49,6 @@ func WriteFile(path string, currencies []currency.Currency) error {
 	return nil
 }
 
-// Write encodes currencies as indented JSON to writer.
 func Write(writer io.Writer, currencies []currency.Currency) error {
 	if currencies == nil {
 		currencies = make([]currency.Currency, 0)
