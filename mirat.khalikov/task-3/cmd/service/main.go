@@ -16,20 +16,20 @@ func main() {
 	}
 
 	cfg, err := config.LoadConfig(*configPath)
-	if err != nil {
-		panic(err)
-	}
+	checkError(err)
 
 	currencies, err := xml.ParseFile(cfg.InputFile)
-	if err != nil {
-		panic(err)
-	}
+	checkError(err)
 
 	xml.SortCur(currencies)
 
 	err = output.WriteFile(cfg.OutputFile, currencies)
+	checkError(err)
+
+}
+
+func checkError(err error) {
 	if err != nil {
 		panic(err)
 	}
-
 }
