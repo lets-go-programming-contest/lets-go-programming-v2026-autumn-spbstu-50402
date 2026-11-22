@@ -20,7 +20,7 @@ func WriteJSON(path string, data any) error {
 
 	dir := filepath.Dir(path)
 	if err := os.MkdirAll(dir, dirPerms); err != nil {
-		return fmt.Errorf("create output directory %q: %w", dir, err) 
+		return fmt.Errorf("create output directory %q: %w", dir, err)
 	}
 
 	err = os.WriteFile(path, encoded, filePerms)

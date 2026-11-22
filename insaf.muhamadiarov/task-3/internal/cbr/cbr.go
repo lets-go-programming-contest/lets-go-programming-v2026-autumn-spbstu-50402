@@ -9,20 +9,20 @@ import (
 )
 
 type ValCurs struct {
-	XMLName xml.Name 	`xml:"ValCurs"`
+	XMLName xml.Name `xml:"ValCurs"`
 	Valutes []Valute `xml:"Valute"`
 }
 
 type Valute struct {
-	NumCode 	string `xml:"NumCode"`
-	CharCode 	string `xml:"CharCode"`
-	Value 		string `xml:"Value"`
+	NumCode  string `xml:"NumCode"`
+	CharCode string `xml:"CharCode"`
+	Value    string `xml:"Value"`
 }
 
 type Currency struct {
-	NumCode 	int 		`json:"num_code"`
-	CharCode 	string 	`json:"char_code"`
-	Value 		float64 `json:"value"`
+	NumCode  int     `json:"num_code"`
+	CharCode string  `json:"char_code"`
+	Value    float64 `json:"value"`
 }
 
 func ReadXML(path string) ([]Currency, error) {
@@ -33,7 +33,7 @@ func ReadXML(path string) ([]Currency, error) {
 
 	var doc ValCurs
 	err := xml.Unmarshal(data, &doc)
-	if err != nil {	
+	if err != nil {
 		return nil, fmt.Errorf("unmarshal from the path %q: %w", path, err)
 	}
 
@@ -54,9 +54,9 @@ func ReadXML(path string) ([]Currency, error) {
 		}
 
 		result = append(result, Currency{
-			NumCode: 	num,
+			NumCode:  num,
 			CharCode: strings.TrimSpace(v.CharCode),
-			Value: 		val,
+			Value:    val,
 		})
 	}
 

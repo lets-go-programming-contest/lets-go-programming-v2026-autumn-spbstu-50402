@@ -2,11 +2,11 @@ package main
 
 import (
 	"flag"
-	"sort"
 	"fmt"
+	"sort"
 
+	"github.com/InsafM1/task-3/internal/cbr"
 	"github.com/InsafM1/task-3/internal/config"
-	"github.com/InsafM1/task-3/internal/cbr"	
 	"github.com/InsafM1/task-3/internal/storage"
 )
 

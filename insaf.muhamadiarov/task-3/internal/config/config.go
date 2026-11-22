@@ -1,14 +1,14 @@
 package config
 
 import (
-	"os"
 	"fmt"
+	"os"
 
 	"gopkg.in/yaml.v3"
 )
 
 type Config struct {
-	InputFile string `yaml:"input-file"`
+	InputFile  string `yaml:"input-file"`
 	OutputFile string `yaml:"output-file"`
 }
 
@@ -27,4 +27,3 @@ func LoadConfigFile(path string) (Config, error) {
 
 	return config, nil
 }
-
