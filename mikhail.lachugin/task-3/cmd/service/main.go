@@ -3,9 +3,9 @@ package main
 import (
 	"flag"
 	"fmt"
-	"os"
 
 	"github.com/mikeee322/task-3/internal/config"
+	"github.com/mikeee322/task-3/internal/currency"
 )
 
 func main() {
@@ -21,6 +21,13 @@ func main() {
 		panic(err)
 	}
 
-	// The remaining processing steps are added in the following project parts.
-	fmt.Fprintf(os.Stdout, "Configuration loaded: input=%s output=%s\n", cfg.InputFile, cfg.OutputFile)
+	currencies, err := currency.LoadSorted(cfg.InputFile)
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Printf("Loaded %d currencies from %s\n", len(currencies), cfg.InputFile)
+	for _, item := range currencies {
+		fmt.Printf("%s (%d): %g\n", item.CharCode, item.NumCode, item.Value)
+	}
 }
