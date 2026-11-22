@@ -10,7 +10,7 @@ import (
 
 type ValCurs struct {
 	XMLName xml.Name 	`xml:"ValCurs"`
-	Valutes []Valutes `xml:"Valute"`
+	Valutes []Valute `xml:"Valute"`
 }
 
 type Valute struct {
@@ -20,9 +20,9 @@ type Valute struct {
 }
 
 type Currency struct {
-	NumCode 	int 		`xml:"NumCode" json:"num_code"`
-	CharCode 	string 	`xml:"CharCode" json:"char_code"`
-	Value 		float64 `xml:"Value" json:"value"`
+	NumCode 	int 		`json:"num_code"`
+	CharCode 	string 	`json:"char_code"`
+	Value 		float64 `json:"value"`
 }
 
 func ReadXML(path string) ([]Currency, error) {
@@ -32,7 +32,7 @@ func ReadXML(path string) ([]Currency, error) {
 	}
 
 	var doc ValCurs
-	err := xml.Unmarshal(data, %doc)
+	err := xml.Unmarshal(data, &doc)
 	if err != nil {	
 		return nil, fmt.Errorf("unmarshal from the path %q: %w", path, err)
 	}
@@ -43,12 +43,12 @@ func ReadXML(path string) ([]Currency, error) {
 
 	result := make([]Currency, 0, len(doc.Valutes))
 	for _, v := range doc.Valutes {
-		num, err := strconv.Atoi(string.TrimSpace(v.NumCode))
+		num, err := strconv.Atoi(strings.TrimSpace(v.NumCode))
 		if err != nil {
 			return nill, fmt.Errorf("bad NumCode %q: %w", v.NumCode, err)
 		}
 
-		val, err := strconv.ParseFloat(string.ReplaceAll(v.Value, ",", "."), 64)
+		val, err := strconv.ParseFloat(strings.ReplaceAll(v.Value, ",", "."), 64)
 		if err != nil {
 			return nil, fmt.Errorf("bad value %q: %w", v.Value, err)
 		}

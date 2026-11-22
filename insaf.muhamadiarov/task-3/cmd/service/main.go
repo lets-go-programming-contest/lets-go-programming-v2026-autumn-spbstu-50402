@@ -6,11 +6,12 @@ import (
 	"fmt"
 
 	"github.com/InsafM1/task-3/internal/config"
-	"github.com/InsafM1/task-3/internal/cbr"
+	"github.com/InsafM1/task-3/internal/cbr"	
+	"github.com/InsafM1/task-3/internal/storage"
 )
 
 func main() {
-	path := flag.String("config", "", "configuration file path");
+	path := flag.String("config", "", "configuration file path")
 	flag.Parse()
 
 	cfg, err := config.LoadConfigFile(*path)
@@ -30,4 +31,9 @@ func main() {
 	sort.Slice(currencies, func(i, j int) bool {
 		return currencies[i].Value > currencies[j].Value
 	})
+
+	err = storage.WriteJSON(cfg.OutputFile, currencies)
+	if err != nil {
+		panic(err)
+	}
 }
