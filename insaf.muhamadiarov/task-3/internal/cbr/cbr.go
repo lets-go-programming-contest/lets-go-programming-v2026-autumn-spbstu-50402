@@ -12,9 +12,7 @@ import (
 	"golang.org/x/net/html/charset"
 )
 
-var (
-	ErrNoElements = errors.New("file has no elements")
-)
+var ErrNoElements = errors.New("file has no elements")
 
 type ValCurs struct {
 	XMLName xml.Name `xml:"ValCurs"`
@@ -54,7 +52,13 @@ func ReadXML(path string) ([]Currency, error) {
 
 	result := make([]Currency, 0, len(doc.Valutes))
 	for _, valute := range doc.Valutes {
-		num, err := strconv.Atoi(strings.TrimSpace(valute.NumCode))
+		numCodeStr := strings.TrimSpace(valute.NumCode)
+
+		if numCodeStr == "" {
+			continue
+		}
+
+		num, err := strconv.Atoi(numCodeStr)
 		if err != nil {
 			return nil, fmt.Errorf("bad NumCode %q: %w", valute.NumCode, err)
 		}

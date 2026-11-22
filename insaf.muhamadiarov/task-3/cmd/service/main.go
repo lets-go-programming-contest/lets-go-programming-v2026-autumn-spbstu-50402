@@ -11,9 +11,7 @@ import (
 	"github.com/InsafM1/task-3/internal/storage"
 )
 
-var (
-	ErrMissingConfigFields = errors.New("input-file and output-file are required")
-)
+var ErrMissingConfigFields = errors.New("input-file and output-file are required")
 
 func main() {
 	path := flag.String("config", "", "configuration file path")
