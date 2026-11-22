@@ -2,11 +2,12 @@ package currency
 
 import (
 	"bytes"
-	"encoding/xml"
 	"encoding/json"
-	"path/filepath"
+	"encoding/xml"
 	"fmt"
 	"os"
+	"path/filepath"
+	"sort"
 	"strconv"
 	"strings"
 
