@@ -15,6 +15,6 @@ type Currency struct {
 }
 
 type XMLDocument struct {
-	XMLName  xml.Name      `xml:"ValCurs"`
+	XMLName    xml.Name      `xml:"ValCurs"`
 	Currencies []XMLCurrency `xml:"Valute"`
 }

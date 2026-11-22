@@ -1,8 +1,8 @@
 package config
 
 import (
-	"os"
 	"gopkg.in/yaml.v3"
+	"os"
 )
 
 type Config struct {

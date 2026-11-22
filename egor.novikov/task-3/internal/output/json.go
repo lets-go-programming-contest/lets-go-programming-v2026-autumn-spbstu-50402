@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"os"
 	"path/filepath"
+
 	"github.com/EGGorkaa/task-3/internal/currency"
 )
 
@@ -20,7 +21,7 @@ func WriteJSON(path string, currencies []currency.Currency) {
 		panic(err)
 	}
 
-	err = os.WriteFile(path, data, 0644)
+	err = os.WriteFile(path, data, 0600)
 	if err != nil {
 		panic(err)
 	}

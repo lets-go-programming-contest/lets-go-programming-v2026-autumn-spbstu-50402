@@ -2,10 +2,10 @@ package currency
 
 import (
 	"encoding/xml"
+	"golang.org/x/net/html/charset"
 	"os"
 	"strconv"
 	"strings"
-	"golang.org/x/net/html/charset"
 )
 
 func ReadXML(path string) []Currency {
@@ -13,7 +13,11 @@ func ReadXML(path string) []Currency {
 	if err != nil {
 		panic(err)
 	}
-	defer file.Close()
+	defer func() {
+		if err := file.Close(); err != nil {
+			panic(err)
+		}
+	}()
 
 	decoder := xml.NewDecoder(file)
 	decoder.CharsetReader = charset.NewReaderLabel
