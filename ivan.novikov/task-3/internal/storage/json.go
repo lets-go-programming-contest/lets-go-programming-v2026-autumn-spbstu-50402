@@ -9,9 +9,11 @@ import (
 	"github.com/Kayv1e/task-3/internal/model"
 )
 
+const outputDirPerm = 0o755
+
 func SaveJSON(path string, currencies []model.Currency) error {
 	outputDir := filepath.Dir(path)
-	if err := os.MkdirAll(outputDir, 0o755); err != nil {
+	if err := os.MkdirAll(outputDir, outputDirPerm); err != nil {
 		return fmt.Errorf("create output directory: %w", err)
 	}
 

@@ -8,9 +8,9 @@ import (
 	"strconv"
 	"strings"
 
-	"golang.org/x/net/html/charset"
-
 	"github.com/Kayv1e/task-3/internal/model"
+
+	"golang.org/x/net/html/charset"
 )
 
 var (
@@ -58,6 +58,7 @@ func ParseXML(path string) ([]model.Currency, error) {
 	}
 
 	currencies := make([]model.Currency, 0, len(data.Valutes))
+
 	for _, item := range data.Valutes {
 		numCode, err := strconv.Atoi(strings.TrimSpace(item.NumCode))
 		if err != nil {
