@@ -19,6 +19,7 @@ func Save(path string, currencies []Currency) error {
 	if err != nil {
 		return fmt.Errorf("create output file: %w", err)
 	}
+
 	defer func() {
 		closeErr := file.Close()
 		if closeErr != nil {

@@ -23,6 +23,7 @@ func Read(path string) ([]Valute, error) {
 	if err != nil {
 		return nil, fmt.Errorf("open input file: %w", err)
 	}
+
 	defer func() {
 		closeErr := file.Close()
 		if closeErr != nil {
