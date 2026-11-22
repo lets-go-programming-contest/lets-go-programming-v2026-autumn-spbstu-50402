@@ -35,7 +35,7 @@ func Parse(path string) (Curs, error) {
     res := Curs{}
     err = xml.Unmarshal(data, &res)
     if err != nil {
-        return Curs{}, fmt.Errorf("failed to unmarshal %q: %w", err)
+        return Curs{}, fmt.Errorf("failed to unmarshal %q: %w", path, err)
     }
     return res, nil
 }

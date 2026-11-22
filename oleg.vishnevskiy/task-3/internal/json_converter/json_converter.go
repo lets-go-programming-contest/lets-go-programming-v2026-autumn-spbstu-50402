@@ -36,7 +36,7 @@ func Save(data xml_parser.Curs, path string) (error) {
     }
     err = os.WriteFile(path, toWrite, 0644)
     if err != nil {
-        return fmt.Errorf("failed to write json: %w", path, err)
+        return fmt.Errorf("failed to write json %q: %w", path, err)
     }
     return nil
 }
@@ -45,7 +45,7 @@ func ChangeFormat(val xml_parser.Valute) (ValuteJson, error) {
 	valStr := strings.ReplaceAll(strings.TrimSpace(val.Value), ",", ".")
 	value, err := strconv.ParseFloat(valStr, 64)
 	if err != nil {
-		return ValuteJson{}, fmt.Errorf("failed to convert val: %w", val.Value, err)
+		return ValuteJson{}, fmt.Errorf("failed to convert val %q: %w", val.Value, err)
 	}
     return ValuteJson{NumCode: val.NumCode, CharCode: val.CharCode, Value: value}, nil
 }
