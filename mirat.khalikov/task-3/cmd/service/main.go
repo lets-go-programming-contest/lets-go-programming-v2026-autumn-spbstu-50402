@@ -2,9 +2,10 @@ package main
 
 import (
 	"flag"
-	"task-3/cmd/service/internal/config"
-	"task-3/cmd/service/internal/output"
-	"task-3/cmd/service/internal/xml"
+
+	"github.com/khalii21/task-3/cmd/service/internal/config"
+	"github.com/khalii21/task-3/cmd/service/internal/output"
+	"github.com/khalii21/task-3/cmd/service/internal/xml"
 )
 
 func main() {
@@ -25,7 +26,6 @@ func main() {
 
 	err = output.WriteFile(cfg.OutputFile, currencies)
 	checkError(err)
-
 }
 
 func checkError(err error) {

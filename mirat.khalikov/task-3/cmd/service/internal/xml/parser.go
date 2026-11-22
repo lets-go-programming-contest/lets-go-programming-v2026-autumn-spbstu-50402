@@ -5,24 +5,26 @@ import (
 	"fmt"
 	"io"
 	"os"
-	"task-3/cmd/service/internal/codetoint"
-	"task-3/cmd/service/internal/sttodec"
 
+	"github.com/khalii21/task-3/cmd/service/internal/codetoint"
+	"github.com/khalii21/task-3/cmd/service/internal/sttodec"
 	"golang.org/x/text/encoding/charmap"
 )
 
 type Currency struct {
 	NumCode  int     `json:"num_code"`
 	CharCode string  `json:"char_code" xml:"CharCode"`
-	Value    float64 `json:"value" xml:"Value"`
+	Value    float64 `json:"value"     xml:"Value"`
+}
+
+type xmlCurrency struct {
+	NumCode  string `xml:"NumCode"`
+	CharCode string `xml:"CharCode"`
+	Value    string `xml:"Value"`
 }
 
 type xmlData struct {
-	Currencies []struct {
-		NumCode  string `xml:"NumCode"`
-		CharCode string `xml:"CharCode"`
-		Value    string `xml:"Value"`
-	} `xml:"Valute"`
+	Currencies []xmlCurrency `xml:"Valute"`
 }
 
 func ParseFile(path string) ([]Currency, error) {
@@ -30,9 +32,11 @@ func ParseFile(path string) ([]Currency, error) {
 	if err != nil {
 		return nil, fmt.Errorf("read XML file failed %q: %w", path, err)
 	}
+
 	defer func() {
-		if err := file.Close(); err != nil {
-			panic(err)
+		err := file.Close()
+		if err != nil {
+			fmt.Println("close XML file failed:", err)
 		}
 	}()
 
@@ -43,23 +47,27 @@ func ParseFile(path string) ([]Currency, error) {
 	}
 
 	var doc xmlData
-	err = decoder.Decode(&doc)
 
+	err = decoder.Decode(&doc)
 	if err != nil {
 		return nil, fmt.Errorf("decode XML file failed: %w", err)
 	}
 
-	currencies := make([]Currency, 0, len(doc.Currencies))
-	for _, item := range doc.Currencies {
+	return parseCurrencies(doc.Currencies)
+}
 
+func parseCurrencies(items []xmlCurrency) ([]Currency, error) {
+	currencies := make([]Currency, 0, len(items))
+
+	for _, item := range items {
 		code, err := codetoint.CodeToInt(item.NumCode)
 		if err != nil {
 			return nil, fmt.Errorf("convert currency code failed: %w", err)
 		}
 
-		value, err := sttodec.StToDec(item.Value)
-		if err != nil {
-			return nil, fmt.Errorf("parse currency value failed: %w", err)
+		value, parseErr := sttodec.StToDec(item.Value)
+		if parseErr != nil {
+			return nil, fmt.Errorf("parse currency value failed: %w", parseErr)
 		}
 
 		currencies = append(currencies, Currency{

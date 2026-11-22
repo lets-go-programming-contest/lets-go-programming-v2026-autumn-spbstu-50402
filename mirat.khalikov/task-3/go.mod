@@ -1,4 +1,4 @@
-module task-3
+module github.com/khalii21/task-3
 
 go 1.22.7
 
