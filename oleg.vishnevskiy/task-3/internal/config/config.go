@@ -14,8 +14,8 @@ var (
 )
 
 type Paths struct {
-    InputPath string `yaml:"input-file"`
-    OutputPath string `yaml:"output-file"`
+	InputPath  string `yaml:"input-file"`
+	OutputPath string `yaml:"output-file"`
 }
 
 func Parse(data []byte) (Paths, error) {

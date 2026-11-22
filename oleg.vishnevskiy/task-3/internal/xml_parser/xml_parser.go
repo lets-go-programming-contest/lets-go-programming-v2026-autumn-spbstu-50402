@@ -10,9 +10,9 @@ import (
 )
 
 type Valute struct {
-    NumCode  int    `xml:"NumCode"`
-    CharCode string `xml:"CharCode"`
-    Value    string `xml:"Value"`
+	NumCode  int    `xml:"NumCode"`
+	CharCode string `xml:"CharCode"`
+	Value    string `xml:"Value"`
 }
 
 type Curs struct {

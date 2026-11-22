@@ -18,9 +18,9 @@ const (
 )
 
 type ValuteJSON struct {
-    NumCode  int     `json:"num_code"`
-    CharCode string  `json:"char_code"`
-    Value    float64 `json:"value"`
+	NumCode  int     `json:"num_code"`
+	CharCode string  `json:"char_code"`
+	Value    float64 `json:"value"`
 }
 
 func Save(data xmlparser.Curs, path string) (error) {
