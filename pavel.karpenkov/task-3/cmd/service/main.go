@@ -7,6 +7,7 @@ import (
 
 	"github.com/xRonnyn/lets-go-programming-v2026-autumn-spbstu-50402/task-3/cbr"
 	"github.com/xRonnyn/lets-go-programming-v2026-autumn-spbstu-50402/task-3/config"
+	"github.com/xRonnyn/lets-go-programming-v2026-autumn-spbstu-50402/task-3/currency"
 )
 
 var errConfigPathNotSet = errors.New("config path is not set")
@@ -29,5 +30,12 @@ func main() {
 		panic(err)
 	}
 
-	fmt.Println(valutes)
+	currencies, err := currency.Convert(valutes)
+	if err != nil {
+		panic(err)
+	}
+
+	currency.Sort(currencies)
+
+	fmt.Println(currencies)
 }
