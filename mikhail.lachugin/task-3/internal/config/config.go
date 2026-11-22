@@ -4,6 +4,7 @@ package config
 import (
 	"fmt"
 	"os"
+	"strings"
 
 	"gopkg.in/yaml.v3"
 )
@@ -16,23 +17,31 @@ type Config struct {
 
 // Load reads a YAML configuration from path and checks its required fields.
 func Load(path string) (Config, error) {
+	if strings.TrimSpace(path) == "" {
+		return Config{}, fmt.Errorf("configuration path is empty")
+	}
+
 	file, err := os.Open(path)
 	if err != nil {
 		return Config{}, fmt.Errorf("open configuration %q: %w", path, err)
 	}
-	defer file.Close()
 
 	var cfg Config
 	decoder := yaml.NewDecoder(file)
 	decoder.KnownFields(true)
-	if err := decoder.Decode(&cfg); err != nil {
-		return Config{}, fmt.Errorf("decode configuration %q: %w", path, err)
+	decodeErr := decoder.Decode(&cfg)
+	closeErr := file.Close()
+	if decodeErr != nil {
+		return Config{}, fmt.Errorf("decode configuration %q: %w", path, decodeErr)
+	}
+	if closeErr != nil {
+		return Config{}, fmt.Errorf("close configuration %q: %w", path, closeErr)
 	}
 
-	if cfg.InputFile == "" {
+	if strings.TrimSpace(cfg.InputFile) == "" {
 		return Config{}, fmt.Errorf("configuration %q: input-file is required", path)
 	}
-	if cfg.OutputFile == "" {
+	if strings.TrimSpace(cfg.OutputFile) == "" {
 		return Config{}, fmt.Errorf("configuration %q: output-file is required", path)
 	}
 
