@@ -1,7 +1,6 @@
 package xmlparser
 
 import (
-	"converter/internal/currency"
 	"encoding/xml"
 	"errors"
 	"fmt"
@@ -9,6 +8,7 @@ import (
 	"os"
 	"strings"
 
+	"arsenii.shirokov/task-3/internal/currency"
 	"golang.org/x/net/html/charset"
 )
 

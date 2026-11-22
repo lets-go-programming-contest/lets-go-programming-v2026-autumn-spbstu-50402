@@ -1,4 +1,4 @@
-module converter
+module arsenii.shirokov/task-3
 
 go 1.22
 
