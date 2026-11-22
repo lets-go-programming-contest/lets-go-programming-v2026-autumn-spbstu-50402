@@ -42,7 +42,6 @@ func Check(p Paths) error {
 
 func Load(cfgPath string) (Paths, error) {
 	data, err := os.ReadFile(cfgPath)
-
 	if err != nil {
 		return Paths{}, fmt.Errorf("failed to open file %q: %w", cfgPath, err)
 	}

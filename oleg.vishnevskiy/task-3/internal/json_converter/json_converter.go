@@ -41,7 +41,6 @@ func Save(data xmlparser.Curs, path string) error {
 	}
 
 	sort.SliceStable(res, func(i, j int) bool {
-
 		return res[i].Value > res[j].Value
 	})
 
@@ -51,7 +50,6 @@ func Save(data xmlparser.Curs, path string) error {
 	}
 
 	err = os.WriteFile(path, toWrite, filePerm)
-
 	if err != nil {
 		return fmt.Errorf("failed to write json %q: %w", path, err)
 	}
