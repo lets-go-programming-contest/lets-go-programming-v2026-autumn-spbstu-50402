@@ -4,6 +4,7 @@ package currency
 import (
 	"cmp"
 	"encoding/xml"
+	"errors"
 	"fmt"
 	"math"
 	"slices"
@@ -13,6 +14,9 @@ import (
 
 const floatBitSize = 64
 
+// ErrInvalidDecimal means an XML decimal is not finite.
+var ErrInvalidDecimal = errors.New("decimal value must be a finite number")
+
 // ValCurs is the root element of the Bank of Russia currency XML document.
 type ValCurs struct {
 	XMLName xml.Name   `xml:"ValCurs"`
@@ -21,9 +25,9 @@ type ValCurs struct {
 
 // Currency contains the fields used in the JSON result.
 type Currency struct {
-	NumCode  int     `json:"num_code" xml:"NumCode"`
+	NumCode  int     `json:"num_code"  xml:"NumCode"`
 	CharCode string  `json:"char_code" xml:"CharCode"`
-	Value    Decimal `json:"value" xml:"Value"`
+	Value    Decimal `json:"value"     xml:"Value"`
 }
 
 // Decimal accepts the comma decimal separator used in the Bank of Russia XML.
@@ -40,11 +44,13 @@ func (d *Decimal) UnmarshalXML(decoder *xml.Decoder, start xml.StartElement) err
 	if err != nil {
 		return fmt.Errorf("parse decimal value %q: %w", raw, err)
 	}
+
 	if math.IsNaN(value) || math.IsInf(value, 0) {
-		return fmt.Errorf("decimal value must be finite: %q", raw)
+		return fmt.Errorf("%w: %q", ErrInvalidDecimal, raw)
 	}
 
 	*d = Decimal(value)
+
 	return nil
 }
 

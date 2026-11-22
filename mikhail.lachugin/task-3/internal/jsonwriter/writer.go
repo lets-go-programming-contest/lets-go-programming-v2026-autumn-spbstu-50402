@@ -3,6 +3,7 @@ package jsonwriter
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"os"
@@ -12,16 +13,22 @@ import (
 	"github.com/mikeee322/task-3/internal/currency"
 )
 
-const jsonIndent = "    "
+const (
+	dirPerm    = 0o750
+	jsonIndent = "    "
+)
+
+// ErrEmptyOutputPath means the JSON destination path is blank.
+var ErrEmptyOutputPath = errors.New("JSON output path is empty")
 
 // WriteFile creates the output directory when needed and writes currencies to path.
 func WriteFile(path string, currencies []currency.Currency) error {
 	if strings.TrimSpace(path) == "" {
-		return fmt.Errorf("JSON output path is empty")
+		return ErrEmptyOutputPath
 	}
 
 	directory := filepath.Dir(path)
-	if err := os.MkdirAll(directory, 0o750); err != nil {
+	if err := os.MkdirAll(directory, dirPerm); err != nil {
 		return fmt.Errorf("create output directory %q: %w", directory, err)
 	}
 
@@ -31,13 +38,16 @@ func WriteFile(path string, currencies []currency.Currency) error {
 	}
 
 	writeErr := Write(file, currencies)
+
 	closeErr := file.Close()
 	if writeErr != nil {
 		return fmt.Errorf("write JSON to %q: %w", path, writeErr)
 	}
+
 	if closeErr != nil {
 		return fmt.Errorf("close output file %q: %w", path, closeErr)
 	}
+
 	return nil
 }
 
@@ -52,5 +62,6 @@ func Write(writer io.Writer, currencies []currency.Currency) error {
 	if err := encoder.Encode(currencies); err != nil {
 		return fmt.Errorf("encode JSON: %w", err)
 	}
+
 	return nil
 }
