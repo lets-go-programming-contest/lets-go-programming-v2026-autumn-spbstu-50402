@@ -3,13 +3,19 @@ package parser
 import (
 	"encoding/xml"
 	"errors"
+	"fmt"
 	"os"
 	"strconv"
 	"strings"
 
-	"github.com/Kayv1e/task-3/internal/model"
-
 	"golang.org/x/net/html/charset"
+
+	"github.com/Kayv1e/task-3/internal/model"
+)
+
+var (
+	ErrNoValutes     = errors.New("no valutes data in input file")
+	ErrEmptyCharCode = errors.New("empty CharCode field in input file")
 )
 
 type valCurs struct {
@@ -31,38 +37,43 @@ type valute struct {
 func ParseXML(path string) ([]model.Currency, error) {
 	file, err := os.Open(path)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("open xml file: %w", err)
 	}
-	defer file.Close()
+
+	defer func() {
+		_ = file.Close()
+	}()
 
 	decoder := xml.NewDecoder(file)
 	decoder.CharsetReader = charset.NewReaderLabel
 
 	var data valCurs
+
 	if err := decoder.Decode(&data); err != nil {
-		return nil, err
+		return nil, fmt.Errorf("decode xml: %w", err)
 	}
 
 	if len(data.Valutes) == 0 {
-		return nil, errors.New("no valutes data in input file")
+		return nil, ErrNoValutes
 	}
 
 	currencies := make([]model.Currency, 0, len(data.Valutes))
-	for _, v := range data.Valutes {
-		numCode, err := strconv.Atoi(strings.TrimSpace(v.NumCode))
+	for _, item := range data.Valutes {
+		numCode, err := strconv.Atoi(strings.TrimSpace(item.NumCode))
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("parse NumCode: %w", err)
 		}
 
-		charCode := strings.TrimSpace(v.CharCode)
+		charCode := strings.TrimSpace(item.CharCode)
 		if charCode == "" {
-			return nil, errors.New("empty CharCode field in input file")
+			return nil, ErrEmptyCharCode
 		}
 
-		valueStr := strings.ReplaceAll(strings.TrimSpace(v.Value), ",", ".")
+		valueStr := strings.ReplaceAll(strings.TrimSpace(item.Value), ",", ".")
+
 		value, err := strconv.ParseFloat(valueStr, 64)
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("parse Value: %w", err)
 		}
 
 		currencies = append(currencies, model.Currency{
