@@ -9,7 +9,6 @@ import (
 	"strings"
 
 	"github.com/Kayv1e/task-3/internal/model"
-
 	"golang.org/x/net/html/charset"
 )
 
@@ -60,16 +59,19 @@ func ParseXML(path string) ([]model.Currency, error) {
 	currencies := make([]model.Currency, 0, len(data.Valutes))
 
 	for _, item := range data.Valutes {
-		numCode, err := strconv.Atoi(strings.TrimSpace(item.NumCode))
-		if err != nil {
-			return nil, fmt.Errorf("parse NumCode: %w", err)
+		var numCode int
+
+		numCodeStr := strings.TrimSpace(item.NumCode)
+		if numCodeStr != "" {
+			var err error
+
+			numCode, err = strconv.Atoi(numCodeStr)
+			if err != nil {
+				return nil, fmt.Errorf("parse NumCode: %w", err)
+			}
 		}
 
 		charCode := strings.TrimSpace(item.CharCode)
-		if charCode == "" {
-			return nil, ErrEmptyCharCode
-		}
-
 		valueStr := strings.ReplaceAll(strings.TrimSpace(item.Value), ",", ".")
 
 		value, err := strconv.ParseFloat(valueStr, 64)
