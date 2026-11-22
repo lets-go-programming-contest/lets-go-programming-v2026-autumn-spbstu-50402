@@ -15,14 +15,11 @@ func WriteJSON(path string, currencies []currency.Currency) {
 	}
 
 	dir := filepath.Dir(path)
-
-	err = os.MkdirAll(dir, 0755)
-	if err != nil {
+	if err := os.MkdirAll(dir, 0755); err != nil {
 		panic(err)
 	}
 
-	err = os.WriteFile(path, data, 0600)
-	if err != nil {
+	if err := os.WriteFile(path, data, 0600); err != nil {
 		panic(err)
 	}
 }
