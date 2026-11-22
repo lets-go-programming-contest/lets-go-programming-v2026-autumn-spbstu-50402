@@ -5,13 +5,14 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"task-3/cmd/service/internal/codetoint"
 	"task-3/cmd/service/internal/sttodec"
 
 	"golang.org/x/text/encoding/charmap"
 )
 
 type Currency struct {
-	NumCode  string  `xml:"NumCode" json:"num_code"`
+	NumCode  int  `xml:"NumCode" json:"num_code"`
 	CharCode string  `xml:"CharCode" json:"char_code"`
 	Value    float64 `xml:"Value" json:"value"`
 }
@@ -47,13 +48,19 @@ func ParseFile(path string) ([]Currency, error) {
 	currencies := make([]Currency, 0, len(doc.Currencies))
 	if len(doc.Currencies) != 0 {
 		for _, item := range doc.Currencies {
+
+			code, err := codetoint.CodeToInt(item.NumCode)
+			if err != nil {
+				return nil, err
+			}
+
 			value, err := sttodec.StToDec(item.Value)
 			if err != nil {
 				return nil, fmt.Errorf("parse currency value failed: %w", err)
 			}
 
 			currencies = append(currencies, Currency{
-				NumCode:  item.NumCode,
+				NumCode:  code,
 				CharCode: item.CharCode,
 				Value:    value,
 			})

@@ -2,8 +2,9 @@ package main
 
 import (
 	"flag"
-	"fmt"
 	"task-3/cmd/service/internal/config"
+	"task-3/cmd/service/internal/output"
+	"task-3/cmd/service/internal/xml"
 )
 
 func main() {
@@ -19,6 +20,16 @@ func main() {
 		panic(err)
 	}
 
-	fmt.Println("Input File: ", cfg.InputFile)
-	fmt.Println("Output File: ", cfg.OutputFile)
+	currencies, err := xml.ParseFile(cfg.InputFile)
+	if err != nil {
+		panic(err)
+	}
+
+	xml.SortCur(currencies)
+
+	err = output.WriteFile(cfg.OutputFile, currencies)
+	if err != nil {
+		panic(err)
+	}
+
 }
