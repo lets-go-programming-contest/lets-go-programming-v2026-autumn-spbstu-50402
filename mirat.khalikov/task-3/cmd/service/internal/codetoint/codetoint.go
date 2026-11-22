@@ -14,7 +14,7 @@ func CodeToInt(raw string) (int, error) {
 
 	numCode, err := strconv.Atoi(trimmed)
 	if err != nil {
-		return 0, fmt.Errorf("parse num code failed: %w", raw, err)
+		return 0, fmt.Errorf("parse num code failed: %w", err)
 	}
 
 	return numCode, nil
