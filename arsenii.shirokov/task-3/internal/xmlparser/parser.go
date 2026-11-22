@@ -1,6 +1,7 @@
 package xmlparser
 
 import (
+	"converter/internal/currency"
 	"encoding/xml"
 	"errors"
 	"fmt"
@@ -8,7 +9,6 @@ import (
 	"os"
 	"strings"
 
-	"converter/internal/currency"
 	"golang.org/x/net/html/charset"
 )
 
