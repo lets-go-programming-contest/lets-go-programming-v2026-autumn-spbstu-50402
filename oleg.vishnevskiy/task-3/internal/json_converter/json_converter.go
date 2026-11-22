@@ -24,7 +24,7 @@ func Save(data xml_parser.Curs, string path) (error) {
     }
     var res []ValuteJson
     for i := range data.Valutes {
-        val, err := changeFormat(data.Valutes[i])
+        val, err := ChangeFormat(data.Valutes[i])
         if err != nil {
             return err
         }
@@ -41,7 +41,7 @@ func Save(data xml_parser.Curs, string path) (error) {
     return nil
 }
 
-func changeFormat(val xml_parser.Valute) (ValuteJson, error) {
+func ChangeFormat(val xml_parser.Valute) (ValuteJson, error) {
 	valStr := strings.ReplaceAll(strings.TrimSpace(val.Value), ",", ".")
 	value, err := strconv.ParseFloat(valStr, 64)
 	if err != nil {

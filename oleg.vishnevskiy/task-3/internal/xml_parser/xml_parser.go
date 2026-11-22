@@ -3,6 +3,7 @@ package xml_parser
 import (
 	"encoding/xml"
     "fmt"
+    "os"
     "strings"
 )
 
@@ -16,11 +17,15 @@ type Curs struct {
 	Valutes []Valute `xml:"Valute"`
 }
 
-func Parse(data []byte) (Curs, error) {
+func Parse(path string) (Curs, error) {
+	data, err := os.ReadFile(path)
+    if err != nil {
+        return Curs{}, fmt.Errorf("failed to read file %q: %w", path, err)
+    }
     res := Curs{}
     err := xml.Unmarshal(data, &res)
     if err != nil {
-        return Curs{}, err
+        return Curs{}, fmt.Errorf("failed to unmarshal %q: %w", err)
     }
     return res, nil
 }
