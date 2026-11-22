@@ -1,11 +1,19 @@
 package cbr
 
 import (
+	"bytes"
 	"encoding/xml"
+	"errors"
 	"fmt"
 	"os"
 	"strconv"
 	"strings"
+
+	"golang.org/x/net/html/charset"
+)
+
+var (
+	ErrNoElements = errors.New("file has no elements")
 )
 
 type ValCurs struct {
@@ -32,30 +40,33 @@ func ReadXML(path string) ([]Currency, error) {
 	}
 
 	var doc ValCurs
-	err = xml.Unmarshal(data, &doc)
-	if err != nil {
-		return nil, fmt.Errorf("unmarshal from the path %q: %w", path, err)
+
+	decoder := xml.NewDecoder(bytes.NewReader(data))
+	decoder.CharsetReader = charset.NewReaderLabel
+
+	if err := decoder.Decode(&doc); err != nil {
+		return nil, fmt.Errorf("decode xml from the path %q: %w", path, err)
 	}
 
 	if len(doc.Valutes) == 0 {
-		return nil, fmt.Errorf("the file from the path %q has not elements", path)
+		return nil, fmt.Errorf("the file from the path %q has not elements: %w", path, ErrNoElements)
 	}
 
 	result := make([]Currency, 0, len(doc.Valutes))
-	for _, v := range doc.Valutes {
-		num, err := strconv.Atoi(strings.TrimSpace(v.NumCode))
+	for _, valute := range doc.Valutes {
+		num, err := strconv.Atoi(strings.TrimSpace(valute.NumCode))
 		if err != nil {
-			return nil, fmt.Errorf("bad NumCode %q: %w", v.NumCode, err)
+			return nil, fmt.Errorf("bad NumCode %q: %w", valute.NumCode, err)
 		}
 
-		val, err := strconv.ParseFloat(strings.ReplaceAll(v.Value, ",", "."), 64)
+		val, err := strconv.ParseFloat(strings.ReplaceAll(valute.Value, ",", "."), 64)
 		if err != nil {
-			return nil, fmt.Errorf("bad value %q: %w", v.Value, err)
+			return nil, fmt.Errorf("bad value %q: %w", valute.Value, err)
 		}
 
 		result = append(result, Currency{
 			NumCode:  num,
-			CharCode: strings.TrimSpace(v.CharCode),
+			CharCode: strings.TrimSpace(valute.CharCode),
 			Value:    val,
 		})
 	}

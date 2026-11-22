@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"flag"
 	"fmt"
 	"sort"
@@ -8,6 +9,10 @@ import (
 	"github.com/InsafM1/task-3/internal/cbr"
 	"github.com/InsafM1/task-3/internal/config"
 	"github.com/InsafM1/task-3/internal/storage"
+)
+
+var (
+	ErrMissingConfigFields = errors.New("input-file and output-file are required")
 )
 
 func main() {
@@ -20,7 +25,7 @@ func main() {
 	}
 
 	if cfg.InputFile == "" || cfg.OutputFile == "" {
-		panic(fmt.Errorf("config %q: input-file or output-file are required", *path))
+		panic(fmt.Errorf("config %q: input-file or output-file are required: %w", *path, ErrMissingConfigFields))
 	}
 
 	currencies, err := cbr.ReadXML(cfg.InputFile)
