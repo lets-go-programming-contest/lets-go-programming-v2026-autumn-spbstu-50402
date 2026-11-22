@@ -5,6 +5,7 @@ import (
 	"flag"
 	"fmt"
 
+	"github.com/xRonnyn/lets-go-programming-v2026-autumn-spbstu-50402/task-3/cbr"
 	"github.com/xRonnyn/lets-go-programming-v2026-autumn-spbstu-50402/task-3/config"
 )
 
@@ -23,5 +24,10 @@ func main() {
 		panic(err)
 	}
 
-	fmt.Println(cfg)
+	valutes, err := cbr.Read(cfg.InputFile)
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println(valutes)
 }

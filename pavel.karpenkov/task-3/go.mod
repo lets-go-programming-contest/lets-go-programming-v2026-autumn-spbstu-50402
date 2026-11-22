@@ -1,5 +1,9 @@
 module github.com/xRonnyn/lets-go-programming-v2026-autumn-spbstu-50402/task-3
 
-go 1.22.7
+go 1.26.0
 
-require gopkg.in/yaml.v3 v3.0.1 // indirect
+require (
+	golang.org/x/net v0.63.0 // indirect
+	golang.org/x/text v0.44.0 // indirect
+	gopkg.in/yaml.v3 v3.0.1 // indirect
+)
