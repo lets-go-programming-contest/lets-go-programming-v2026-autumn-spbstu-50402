@@ -23,7 +23,7 @@ type ValuteJSON struct {
 	Value    float64 `json:"value"`
 }
 
-func Save(data xmlparser.Curs, path string) (error) {
+func Save(data xmlparser.Curs, path string) error {
 	err := os.MkdirAll(filepath.Dir(path), dirPerm)
 	if err != nil {
 		return fmt.Errorf("failed to create directory %q: %w", path, err)

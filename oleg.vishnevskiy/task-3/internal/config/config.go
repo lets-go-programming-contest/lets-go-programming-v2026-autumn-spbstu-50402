@@ -21,9 +21,7 @@ type Paths struct {
 func Parse(data []byte) (Paths, error) {
 	var resPaths Paths
 
-	err := yaml.Unmarshal(data, &resPaths)
-
-	if err != nil {
+	if err := yaml.Unmarshal(data, &resPaths); err != nil {
 		return Paths{}, fmt.Errorf("failed to unmarshal yaml: %w", err)
 	}
 
@@ -49,17 +47,17 @@ func Load(cfgPath string) (Paths, error) {
 		return Paths{}, fmt.Errorf("failed to open file %q: %w", cfgPath, err)
 	}
 
-	var p Paths
+	var pth Paths
 
-	p, err = Parse(data)
+	pth, err = Parse(data)
 	if err != nil {
 		return Paths{}, fmt.Errorf("failed to parse file %q: %w", cfgPath, err)
 	}
 
-	err = Check(p)
+	err = Check(pth)
 	if err != nil {
 		return Paths{}, err
 	}
 
-	return p, nil
+	return pth, nil
 }
