@@ -51,16 +51,18 @@ func ReadXML(path string) ([]Currency, error) {
 	}
 
 	result := make([]Currency, 0, len(doc.Valutes))
+
 	for _, valute := range doc.Valutes {
 		numCodeStr := strings.TrimSpace(valute.NumCode)
 
+		var num int
 		if numCodeStr == "" {
-			continue
-		}
-
-		num, err := strconv.Atoi(numCodeStr)
-		if err != nil {
-			return nil, fmt.Errorf("bad NumCode %q: %w", valute.NumCode, err)
+			num = 0
+		} else {
+			num, err = strconv.Atoi(numCodeStr)
+			if err != nil {
+				return nil, fmt.Errorf("bad NumCode %q: %w", valute.NumCode, err)
+			}
 		}
 
 		val, err := strconv.ParseFloat(strings.ReplaceAll(valute.Value, ",", "."), 64)
