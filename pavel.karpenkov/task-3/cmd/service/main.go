@@ -3,7 +3,6 @@ package main
 import (
 	"errors"
 	"flag"
-	"fmt"
 
 	"github.com/xRonnyn/lets-go-programming-v2026-autumn-spbstu-50402/task-3/cbr"
 	"github.com/xRonnyn/lets-go-programming-v2026-autumn-spbstu-50402/task-3/config"
@@ -37,5 +36,8 @@ func main() {
 
 	currency.Sort(currencies)
 
-	fmt.Println(currencies)
+	err = currency.Save(cfg.OutputFile, currencies)
+	if err != nil {
+		panic(err)
+	}
 }
