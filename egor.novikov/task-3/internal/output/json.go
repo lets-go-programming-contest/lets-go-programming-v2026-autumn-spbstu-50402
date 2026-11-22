@@ -1,3 +1,4 @@
+
 package output
 
 import (
@@ -8,6 +9,11 @@ import (
 	"github.com/EGGorkaa/task-3/internal/currency"
 )
 
+const (
+	dirPermissions  os.FileMode = 0o755
+	filePermissions os.FileMode = 0o600
+)
+
 func WriteJSON(path string, currencies []currency.Currency) {
 	data, err := json.MarshalIndent(currencies, "", "    ")
 	if err != nil {
@@ -15,11 +21,11 @@ func WriteJSON(path string, currencies []currency.Currency) {
 	}
 
 	dir := filepath.Dir(path)
-	if err := os.MkdirAll(dir, 0o755); err != nil {
+	if err := os.MkdirAll(dir, dirPermissions); err != nil {
 		panic(err)
 	}
 
-	if err := os.WriteFile(path, data, 0o600); err != nil {
+	if err := os.WriteFile(path, data, filePermissions); err != nil {
 		panic(err)
 	}
 }
