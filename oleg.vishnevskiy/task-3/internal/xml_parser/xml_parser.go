@@ -21,23 +21,23 @@ type Curs struct {
 
 func Parse(path string) (Curs, error) {
 	data, err := os.ReadFile(path)
-    if err != nil {
-        return Curs{}, fmt.Errorf("failed to read file %q: %w", path, err)
-    }
+	if err != nil {
+		return Curs{}, fmt.Errorf("failed to read file %q: %w", path, err)
+	}
 
-    data, err = charmap.Windows1251.NewDecoder().Bytes(data)
+	data, err = charmap.Windows1251.NewDecoder().Bytes(data)
 	if err != nil {
 		return Curs{}, fmt.Errorf("failed to decode windows-1251 %q: %w", path, err)
 	}
 
 	data = bytes.Replace(data, []byte(`encoding="windows-1251"`), []byte(`encoding="UTF-8"`), 1)
 
-    var res Curs
+	var res Curs
 
-    err = xml.Unmarshal(data, &res)
-    if err != nil {
-        return Curs{}, fmt.Errorf("failed to unmarshal %q: %w", path, err)
-    }
+	err = xml.Unmarshal(data, &res)
+	if err != nil {
+		return Curs{}, fmt.Errorf("failed to unmarshal %q: %w", path, err)
+	}
 
-    return res, nil
+	return res, nil
 }

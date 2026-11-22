@@ -1,32 +1,32 @@
 package main
 
 import (
-    "flag"
+	"flag"
 
-    "github.com/voleg904/task-3/internal/config"
-    "github.com/voleg904/task-3/internal/json_converter"
-    "github.com/voleg904/task-3/internal/xml_parser"
+	"github.com/voleg904/task-3/internal/config"
+	"github.com/voleg904/task-3/internal/json_converter"
+	"github.com/voleg904/task-3/internal/xml_parser"
 )
 
 func main() {
-    cfgPath := flag.String("config", "config.yaml", "path to config")
-    flag.Parse()
+	cfgPath := flag.String("config", "config.yaml", "path to config")
+	flag.Parse()
 
-    path, err := config.Load(*cfgPath)
+	path, err := config.Load(*cfgPath)
 
-    if err != nil {
-        panic(err)
-    }
+	if err != nil {
+		panic(err)
+	}
 
-    curs, err := xmlparser.Parse(path.InputPath)
+	curs, err := xmlparser.Parse(path.InputPath)
 
-    if err != nil {
-        panic(err)
-    }
+	if err != nil {
+		panic(err)
+	}
 
-    err = jsonconverter.Save(curs, path.OutputPath)
+	err = jsonconverter.Save(curs, path.OutputPath)
 
-    if err != nil {
-        panic(err)
-    }
+	if err != nil {
+		panic(err)
+	}
 }

@@ -19,47 +19,47 @@ type Paths struct {
 }
 
 func Parse(data []byte) (Paths, error) {
-    var resPaths Paths
+	var resPaths Paths
 
-    err := yaml.Unmarshal(data, &resPaths)
+	err := yaml.Unmarshal(data, &resPaths)
 
-    if err != nil {
-        return Paths{}, fmt.Errorf("failed to unmarshal yaml: %w", err)
-    }
+	if err != nil {
+		return Paths{}, fmt.Errorf("failed to unmarshal yaml: %w", err)
+	}
 
-    return resPaths, nil
+	return resPaths, nil
 }
 
 func Check(p Paths) error {
-    if p.InputPath == "" {
-        return ErrEmptyInput
-    }
+	if p.InputPath == "" {
+		return ErrEmptyInput
+	}
 
-    if p.OutputPath == "" {
-        return ErrEmptyOutput
-    }
+	if p.OutputPath == "" {
+		return ErrEmptyOutput
+	}
 
-    return nil
+	return nil
 }
 
 func Load(cfgPath string) (Paths, error) {
-    data, err := os.ReadFile(cfgPath)
+	data, err := os.ReadFile(cfgPath)
 
-    if err != nil {
-        return Paths{}, fmt.Errorf("failed to open file %q: %w", cfgPath, err)
-    }
+	if err != nil {
+		return Paths{}, fmt.Errorf("failed to open file %q: %w", cfgPath, err)
+	}
 
-    var p Paths
+	var p Paths
 
-    p, err = Parse(data)
-    if err != nil {
-        return Paths{}, fmt.Errorf("failed to parse file %q: %w", cfgPath, err)
-    }
+	p, err = Parse(data)
+	if err != nil {
+		return Paths{}, fmt.Errorf("failed to parse file %q: %w", cfgPath, err)
+	}
 
-    err = Check(p)
-    if err != nil {
-        return Paths{}, err
-    }
+	err = Check(p)
+	if err != nil {
+		return Paths{}, err
+	}
 
-    return p, nil
+	return p, nil
 }

@@ -24,39 +24,39 @@ type ValuteJSON struct {
 }
 
 func Save(data xmlparser.Curs, path string) (error) {
-    err := os.MkdirAll(filepath.Dir(path), dirPerm)
-    if err != nil {
-        return fmt.Errorf("failed to create directory %q: %w", path, err)
-    }
+	err := os.MkdirAll(filepath.Dir(path), dirPerm)
+	if err != nil {
+		return fmt.Errorf("failed to create directory %q: %w", path, err)
+	}
 
-    res := make([]ValuteJSON, 0, len(data.Valutes))
+	res := make([]ValuteJSON, 0, len(data.Valutes))
 
-    for i := range data.Valutes {
-        val, err := ChangeFormat(data.Valutes[i])
+	for i := range data.Valutes {
+		val, err := ChangeFormat(data.Valutes[i])
 
-        if err != nil {
-            return err
-        }
+		if err != nil {
+			return err
+		}
 
-        res = append(res, val)
-    }
+		res = append(res, val)
+	}
 
-    sort.SliceStable(res, func(i, j int) bool {
+	sort.SliceStable(res, func(i, j int) bool {
 		return res[i].Value > res[j].Value
 	})
 
-    toWrite, err := json.Marshal(res)
-    if err != nil {
-        return fmt.Errorf("failed to marshal json: %w", err)
-    }
+	toWrite, err := json.Marshal(res)
+	if err != nil {
+		return fmt.Errorf("failed to marshal json: %w", err)
+	}
 
-    err = os.WriteFile(path, toWrite, filePerm)
+	err = os.WriteFile(path, toWrite, filePerm)
 
-    if err != nil {
-        return fmt.Errorf("failed to write json %q: %w", path, err)
-    }
+	if err != nil {
+		return fmt.Errorf("failed to write json %q: %w", path, err)
+	}
 
-    return nil
+	return nil
 }
 
 func ChangeFormat(val xmlparser.Valute) (ValuteJSON, error) {
@@ -67,5 +67,5 @@ func ChangeFormat(val xmlparser.Valute) (ValuteJSON, error) {
 		return ValuteJSON{}, fmt.Errorf("failed to convert val %q: %w", val.Value, err)
 	}
 
-    return ValuteJSON{NumCode: val.NumCode, CharCode: val.CharCode, Value: value}, nil
+	return ValuteJSON{NumCode: val.NumCode, CharCode: val.CharCode, Value: value}, nil
 }
