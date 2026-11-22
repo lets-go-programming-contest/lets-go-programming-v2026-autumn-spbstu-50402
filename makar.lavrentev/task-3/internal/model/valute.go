@@ -1,6 +1,7 @@
 package model
 
 import (
+	"cmp"
 	"encoding/xml"
 	"fmt"
 	"strconv"
@@ -35,4 +36,8 @@ type Valute struct {
 	NumCode  int        `json:"num_code"  xml:"NumCode"`
 	CharCode string     `json:"char_code" xml:"CharCode"`
 	Value    CommaFloat `json:"value"     xml:"Value"`
+}
+
+func SortFunc(a, b Valute) int {
+	return cmp.Compare(b.Value, a.Value)
 }

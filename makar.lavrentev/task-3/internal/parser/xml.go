@@ -2,10 +2,10 @@ package parser
 
 import (
 	"encoding/xml"
+	"fmt"
 	"io"
 	"os"
 
-	"github.com/Pilipchenok/task-3/internal/model"
 	"golang.org/x/text/encoding/charmap"
 )
 
@@ -17,24 +17,28 @@ func winDecoder(charset string, input io.Reader) (io.Reader, error) {
 	return input, nil
 }
 
-func DecodeXML(inputFile string) *model.ValCurs {
-	file, err := os.Open(inputFile)
-	if err != nil {
+func panicIfErr(fn func() error) {
+	if err := fn(); err != nil {
 		panic(err)
 	}
+}
 
-	defer func() {
-		_ = file.Close()
-	}()
+func DecodeXML[T any](inputFile string) (*T, error) {
+	file, err := os.Open(inputFile)
+	if err != nil {
+		return nil, fmt.Errorf("open xml file: %w", err)
+	}
+
+	defer panicIfErr(file.Close)
 
 	decoder := xml.NewDecoder(file)
 	decoder.CharsetReader = winDecoder
 
-	var curs model.ValCurs
+	var result T
 
-	if err := decoder.Decode(&curs); err != nil {
-		panic(err)
+	if err := decoder.Decode(&result); err != nil {
+		return nil, fmt.Errorf("decode xml: %w", err)
 	}
 
-	return &curs
+	return &result, nil
 }
