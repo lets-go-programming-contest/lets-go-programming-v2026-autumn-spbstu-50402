@@ -32,7 +32,8 @@ func Save(data xmlparser.Curs, path string) error {
 	res := make([]ValuteJSON, 0, len(data.Valutes))
 
 	for i := range data.Valutes {
-		if val, err := ChangeFormat(data.Valutes[i]); err != nil {
+		val, err := ChangeFormat(data.Valutes[i])
+		if err != nil {
 			return err
 		}
 
