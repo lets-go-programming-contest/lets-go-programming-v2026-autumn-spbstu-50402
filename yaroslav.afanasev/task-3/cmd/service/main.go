@@ -3,12 +3,12 @@ package main
 import (
 	"errors"
 	"flag"
-	"fmt"
 
 	"github.com/Jaroslaw-super1/task-3/internal/cbr"
 	"github.com/Jaroslaw-super1/task-3/internal/config"
 	"github.com/Jaroslaw-super1/task-3/internal/currency"
 	"github.com/Jaroslaw-super1/task-3/internal/must"
+	"github.com/Jaroslaw-super1/task-3/internal/storage"
 )
 
 var errConfigPathNotSet = errors.New("config path is not specified")
@@ -25,8 +25,10 @@ func main() {
 
 	currency.SortByValueDescending(rates)
 
-	fmt.Printf("Загружено валют: %d\n", len(rates))
-	fmt.Printf("Топ-1: %s = %.4f\n", rates[0].CharCode, rates[0].Value)
+	err = storage.WriteJSON(cfg.OutputFile, rates)
+	must.NoError(err)
+
+	println("Успешно! Результат сохранен в", cfg.OutputFile)
 }
 
 func readConfigPath() (string, error) {
