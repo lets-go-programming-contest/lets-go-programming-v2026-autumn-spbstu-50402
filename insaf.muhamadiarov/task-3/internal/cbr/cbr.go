@@ -32,7 +32,7 @@ func ReadXML(path string) ([]Currency, error) {
 	}
 
 	var doc ValCurs
-	err := xml.Unmarshal(data, &doc)
+	err = xml.Unmarshal(data, &doc)
 	if err != nil {
 		return nil, fmt.Errorf("unmarshal from the path %q: %w", path, err)
 	}
@@ -45,7 +45,7 @@ func ReadXML(path string) ([]Currency, error) {
 	for _, v := range doc.Valutes {
 		num, err := strconv.Atoi(strings.TrimSpace(v.NumCode))
 		if err != nil {
-			return nill, fmt.Errorf("bad NumCode %q: %w", v.NumCode, err)
+			return nil, fmt.Errorf("bad NumCode %q: %w", v.NumCode, err)
 		}
 
 		val, err := strconv.ParseFloat(strings.ReplaceAll(v.Value, ",", "."), 64)
