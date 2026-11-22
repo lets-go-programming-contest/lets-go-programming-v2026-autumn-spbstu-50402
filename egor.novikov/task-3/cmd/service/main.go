@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+
 	"github.com/EGGorkaa/task-3/internal/config"
 	"github.com/EGGorkaa/task-3/internal/currency"
 	"github.com/EGGorkaa/task-3/internal/output"
