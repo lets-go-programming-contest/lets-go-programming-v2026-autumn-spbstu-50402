@@ -5,6 +5,7 @@ import (
     "fmt"
     "os"
     "path/filepath"
+    "sort"
     "strconv"
     "strings"
 
@@ -30,6 +31,11 @@ func Save(data xml_parser.Curs, path string) (error) {
         }
         res = append(res, val)
     }
+
+    sort.SliceStable(res, func(i, j int) bool {
+		return res[i].Value > res[j].Value
+	})
+
     toWrite, err := json.Marshal(res)
     if err != nil {
         return fmt.Errorf("failed to marshal json: %w", err)
