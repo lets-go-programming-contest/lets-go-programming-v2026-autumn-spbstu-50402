@@ -2,9 +2,9 @@ package json_converter
 
 import (
 	"encoding/json"
-    "errors"
     "fmt"
     "os"
+    "path/filepath"
     "strconv"
     "strings"
 
@@ -17,8 +17,8 @@ type ValuteJson struct {
     Value float64 `json:"value"`
 }
 
-func Save(data xml_parser.Curs, string path) (error) {
-    err := os.MkdirAll(path, 0755)
+func Save(data xml_parser.Curs, path string) (error) {
+    err := os.MkdirAll(filepath.Dir(path), 0755)
     if err != nil {
         return fmt.Errorf("failed to create directory %q: %w", path, err)
     }
@@ -34,7 +34,7 @@ func Save(data xml_parser.Curs, string path) (error) {
     if err != nil {
         return fmt.Errorf("failed to marshal json: %w", err)
     }
-    err := os.WriteFile(path, toWrite, 0644)
+    err = os.WriteFile(path, toWrite, 0644)
     if err != nil {
         return fmt.Errorf("failed to write json: %w", path, err)
     }

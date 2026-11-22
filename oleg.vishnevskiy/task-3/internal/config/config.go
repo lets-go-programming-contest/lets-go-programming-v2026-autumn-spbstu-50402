@@ -4,14 +4,13 @@ import (
     "errors"
     "fmt"
     "os"
-    "strings"
 
     "gopkg.in/yaml.v3"
 )
 
 type Paths struct {
     InputPath string `yaml:"input-file"`
-    OutputPath string `yaml:"input-file"`
+    OutputPath string `yaml:"output-file"`
 }
 
 func Parse(data []byte) (Paths, error) {
@@ -30,6 +29,7 @@ func Check(p Paths) error {
     if p.OutputPath == "" {
         return errors.New("Empty output path!")
     }
+    return nil
 }
 
 func Load(cfgPath string) (Paths, error) {
@@ -45,7 +45,7 @@ func Load(cfgPath string) (Paths, error) {
         return Paths{}, fmt.Errorf("failed to parse file %q: %w", cfgPath, err)
     }
 
-    p, err = Check(p)
+    err = Check(p)
     if err != nil {
         return Paths{}, err
     }

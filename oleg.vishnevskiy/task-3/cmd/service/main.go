@@ -12,7 +12,7 @@ func main() {
     cfgPath := flag.String("config", "config.yaml", "path to config")
     flag.Parse()
 
-    path, err := config.Load(cfgPath)
+    path, err := config.Load(*cfgPath)
     if err != nil {
         panic(err)
     }
@@ -20,7 +20,7 @@ func main() {
     if err != nil {
         panic(err)
     }
-    err := json_converter.Save(curs, path.OutputPath)
+    err = json_converter.Save(curs, path.OutputPath)
     if err != nil {
         panic(err)
     }

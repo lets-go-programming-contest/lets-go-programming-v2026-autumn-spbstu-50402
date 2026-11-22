@@ -1,10 +1,12 @@
 package xml_parser
 
 import (
+    "bytes"
 	"encoding/xml"
     "fmt"
     "os"
-    "strings"
+
+	"golang.org/x/text/encoding/charmap"
 )
 
 type Valute struct {
@@ -22,8 +24,16 @@ func Parse(path string) (Curs, error) {
     if err != nil {
         return Curs{}, fmt.Errorf("failed to read file %q: %w", path, err)
     }
+
+    data, err = charmap.Windows1251.NewDecoder().Bytes(data)
+	if err != nil {
+		return Curs{}, fmt.Errorf("failed to decode windows-1251 %q: %w", path, err)
+	}
+
+	data = bytes.Replace(data, []byte(`encoding="windows-1251"`), []byte(`encoding="UTF-8"`), 1)
+
     res := Curs{}
-    err := xml.Unmarshal(data, &res)
+    err = xml.Unmarshal(data, &res)
     if err != nil {
         return Curs{}, fmt.Errorf("failed to unmarshal %q: %w", err)
     }
