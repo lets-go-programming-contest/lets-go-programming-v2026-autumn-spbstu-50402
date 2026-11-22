@@ -28,6 +28,7 @@ func (code *NumCode) UnmarshalText(text []byte) error {
 	if err != nil {
 		return fmt.Errorf("%w: %q", ErrInvalidNumCode, value)
 	}
+
 	*code = NumCode(parsed)
 
 	return nil
@@ -43,9 +44,11 @@ func (value *RateValue) UnmarshalText(text []byte) error {
 
 	normalized := strings.ReplaceAll(original, ",", ".")
 	parsed, err := strconv.ParseFloat(normalized, 64)
+
 	if err != nil || math.IsNaN(parsed) || math.IsInf(parsed, 0) {
 		return fmt.Errorf("%w: %q", ErrInvalidValue, original)
 	}
+
 	*value = RateValue(parsed)
 
 	return nil
