@@ -9,7 +9,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/voleg904/task-3/internal/xml_parser"
+	"github.com/voleg904/task-3/internal/xmlparser"
 )
 
 const (

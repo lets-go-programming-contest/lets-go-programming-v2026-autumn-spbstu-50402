@@ -4,8 +4,8 @@ import (
 	"flag"
 
 	"github.com/voleg904/task-3/internal/config"
-	"github.com/voleg904/task-3/internal/json_converter"
-	"github.com/voleg904/task-3/internal/xml_parser"
+	"github.com/voleg904/task-3/internal/jsonconverter"
+	"github.com/voleg904/task-3/internal/xmlparser"
 )
 
 func main() {
