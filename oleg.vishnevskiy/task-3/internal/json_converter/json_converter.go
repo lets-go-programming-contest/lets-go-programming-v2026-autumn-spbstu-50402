@@ -59,8 +59,8 @@ func Save(data xmlparser.Curs, path string) error {
 
 func ChangeFormat(val xmlparser.Valute) (ValuteJSON, error) {
 	valStr := strings.ReplaceAll(strings.TrimSpace(val.Value), ",", ".")
-	value, err := strconv.ParseFloat(valStr, 64)
 
+	value, err := strconv.ParseFloat(valStr, 64)
 	if err != nil {
 		return ValuteJSON{}, fmt.Errorf("failed to convert val %q: %w", val.Value, err)
 	}
