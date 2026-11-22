@@ -2,6 +2,8 @@ package main
 
 import (
 	"flag"
+	"sort"
+	"fmt"
 
 	"github.com/InsafM1/task-3/internal/config"
 	"github.com/InsafM1/task-3/internal/cbr"
@@ -24,4 +26,8 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+
+	sort.Slice(currencies, func(i, j int) bool {
+		return currencies[i].Value > currencies[j].Value
+	})
 }
