@@ -11,12 +11,9 @@ import (
 )
 
 var (
-	// ErrEmptyConfigPath means the YAML configuration path is blank.
-	ErrEmptyConfigPath = errors.New("config path is empty")
-	// ErrEmptyInputFile means input-file is missing from the configuration.
-	ErrEmptyInputFile  = errors.New("input-file is required in config")
-	// ErrEmptyOutputFile means output-file is missing from the configuration.
-	ErrEmptyOutputFile = errors.New("output-file is required in config")
+	errEmptyConfigPath = errors.New("config path is empty")
+	errEmptyInputFile  = errors.New("input-file is required in config")
+	errEmptyOutputFile = errors.New("output-file is required in config")
 )
 
 // Config contains paths used by the currency conversion application.
@@ -28,7 +25,7 @@ type Config struct {
 // Load reads a YAML configuration from path and checks its required fields.
 func Load(path string) (Config, error) {
 	if strings.TrimSpace(path) == "" {
-		return Config{}, fmt.Errorf("validate config path: %w", ErrEmptyConfigPath)
+		return Config{}, fmt.Errorf("validate config path: %w", errEmptyConfigPath)
 	}
 
 	file, err := os.Open(path)
@@ -55,11 +52,11 @@ func Load(path string) (Config, error) {
 	}
 
 	if strings.TrimSpace(cfg.InputFile) == "" {
-		return Config{}, fmt.Errorf("configuration %q: %w", path, ErrEmptyInputFile)
+		return Config{}, fmt.Errorf("configuration %q: %w", path, errEmptyInputFile)
 	}
 
 	if strings.TrimSpace(cfg.OutputFile) == "" {
-		return Config{}, fmt.Errorf("configuration %q: %w", path, ErrEmptyOutputFile)
+		return Config{}, fmt.Errorf("configuration %q: %w", path, errEmptyOutputFile)
 	}
 
 	return cfg, nil

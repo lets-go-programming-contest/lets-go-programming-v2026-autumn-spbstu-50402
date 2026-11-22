@@ -30,6 +30,7 @@ func ParseFile(path string) ([]currency.Currency, error) {
 	currencies, parseErr := Parse(file)
 
 	closeErr := file.Close()
+
 	if parseErr != nil {
 		return nil, fmt.Errorf("parse XML file %q: %w", path, parseErr)
 	}
@@ -50,8 +51,10 @@ func Parse(reader io.Reader) ([]currency.Currency, error) {
 	if err := decoder.Decode(&document); err != nil {
 		return nil, fmt.Errorf("decode XML: %w", err)
 	}
+
 	if document.Valutes == nil {
 		return make([]currency.Currency, 0), nil
 	}
+
 	return document.Valutes, nil
 }

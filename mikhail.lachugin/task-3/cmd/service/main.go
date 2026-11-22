@@ -33,8 +33,10 @@ func run(configPath string) error {
 	}
 
 	currency.SortByValueDesc(currencies)
+
 	if err := jsonwriter.WriteFile(cfg.OutputFile, currencies); err != nil {
 		return fmt.Errorf("write currencies: %w", err)
 	}
+
 	return nil
 }

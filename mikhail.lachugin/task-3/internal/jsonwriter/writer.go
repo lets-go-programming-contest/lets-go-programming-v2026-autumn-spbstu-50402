@@ -40,6 +40,7 @@ func WriteFile(path string, currencies []currency.Currency) error {
 	writeErr := Write(file, currencies)
 
 	closeErr := file.Close()
+
 	if writeErr != nil {
 		return fmt.Errorf("write JSON to %q: %w", path, writeErr)
 	}
@@ -59,6 +60,7 @@ func Write(writer io.Writer, currencies []currency.Currency) error {
 
 	encoder := json.NewEncoder(writer)
 	encoder.SetIndent("", jsonIndent)
+
 	if err := encoder.Encode(currencies); err != nil {
 		return fmt.Errorf("encode JSON: %w", err)
 	}
