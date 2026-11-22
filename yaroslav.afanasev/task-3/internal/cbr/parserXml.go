@@ -7,7 +7,6 @@ import (
 	"os"
 
 	"github.com/Jaroslaw-super1/task-3/internal/currency"
-
 	"golang.org/x/net/html/charset"
 )
 
