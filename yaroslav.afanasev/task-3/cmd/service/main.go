@@ -27,8 +27,6 @@ func main() {
 
 	err = storage.WriteJSON(cfg.OutputFile, rates)
 	must.NoError(err)
-
-	println("Успешно! Результат сохранен в", cfg.OutputFile)
 }
 
 func readConfigPath() (string, error) {
