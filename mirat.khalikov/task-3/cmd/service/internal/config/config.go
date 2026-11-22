@@ -33,9 +33,6 @@ func (cfg Config) Check() error {
 	return nil
 }
 
-	return nil
-}
-
 func LoadConfig(path string) (Config, error) {
 	data, err := os.ReadFile(path)
 	if err != nil {
