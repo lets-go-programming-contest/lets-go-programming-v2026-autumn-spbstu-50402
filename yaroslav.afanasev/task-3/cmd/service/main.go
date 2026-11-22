@@ -5,7 +5,9 @@ import (
 	"flag"
 	"fmt"
 
+	"github.com/Jaroslaw-super1/task-3/internal/cbr"
 	"github.com/Jaroslaw-super1/task-3/internal/config"
+	"github.com/Jaroslaw-super1/task-3/internal/currency"
 	"github.com/Jaroslaw-super1/task-3/internal/must"
 )
 
@@ -18,7 +20,13 @@ func main() {
 	cfg, err := config.Load(configPath)
 	must.NoError(err)
 
-	fmt.Printf("Input: %s, Output: %s\n", cfg.InputFile, cfg.OutputFile)
+	rates, err := cbr.ParseFile(cfg.InputFile)
+	must.NoError(err)
+
+	currency.SortByValueDescending(rates)
+
+	fmt.Printf("Загружено валют: %d\n", len(rates))
+	fmt.Printf("Топ-1: %s = %.4f\n", rates[0].CharCode, rates[0].Value)
 }
 
 func readConfigPath() (string, error) {
