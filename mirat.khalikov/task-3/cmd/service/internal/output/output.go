@@ -19,7 +19,7 @@ func WriteFile(path string, currencies []xml.Currency) error {
 		return fmt.Errorf("create output directory failed: %w", err)
 	}
 
-	err = os.WriteFile(path, data, 0644)
+	err = os.WriteFile(path, data, 0600)
 	if err != nil {
 		return fmt.Errorf("write JSON file failed: %w", err)
 	}

@@ -20,12 +20,18 @@ type Config struct {
 }
 
 func (cfg Config) Check() error {
-	if strings.TrimSpace(cfg.InputFile) == "" {
+	inputFile := strings.TrimSpace(cfg.InputFile)
+	if inputFile == "" {
 		return errInputFile
 	}
-	if strings.TrimSpace(cfg.OutputFile) == "" {
+
+	outputFile := strings.TrimSpace(cfg.OutputFile)
+	if outputFile == "" {
 		return errOutputFile
 	}
+
+	return nil
+}
 
 	return nil
 }

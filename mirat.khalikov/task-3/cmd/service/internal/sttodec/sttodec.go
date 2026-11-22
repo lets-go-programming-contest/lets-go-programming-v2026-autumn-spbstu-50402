@@ -12,5 +12,6 @@ func StToDec(value string) (float64, error) {
 	if err != nil {
 		return 0, fmt.Errorf("parse failed: %w", err)
 	}
+
 	return result, nil
 }

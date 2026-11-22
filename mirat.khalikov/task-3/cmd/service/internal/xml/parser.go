@@ -12,9 +12,9 @@ import (
 )
 
 type Currency struct {
-	NumCode  int  `xml:"NumCode" json:"num_code"`
-	CharCode string  `xml:"CharCode" json:"char_code"`
-	Value    float64 `xml:"Value" json:"value"`
+	NumCode  int     `json:"num_code"`
+	CharCode string  `json:"char_code" xml:"CharCode"`
+	Value    float64 `json:"value" xml:"Value"`
 }
 
 type xmlData struct {
@@ -30,7 +30,11 @@ func ParseFile(path string) ([]Currency, error) {
 	if err != nil {
 		return nil, fmt.Errorf("read XML file failed %q: %w", path, err)
 	}
-	defer file.Close()
+	defer func() {
+		if err := file.Close(); err != nil {
+			panic(err)
+		}
+	}()
 
 	decoder := xml.NewDecoder(file)
 
@@ -46,25 +50,23 @@ func ParseFile(path string) ([]Currency, error) {
 	}
 
 	currencies := make([]Currency, 0, len(doc.Currencies))
-	if len(doc.Currencies) != 0 {
-		for _, item := range doc.Currencies {
+	for _, item := range doc.Currencies {
 
-			code, err := codetoint.CodeToInt(item.NumCode)
-			if err != nil {
-				return nil, err
-			}
-
-			value, err := sttodec.StToDec(item.Value)
-			if err != nil {
-				return nil, fmt.Errorf("parse currency value failed: %w", err)
-			}
-
-			currencies = append(currencies, Currency{
-				NumCode:  code,
-				CharCode: item.CharCode,
-				Value:    value,
-			})
+		code, err := codetoint.CodeToInt(item.NumCode)
+		if err != nil {
+			return nil, fmt.Errorf("convert currency code failed: %w", err)
 		}
+
+		value, err := sttodec.StToDec(item.Value)
+		if err != nil {
+			return nil, fmt.Errorf("parse currency value failed: %w", err)
+		}
+
+		currencies = append(currencies, Currency{
+			NumCode:  code,
+			CharCode: item.CharCode,
+			Value:    value,
+		})
 	}
 
 	return currencies, nil
