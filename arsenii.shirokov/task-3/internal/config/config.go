@@ -29,11 +29,17 @@ func Load(path string) (*Config, error) {
 	if err != nil {
 		return nil, fmt.Errorf("open config file %q: %w", path, err)
 	}
-	defer file.Close()
 
 	var cfg Config
-	if err := yaml.NewDecoder(file).Decode(&cfg); err != nil {
-		return nil, fmt.Errorf("decode yaml config %q: %w", path, err)
+	decodeErr := yaml.NewDecoder(file).Decode(&cfg)
+	closeErr := file.Close()
+
+	if decodeErr != nil {
+		return nil, fmt.Errorf("decode yaml config %q: %w", path, decodeErr)
+	}
+
+	if closeErr != nil {
+		return nil, fmt.Errorf("close config file %q: %w", path, closeErr)
 	}
 
 	if err := cfg.validate(); err != nil {
