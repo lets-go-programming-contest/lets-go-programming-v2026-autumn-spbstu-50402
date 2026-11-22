@@ -13,8 +13,8 @@ import (
 )
 
 const (
-	dirPerm  = 0755
-	filePerm = 0600
+	dirPerm  = 0o755
+	filePerm = 0o600
 )
 
 type ValuteJSON struct {
@@ -32,9 +32,7 @@ func Save(data xmlparser.Curs, path string) error {
 	res := make([]ValuteJSON, 0, len(data.Valutes))
 
 	for i := range data.Valutes {
-		val, err := ChangeFormat(data.Valutes[i])
-
-		if err != nil {
+		if val, err := ChangeFormat(data.Valutes[i]); err != nil {
 			return err
 		}
 
@@ -42,6 +40,7 @@ func Save(data xmlparser.Curs, path string) error {
 	}
 
 	sort.SliceStable(res, func(i, j int) bool {
+
 		return res[i].Value > res[j].Value
 	})
 
