@@ -1,6 +1,6 @@
 module github.com/EGGorkaa/task-3
 
-go 1.27.1
+go 1.22.7
 
 require (
 	golang.org/x/net v0.63.0
