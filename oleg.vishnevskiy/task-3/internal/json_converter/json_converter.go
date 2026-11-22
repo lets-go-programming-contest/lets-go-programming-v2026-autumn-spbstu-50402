@@ -18,9 +18,9 @@ const (
 )
 
 type ValuteJSON struct {
-    NumCode int `json:"num_code"`
-    CharCode string `json:"char_code"`
-    Value float64 `json:"value"`
+    NumCode  int     `json:"num_code"`
+    CharCode string  `json:"char_code"`
+    Value    float64 `json:"value"`
 }
 
 func Save(data xmlparser.Curs, path string) (error) {
@@ -28,6 +28,7 @@ func Save(data xmlparser.Curs, path string) (error) {
     if err != nil {
         return fmt.Errorf("failed to create directory %q: %w", path, err)
     }
+
     res := make([]ValuteJSON, 0, len(data.Valutes))
 
     for i := range data.Valutes {
@@ -48,7 +49,9 @@ func Save(data xmlparser.Curs, path string) (error) {
     if err != nil {
         return fmt.Errorf("failed to marshal json: %w", err)
     }
+
     err = os.WriteFile(path, toWrite, filePerm)
+
     if err != nil {
         return fmt.Errorf("failed to write json %q: %w", path, err)
     }
@@ -59,6 +62,7 @@ func Save(data xmlparser.Curs, path string) (error) {
 func ChangeFormat(val xmlparser.Valute) (ValuteJSON, error) {
 	valStr := strings.ReplaceAll(strings.TrimSpace(val.Value), ",", ".")
 	value, err := strconv.ParseFloat(valStr, 64)
+
 	if err != nil {
 		return ValuteJSON{}, fmt.Errorf("failed to convert val %q: %w", val.Value, err)
 	}

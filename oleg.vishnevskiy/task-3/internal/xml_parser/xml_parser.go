@@ -10,9 +10,9 @@ import (
 )
 
 type Valute struct {
-    NumCode int `xml:"NumCode"`
+    NumCode  int    `xml:"NumCode"`
     CharCode string `xml:"CharCode"`
-    Value string `xml:"Value"`
+    Value    string `xml:"Value"`
 }
 
 type Curs struct {
@@ -33,6 +33,7 @@ func Parse(path string) (Curs, error) {
 	data = bytes.Replace(data, []byte(`encoding="windows-1251"`), []byte(`encoding="UTF-8"`), 1)
 
     var res Curs
+
     err = xml.Unmarshal(data, &res)
     if err != nil {
         return Curs{}, fmt.Errorf("failed to unmarshal %q: %w", path, err)

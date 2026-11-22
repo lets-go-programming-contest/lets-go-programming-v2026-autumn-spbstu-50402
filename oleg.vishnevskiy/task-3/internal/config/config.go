@@ -9,7 +9,7 @@ import (
 )
 
 var (
-	ErrEmptyInput = errors.New("empty input path")
+	ErrEmptyInput  = errors.New("empty input path")
 	ErrEmptyOutput = errors.New("empty output path")
 )
 
