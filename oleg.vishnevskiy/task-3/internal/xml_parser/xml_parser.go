@@ -1,10 +1,10 @@
-package xml_parser
+package xmlparser
 
 import (
-    "bytes"
+	"bytes"
 	"encoding/xml"
-    "fmt"
-    "os"
+	"fmt"
+	"os"
 
 	"golang.org/x/text/encoding/charmap"
 )
@@ -32,10 +32,11 @@ func Parse(path string) (Curs, error) {
 
 	data = bytes.Replace(data, []byte(`encoding="windows-1251"`), []byte(`encoding="UTF-8"`), 1)
 
-    res := Curs{}
+    var res Curs
     err = xml.Unmarshal(data, &res)
     if err != nil {
         return Curs{}, fmt.Errorf("failed to unmarshal %q: %w", path, err)
     }
+
     return res, nil
 }

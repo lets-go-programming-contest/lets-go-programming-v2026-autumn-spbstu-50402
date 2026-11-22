@@ -1,34 +1,42 @@
-package json_converter
+package jsonconverter
 
 import (
 	"encoding/json"
-    "fmt"
-    "os"
-    "path/filepath"
-    "sort"
-    "strconv"
-    "strings"
+	"fmt"
+	"os"
+	"path/filepath"
+	"sort"
+	"strconv"
+	"strings"
 
-    "github.com/voleg904/task-3/internal/xml_parser"
+	"github.com/voleg904/task-3/internal/xml_parser"
 )
 
-type ValuteJson struct {
+const (
+	dirPerm  = 0755
+	filePerm = 0600
+)
+
+type ValuteJSON struct {
     NumCode int `json:"num_code"`
     CharCode string `json:"char_code"`
     Value float64 `json:"value"`
 }
 
-func Save(data xml_parser.Curs, path string) (error) {
-    err := os.MkdirAll(filepath.Dir(path), 0755)
+func Save(data xmlparser.Curs, path string) (error) {
+    err := os.MkdirAll(filepath.Dir(path), dirPerm)
     if err != nil {
         return fmt.Errorf("failed to create directory %q: %w", path, err)
     }
-    var res []ValuteJson
+    res := make([]ValuteJSON, 0, len(data.Valutes))
+
     for i := range data.Valutes {
         val, err := ChangeFormat(data.Valutes[i])
+
         if err != nil {
             return err
         }
+
         res = append(res, val)
     }
 
@@ -40,18 +48,20 @@ func Save(data xml_parser.Curs, path string) (error) {
     if err != nil {
         return fmt.Errorf("failed to marshal json: %w", err)
     }
-    err = os.WriteFile(path, toWrite, 0644)
+    err = os.WriteFile(path, toWrite, filePerm)
     if err != nil {
         return fmt.Errorf("failed to write json %q: %w", path, err)
     }
+
     return nil
 }
 
-func ChangeFormat(val xml_parser.Valute) (ValuteJson, error) {
+func ChangeFormat(val xmlparser.Valute) (ValuteJSON, error) {
 	valStr := strings.ReplaceAll(strings.TrimSpace(val.Value), ",", ".")
 	value, err := strconv.ParseFloat(valStr, 64)
 	if err != nil {
-		return ValuteJson{}, fmt.Errorf("failed to convert val %q: %w", val.Value, err)
+		return ValuteJSON{}, fmt.Errorf("failed to convert val %q: %w", val.Value, err)
 	}
-    return ValuteJson{NumCode: val.NumCode, CharCode: val.CharCode, Value: value}, nil
+
+    return ValuteJSON{NumCode: val.NumCode, CharCode: val.CharCode, Value: value}, nil
 }

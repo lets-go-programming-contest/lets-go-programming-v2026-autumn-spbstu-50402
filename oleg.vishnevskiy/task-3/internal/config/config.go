@@ -1,11 +1,16 @@
 package config
 
 import (
-    "errors"
-    "fmt"
-    "os"
+	"errors"
+	"fmt"
+	"os"
 
-    "gopkg.in/yaml.v3"
+	"gopkg.in/yaml.v3"
+)
+
+var (
+	ErrEmptyInput = errors.New("empty input path")
+	ErrEmptyOutput = errors.New("empty output path")
 )
 
 type Paths struct {
@@ -14,26 +19,32 @@ type Paths struct {
 }
 
 func Parse(data []byte) (Paths, error) {
-    resPaths := Paths{}
+    var resPaths Paths
+
     err := yaml.Unmarshal(data, &resPaths)
+
     if err != nil {
-        return Paths{}, err
+        return Paths{}, fmt.Errorf("failed to unmarshal yaml: %w", err)
     }
+
     return resPaths, nil
 }
 
 func Check(p Paths) error {
     if p.InputPath == "" {
-        return errors.New("Empty input path!")
+        return ErrEmptyInput
     }
+
     if p.OutputPath == "" {
-        return errors.New("Empty output path!")
+        return ErrEmptyOutput
     }
+
     return nil
 }
 
 func Load(cfgPath string) (Paths, error) {
     data, err := os.ReadFile(cfgPath)
+
     if err != nil {
         return Paths{}, fmt.Errorf("failed to open file %q: %w", cfgPath, err)
     }

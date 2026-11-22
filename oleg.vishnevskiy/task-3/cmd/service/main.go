@@ -13,14 +13,19 @@ func main() {
     flag.Parse()
 
     path, err := config.Load(*cfgPath)
+
     if err != nil {
         panic(err)
     }
-    curs, err := xml_parser.Parse(path.InputPath)
+
+    curs, err := xmlparser.Parse(path.InputPath)
+
     if err != nil {
         panic(err)
     }
-    err = json_converter.Save(curs, path.OutputPath)
+
+    err = jsonconverter.Save(curs, path.OutputPath)
+
     if err != nil {
         panic(err)
     }
