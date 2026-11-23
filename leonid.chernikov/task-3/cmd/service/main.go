@@ -81,12 +81,12 @@ func saveJSON(path string, currencies []Currency) {
 		panic(err)
 	}
 
-	err = os.MkdirAll(filepath.Dir(path), 0755)
+	err = os.MkdirAll(filepath.Dir(path), 0o755)
 	if err != nil {
 		panic(err)
 	}
 
-	err = os.WriteFile(path, data, 0644)
+	err = os.WriteFile(path, data, 0o600)
 	if err != nil {
 		panic(err)
 	}
