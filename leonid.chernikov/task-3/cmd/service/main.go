@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/xml"
 	"flag"
 	"os"
 
@@ -10,6 +11,31 @@ import (
 type Config struct {
 	InputFile  string `yaml:"input-file"`
 	OutputFile string `yaml:"output-file"`
+}
+
+type ValCurs struct {
+	Valutes []Valute `xml:"Valute"`
+}
+
+type Valute struct {
+	NumCode  int    `xml:"NumCode"`
+	CharCode string `xml:"CharCode"`
+	Value    string `xml:"Value"`
+}
+
+func readXML(path string) []Valute {
+	data, err := os.ReadFile(path)
+	if err != nil {
+		panic(err)
+	}
+
+	var currencies ValCurs
+	err = xml.Unmarshal(data, &currencies)
+	if err != nil {
+		panic(err)
+	}
+
+	return currencies.Valutes
 }
 
 func main() {
@@ -27,4 +53,8 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+
+	valutes := readXML(config.InputFile)
+
+	_ = valutes
 }
