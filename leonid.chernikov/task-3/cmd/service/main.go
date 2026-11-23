@@ -22,6 +22,8 @@ const (
 	filePermissions = 0o600
 )
 
+var errUnsupportedCharset = errors.New("unsupported charset")
+
 type Config struct {
 	InputFile  string `yaml:"input-file"`
 	OutputFile string `yaml:"output-file"`
@@ -56,7 +58,7 @@ func readXML(path string) []Valute {
 			return charmap.Windows1251.NewDecoder().Reader(input), nil
 		}
 
-		return nil, errors.New("unsupported charset")
+		return nil, errUnsupportedCharset
 	}
 
 	var currencies ValCurs
