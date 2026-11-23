@@ -13,6 +13,11 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
+const (
+	dirPermissions  = 0o755
+	filePermissions = 0o600
+)
+
 type Config struct {
 	InputFile  string `yaml:"input-file"`
 	OutputFile string `yaml:"output-file"`
@@ -81,12 +86,12 @@ func saveJSON(path string, currencies []Currency) {
 		panic(err)
 	}
 
-	err = os.MkdirAll(filepath.Dir(path), 0o755)
+	err = os.MkdirAll(filepath.Dir(path), dirPermissions)
 	if err != nil {
 		panic(err)
 	}
 
-	err = os.WriteFile(path, data, 0o600)
+	err = os.WriteFile(path, data, filePermissions)
 	if err != nil {
 		panic(err)
 	}
