@@ -1,4 +1,3 @@
-
 package output
 
 import (
