@@ -4,8 +4,8 @@ import (
 	"bytes"
 	"encoding/json"
 	"encoding/xml"
+	"errors"
 	"flag"
-	"fmt"
 	"io"
 	"os"
 	"path/filepath"
@@ -56,7 +56,7 @@ func readXML(path string) []Valute {
 			return charmap.Windows1251.NewDecoder().Reader(input), nil
 		}
 
-		return nil, fmt.Errorf("unsupported charset: %s", charset)
+		return nil, errors.New("unsupported charset")
 	}
 
 	var currencies ValCurs
