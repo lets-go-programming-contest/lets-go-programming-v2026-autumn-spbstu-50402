@@ -1,15 +1,19 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
 	"encoding/xml"
 	"flag"
+	"fmt"
+	"io"
 	"os"
 	"path/filepath"
 	"sort"
 	"strconv"
 	"strings"
 
+	"golang.org/x/text/encoding/charmap"
 	"gopkg.in/yaml.v3"
 )
 
@@ -45,9 +49,19 @@ func readXML(path string) []Valute {
 		panic(err)
 	}
 
+	decoder := xml.NewDecoder(bytes.NewReader(data))
+
+	decoder.CharsetReader = func(charset string, input io.Reader) (io.Reader, error) {
+		if strings.EqualFold(charset, "windows-1251") {
+			return charmap.Windows1251.NewDecoder().Reader(input), nil
+		}
+
+		return nil, fmt.Errorf("unsupported charset: %s", charset)
+	}
+
 	var currencies ValCurs
 
-	err = xml.Unmarshal(data, &currencies)
+	err = decoder.Decode(&currencies)
 	if err != nil {
 		panic(err)
 	}
