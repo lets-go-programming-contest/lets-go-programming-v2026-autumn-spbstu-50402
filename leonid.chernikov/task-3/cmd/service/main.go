@@ -1,9 +1,11 @@
 package main
 
 import (
+	"encoding/json"
 	"encoding/xml"
 	"flag"
 	"os"
+	"path/filepath"
 	"sort"
 	"strconv"
 	"strings"
@@ -73,6 +75,23 @@ func convertCurrencies(valutes []Valute) []Currency {
 	return currencies
 }
 
+func saveJSON(path string, currencies []Currency) {
+	data, err := json.MarshalIndent(currencies, "", "    ")
+	if err != nil {
+		panic(err)
+	}
+
+	err = os.MkdirAll(filepath.Dir(path), 0755)
+	if err != nil {
+		panic(err)
+	}
+
+	err = os.WriteFile(path, data, 0644)
+	if err != nil {
+		panic(err)
+	}
+}
+
 func main() {
 	configPath := flag.String("config", "config.yaml", "path to config")
 	flag.Parse()
@@ -93,5 +112,5 @@ func main() {
 
 	currencies := convertCurrencies(valutes)
 
-	_ = currencies
+	saveJSON(config.OutputFile, currencies)
 }
