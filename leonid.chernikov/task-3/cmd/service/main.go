@@ -4,6 +4,9 @@ import (
 	"encoding/xml"
 	"flag"
 	"os"
+	"sort"
+	"strconv"
+	"strings"
 
 	"gopkg.in/yaml.v3"
 )
@@ -23,6 +26,12 @@ type Valute struct {
 	Value    string `xml:"Value"`
 }
 
+type Currency struct {
+	NumCode  int     `json:"num_code"`
+	CharCode string  `json:"char_code"`
+	Value    float64 `json:"value"`
+}
+
 func readXML(path string) []Valute {
 	data, err := os.ReadFile(path)
 	if err != nil {
@@ -30,12 +39,38 @@ func readXML(path string) []Valute {
 	}
 
 	var currencies ValCurs
+
 	err = xml.Unmarshal(data, &currencies)
 	if err != nil {
 		panic(err)
 	}
 
 	return currencies.Valutes
+}
+
+func convertCurrencies(valutes []Valute) []Currency {
+	currencies := make([]Currency, 0)
+
+	for _, valute := range valutes {
+		value := strings.ReplaceAll(valute.Value, ",", ".")
+
+		number, err := strconv.ParseFloat(value, 64)
+		if err != nil {
+			panic(err)
+		}
+
+		currencies = append(currencies, Currency{
+			NumCode:  valute.NumCode,
+			CharCode: valute.CharCode,
+			Value:    number,
+		})
+	}
+
+	sort.Slice(currencies, func(i, j int) bool {
+		return currencies[i].Value > currencies[j].Value
+	})
+
+	return currencies
 }
 
 func main() {
@@ -56,5 +91,7 @@ func main() {
 
 	valutes := readXML(config.InputFile)
 
-	_ = valutes
+	currencies := convertCurrencies(valutes)
+
+	_ = currencies
 }
