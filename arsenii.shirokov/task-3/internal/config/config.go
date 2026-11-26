@@ -25,21 +25,9 @@ func Load(path string) (*Config, error) {
 		return nil, ErrEmptyConfigPath
 	}
 
-	file, err := os.Open(path)
-	if err != nil {
-		return nil, fmt.Errorf("open config file %q: %w", path, err)
-	}
-
 	var cfg Config
-	decodeErr := yaml.NewDecoder(file).Decode(&cfg)
-	closeErr := file.Close()
-
-	if decodeErr != nil {
-		return nil, fmt.Errorf("decode yaml config %q: %w", path, decodeErr)
-	}
-
-	if closeErr != nil {
-		return nil, fmt.Errorf("close config file %q: %w", path, closeErr)
+	if err := decodeFile(path, &cfg); err != nil {
+		return nil, err
 	}
 
 	if err := cfg.validate(); err != nil {
@@ -47,6 +35,25 @@ func Load(path string) (*Config, error) {
 	}
 
 	return &cfg, nil
+}
+
+func decodeFile(path string, cfg *Config) (err error) {
+	file, err := os.Open(path)
+	if err != nil {
+		return fmt.Errorf("open config file %q: %w", path, err)
+	}
+
+	defer func() {
+		if closeErr := file.Close(); closeErr != nil && err == nil {
+			err = fmt.Errorf("close config file %q: %w", path, closeErr)
+		}
+	}()
+
+	if decodeErr := yaml.NewDecoder(file).Decode(cfg); decodeErr != nil {
+		return fmt.Errorf("decode yaml config %q: %w", path, decodeErr)
+	}
+
+	return nil
 }
 
 func (c *Config) validate() error {

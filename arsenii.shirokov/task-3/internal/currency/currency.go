@@ -19,7 +19,6 @@ const (
 var ErrInvalidDecimal = errors.New("decimal value must be a finite number")
 
 type ValCurs struct {
-	XMLName xml.Name   `xml:"ValCurs"`
 	Valutes []Currency `xml:"Valute"`
 }
 

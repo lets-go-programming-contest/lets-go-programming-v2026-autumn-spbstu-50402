@@ -8,48 +8,41 @@ import (
 	"os"
 	"strings"
 
-	"arsenii.shirokov/task-3/internal/currency"
 	"golang.org/x/net/html/charset"
 )
 
 var ErrEmptyInputPath = errors.New("xml input path is empty")
 
-func ParseFile(path string) ([]currency.Currency, error) {
+func ParseFile(path string, target any) (err error) {
 	if strings.TrimSpace(path) == "" {
-		return nil, ErrEmptyInputPath
+		return ErrEmptyInputPath
 	}
 
 	file, err := os.Open(path)
 	if err != nil {
-		return nil, fmt.Errorf("open xml file %q: %w", path, err)
+		return fmt.Errorf("open xml file %q: %w", path, err)
 	}
 
-	currencies, parseErr := Parse(file)
-	closeErr := file.Close()
+	defer func() {
+		if closeErr := file.Close(); closeErr != nil && err == nil {
+			err = fmt.Errorf("close xml file %q: %w", path, closeErr)
+		}
+	}()
 
-	if parseErr != nil {
-		return nil, fmt.Errorf("parse xml file %q: %w", path, parseErr)
+	if parseErr := Parse(file, target); parseErr != nil {
+		return fmt.Errorf("parse xml file %q: %w", path, parseErr)
 	}
 
-	if closeErr != nil {
-		return nil, fmt.Errorf("close xml file %q: %w", path, closeErr)
-	}
-
-	return currencies, nil
+	return nil
 }
 
-func Parse(reader io.Reader) ([]currency.Currency, error) {
+func Parse(reader io.Reader, target any) error {
 	decoder := xml.NewDecoder(reader)
 	decoder.CharsetReader = charset.NewReaderLabel
 
-	var valCurs currency.ValCurs
-	if err := decoder.Decode(&valCurs); err != nil {
-		return nil, fmt.Errorf("decode xml: %w", err)
+	if err := decoder.Decode(target); err != nil {
+		return fmt.Errorf("decode xml: %w", err)
 	}
 
-	if valCurs.Valutes == nil {
-		return make([]currency.Currency, 0), nil
-	}
-
-	return valCurs.Valutes, nil
+	return nil
 }

@@ -8,8 +8,6 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
-
-	"arsenii.shirokov/task-3/internal/currency"
 )
 
 const (
@@ -19,14 +17,14 @@ const (
 
 var ErrEmptyOutputPath = errors.New("json output path is empty")
 
-func WriteFile(path string, currencies []currency.Currency) error {
+func WriteFile(path string, data any) (err error) {
 	if strings.TrimSpace(path) == "" {
 		return ErrEmptyOutputPath
 	}
 
 	dir := filepath.Dir(path)
-	if err := os.MkdirAll(dir, dirPerm); err != nil {
-		return fmt.Errorf("create output directory %q: %w", dir, err)
+	if mkdirErr := os.MkdirAll(dir, dirPerm); mkdirErr != nil {
+		return fmt.Errorf("create output directory %q: %w", dir, mkdirErr)
 	}
 
 	file, err := os.Create(path)
@@ -34,29 +32,24 @@ func WriteFile(path string, currencies []currency.Currency) error {
 		return fmt.Errorf("create output file %q: %w", path, err)
 	}
 
-	writeErr := Write(file, currencies)
-	closeErr := file.Close()
+	defer func() {
+		if closeErr := file.Close(); closeErr != nil && err == nil {
+			err = fmt.Errorf("close output file %q: %w", path, closeErr)
+		}
+	}()
 
-	if writeErr != nil {
+	if writeErr := Write(file, data); writeErr != nil {
 		return fmt.Errorf("write json to %q: %w", path, writeErr)
-	}
-
-	if closeErr != nil {
-		return fmt.Errorf("close output file %q: %w", path, closeErr)
 	}
 
 	return nil
 }
 
-func Write(writer io.Writer, currencies []currency.Currency) error {
-	if currencies == nil {
-		currencies = make([]currency.Currency, 0)
-	}
-
+func Write(writer io.Writer, data any) error {
 	encoder := json.NewEncoder(writer)
 	encoder.SetIndent("", jsonIndent)
 
-	if err := encoder.Encode(currencies); err != nil {
+	if err := encoder.Encode(data); err != nil {
 		return fmt.Errorf("encode json: %w", err)
 	}
 

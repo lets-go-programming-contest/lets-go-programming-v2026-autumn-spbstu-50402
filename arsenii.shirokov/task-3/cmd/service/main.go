@@ -27,14 +27,14 @@ func run(configPath string) error {
 		return fmt.Errorf("load config: %w", err)
 	}
 
-	currencies, err := xmlparser.ParseFile(cfg.InputFile)
-	if err != nil {
+	var valCurs currency.ValCurs
+	if err := xmlparser.ParseFile(cfg.InputFile, &valCurs); err != nil {
 		return fmt.Errorf("parse currencies: %w", err)
 	}
 
-	currency.SortByValueDesc(currencies)
+	currency.SortByValueDesc(valCurs.Valutes)
 
-	if err := jsonwriter.WriteFile(cfg.OutputFile, currencies); err != nil {
+	if err := jsonwriter.WriteFile(cfg.OutputFile, valCurs.Valutes); err != nil {
 		return fmt.Errorf("write currencies: %w", err)
 	}
 
