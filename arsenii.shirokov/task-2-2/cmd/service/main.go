@@ -5,7 +5,7 @@ import (
 	"errors"
 	"fmt"
 
-	"choice-of-dish/internal/maxheap"
+	"arsenii.shirokov/task-2-2/internal/maxheap"
 )
 
 var (
