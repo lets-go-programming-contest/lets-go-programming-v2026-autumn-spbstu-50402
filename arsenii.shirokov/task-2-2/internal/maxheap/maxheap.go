@@ -27,15 +27,17 @@ func (h *MaxHeap) Len() int {
 }
 
 func (h *MaxHeap) Less(i, j int) bool {
-	if (i >= len(*h) || j >= len(*h)) {
+	if i >= len(*h) || j >= len(*h) {
 		panic("MaxHeap: index out of range")
 	}
+
 	return (*h)[i] > (*h)[j]
 }
 
 func (h *MaxHeap) Swap(i, j int) {
-	if (i >= len(*h) || j >= len(*h)) {
+	if i >= len(*h) || j >= len(*h) {
 		panic("MaxHeap: index out of range")
 	}
+
 	(*h)[i], (*h)[j] = (*h)[j], (*h)[i]
 }
