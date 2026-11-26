@@ -4,6 +4,8 @@ import (
 	"container/heap"
 	"errors"
 	"fmt"
+
+	"choice-of-dish/internal/maxheap"
 )
 
 var (
@@ -11,61 +13,25 @@ var (
 	errPreferenceOutOfRange = errors.New("preference out of range")
 )
 
-type MaxHeap []int
-
-func (h *MaxHeap) Push(x any) {
-	val, isInt := x.(int)
-	if !isInt {
-		panic("MaxHeap: push expects an int")
+func getPreferredDish(maxHeap *maxheap.MaxHeap, preference int) (int, error) {
+	if preference <= 0 || preference > maxHeap.Len() {
+		return 0, errPreferenceOutOfRange
 	}
 
-	*h = append(*h, val)
-}
-
-func (h *MaxHeap) Pop() any {
-	if len(*h) == 0 {
-		panic("MaxHeap: deletion from an empty heap")
+	for range preference - 1 {
+		heap.Pop(maxHeap)
 	}
 
-	endVal := (*h)[len(*h)-1]
-	*h = (*h)[:len(*h)-1]
-
-	return endVal
-}
-
-func (h *MaxHeap) Len() int {
-	return len(*h)
-}
-
-func (h *MaxHeap) Less(i, j int) bool {
-	return (*h)[i] > (*h)[j]
-}
-
-func (h *MaxHeap) Swap(i, j int) {
-	(*h)[i], (*h)[j] = (*h)[j], (*h)[i]
-}
-
-func getPreferredDish(maxHeap *MaxHeap, preference int) (int, error) {
-	if preference <= maxHeap.Len() {
-		var result int
-
-		for range preference {
-			var isInt bool
-			result, isInt = heap.Pop(maxHeap).(int)
-
-			if !isInt {
-				return 0, errNotIntegersInHeap
-			}
-		}
-
-		return result, nil
+	result, ok := heap.Pop(maxHeap).(int)
+	if !ok {
+		return 0, errNotIntegersInHeap
 	}
 
-	return 0, errPreferenceOutOfRange
+	return result, nil
 }
 
-func scanPreferences(numberOfDishes int) (*MaxHeap, error) {
-	maxHeap := &MaxHeap{}
+func scanPreferences(numberOfDishes int) (*maxheap.MaxHeap, error) {
+	maxHeap := &maxheap.MaxHeap{}
 	heap.Init(maxHeap)
 
 	for range numberOfDishes {
