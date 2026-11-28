@@ -1,38 +1,35 @@
 package main
 
 import (
-	"container/heap"
 	"errors"
 	"fmt"
 
 	"arsenii.shirokov/task-2-2/internal/maxheap"
 )
 
-var (
-	errNotIntegersInHeap    = errors.New("expects a container with integers")
-	errPreferenceOutOfRange = errors.New("preference out of range")
-)
+var errPreferenceOutOfRange = errors.New("preference out of range")
 
-func getPreferredDish(maxHeap *maxheap.MaxHeap, preference int) (int, error) {
+func getPreferredDish(maxHeap maxheap.IntMaxHeap, preference int) (int, error) {
 	if preference <= 0 || preference > maxHeap.Len() {
 		return 0, errPreferenceOutOfRange
 	}
 
 	for range preference - 1 {
-		heap.Pop(maxHeap)
+		if _, err := maxHeap.Pop(); err != nil {
+			return 0, fmt.Errorf("error when getting the preferred dish: %w", err)
+		}
 	}
 
-	result, ok := heap.Pop(maxHeap).(int)
-	if !ok {
-		return 0, errNotIntegersInHeap
+	result, err := maxHeap.Pop()
+	if err != nil {
+		return 0, fmt.Errorf("error when getting the preferred dish: %w", err)
 	}
 
 	return result, nil
 }
 
-func scanPreferences(numberOfDishes int) (*maxheap.MaxHeap, error) {
-	maxHeap := &maxheap.MaxHeap{}
-	heap.Init(maxHeap)
+func scanPreferences(numberOfDishes int) (maxheap.IntMaxHeap, error) {
+	maxHeap := maxheap.NewIntMaxHeap()
 
 	for range numberOfDishes {
 		var priority int
@@ -40,13 +37,19 @@ func scanPreferences(numberOfDishes int) (*maxheap.MaxHeap, error) {
 			return maxHeap, fmt.Errorf("error while reading the priority: %w", err)
 		}
 
-		heap.Push(maxHeap, priority)
+		maxHeap.Push(priority)
 	}
 
 	return maxHeap, nil
 }
 
 func main() {
+	defer func() {
+		if r := recover(); r != nil {
+			fmt.Printf("unexpected error (panic): %v\n", r)
+		}
+	}()
+
 	var numberOfDishes int
 	if _, err := fmt.Scanln(&numberOfDishes); err != nil {
 		fmt.Printf("error when reading the number of dishes: %v\n", err)
