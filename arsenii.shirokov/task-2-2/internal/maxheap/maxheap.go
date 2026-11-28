@@ -59,6 +59,7 @@ type IntMaxHeap struct {
 func NewIntMaxHeap() IntMaxHeap {
 	h := maxHeap{}
 	heap.Init(&h)
+
 	return IntMaxHeap{
 		h: h,
 	}
